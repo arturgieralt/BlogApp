@@ -1,0 +1,20 @@
+{
+    "name": "nodeRT",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "start": "npm run build:live",
+        "build": "tsc -p .",
+        "build:live": "npx nodemon --watch 'src/**/*.ts' --exec npm run watch", 
+        "watch": "npx ts-node src/server.ts"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^10.12.18",
+        "nodemon": "^1.18.9",
+        "ts-node": "^7.0.1",
+        "typescript": "^3.2.2"
+    }
+}
