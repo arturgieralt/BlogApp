@@ -9,6 +9,8 @@
 # production
 /build
 
+/dist
+
 /config/*.pem
 
 # misc
