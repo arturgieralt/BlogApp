@@ -1,10 +1,10 @@
 import {Request, Response} from "express";
-import { ArticleModel } from './../models/ArticleModel';
-import mongoose from 'mongoose';
+import { UserModel } from '../models/UserModel';
+import mongoose from "mongoose";
 
-export class ArticlesController {
+export class UsersController {
     public getAll(req: Request, res: Response) {
-        ArticleModel.find({}, (err, articles) => {
+        UserModel.find({}, (err, articles) => {
             if(err) {
                 res.send(err);
             }
@@ -13,7 +13,7 @@ export class ArticlesController {
     }
 
     public getSingle(req: Request, res: Response) {
-        ArticleModel.findById(req.params.articleId, (err, article) => {
+        UserModel.findById(req.params.userId, (err, article) => {
             if(err) {
                 res.send(err);
             }
@@ -22,7 +22,7 @@ export class ArticlesController {
     }
 
     public update(req: Request, res: Response) {
-        ArticleModel.findOneAndUpdate({_id: req.params.articleId}, req.body, {new: true}, (err, article) => {
+        UserModel.findOneAndUpdate({_id: req.params.userId}, req.body, {new: true}, (err, article) => {
             if(err) {
                 res.send(err);
             }
@@ -31,10 +31,12 @@ export class ArticlesController {
     }
 
     public add(req: Request, res: Response) {
-        const article = new ArticleModel({
+        const article = new UserModel({
             ...req.body,
             _id: new mongoose.Types.ObjectId()
-        });
+        }
+           )
+            ;
         article.save((err, article) => {
             if(err) {
                 res.send(err);
@@ -44,7 +46,7 @@ export class ArticlesController {
     }
 
     public delete(req: Request, res: Response) {
-        ArticleModel.remove({_id: req.params.articleId}, (err) => {
+        UserModel.remove({_id: req.params.userId}, (err) => {
             if(err) {
                 res.send(err);
             }

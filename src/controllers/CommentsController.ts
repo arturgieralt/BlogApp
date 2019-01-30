@@ -1,10 +1,9 @@
 import {Request, Response} from "express";
-import { ArticleModel } from './../models/ArticleModel';
-import mongoose from 'mongoose';
+import { CommentModel } from '../models/CommentModel';
 
-export class ArticlesController {
+export class CommentsController {
     public getAll(req: Request, res: Response) {
-        ArticleModel.find({}, (err, articles) => {
+        CommentModel.find({}, (err, articles) => {
             if(err) {
                 res.send(err);
             }
@@ -13,7 +12,7 @@ export class ArticlesController {
     }
 
     public getSingle(req: Request, res: Response) {
-        ArticleModel.findById(req.params.articleId, (err, article) => {
+        CommentModel.findById(req.params.commentId, (err, article) => {
             if(err) {
                 res.send(err);
             }
@@ -22,7 +21,7 @@ export class ArticlesController {
     }
 
     public update(req: Request, res: Response) {
-        ArticleModel.findOneAndUpdate({_id: req.params.articleId}, req.body, {new: true}, (err, article) => {
+        CommentModel.findOneAndUpdate({_id: req.params.commentId}, req.body, {new: true}, (err, article) => {
             if(err) {
                 res.send(err);
             }
@@ -31,10 +30,7 @@ export class ArticlesController {
     }
 
     public add(req: Request, res: Response) {
-        const article = new ArticleModel({
-            ...req.body,
-            _id: new mongoose.Types.ObjectId()
-        });
+        const article = new CommentModel(req.body);
         article.save((err, article) => {
             if(err) {
                 res.send(err);
@@ -44,7 +40,7 @@ export class ArticlesController {
     }
 
     public delete(req: Request, res: Response) {
-        ArticleModel.remove({_id: req.params.articleId}, (err) => {
+        CommentModel.remove({_id: req.params.commentId}, (err) => {
             if(err) {
                 res.send(err);
             }
