@@ -1,10 +1,4 @@
-import {
-  getAllArticles as getAllArticlesService,
-  getSingleArticle as getSingleArticleService,
-  updateArticle,
-  addArticle,
-  deleteArticle as deleteArticleService
-} from './../services/ArticleService';
+import * as articleService from './../services/ArticleService';
 import { baseController } from './BaseController';
 import { Request, Response, NextFunction } from 'express';
 
@@ -22,37 +16,29 @@ const provideBody = (req: Request, res: Response, next: NextFunction) => [
   req.body
 ];
 
-function getAll() {
-  return getAllArticlesService();
+function _getAll() {
+  return articleService.getAll();
 }
 
-function getSingle(articleId: string) {
-  return getSingleArticleService(articleId);
+function _getSingle(articleId: string) {
+  return articleService.getSingle(articleId);
 }
 
-function update(articleId: string, body: any) {
-  return updateArticle(articleId, body);
+function _update(articleId: string, body: any) {
+  // validation here
+  return articleService.update(articleId, body);
 }
 
-function add(body: any) {
-  return addArticle(body);
+function _add(body: any) {
+  return articleService.add(body);
 }
 
-function deleteArticle(articleId: string) {
-  return deleteArticleService(articleId);
+function _remove(articleId: string) {
+  return articleService.remove(articleId);
 }
 
-export const getAllArticles = baseController(getAll);
-export const getSingleArticle = baseController(
-  getSingle,
-  provideArticleIdParam
-);
-export const updateSingleArticle = baseController(
-  update,
-  provideArticleIdAndBodyParams
-);
-export const addSingleArticle = baseController(add, provideBody);
-export const deleteSingleArticle = baseController(
-  deleteArticle,
-  provideArticleIdParam
-);
+export const getAll = baseController(_getAll);
+export const getSingle = baseController(_getSingle, provideArticleIdParam);
+export const update = baseController(_update, provideArticleIdAndBodyParams);
+export const add = baseController(_add, provideBody);
+export const remove = baseController(_remove, provideArticleIdParam);

@@ -1,55 +1,42 @@
-import { Request, Response } from 'express';
-import { CommentModel } from '../models/CommentModel';
+import { Request, Response, NextFunction } from 'express';
+import * as commentService from './../services/CommentService';
+import { baseController } from './BaseController';
 
-export class CommentsController {
-  public getAll(req: Request, res: Response) {
-    CommentModel.find({}, (err, articles) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(articles);
-    });
-  }
+const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
+  req.params.commentId
+];
+const provideIdAndBodyParams = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => [req.params.commentId, req.body];
+const provideBody = (req: Request, res: Response, next: NextFunction) => [
+  req.body
+];
 
-  public getSingle(req: Request, res: Response) {
-    CommentModel.findById(req.params.commentId, (err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public update(req: Request, res: Response) {
-    CommentModel.findOneAndUpdate(
-      { _id: req.params.commentId },
-      req.body,
-      { new: true },
-      (err, article) => {
-        if (err) {
-          res.send(err);
-        }
-        res.json(article);
-      }
-    );
-  }
-
-  public add(req: Request, res: Response) {
-    const article = new CommentModel(req.body);
-    article.save((err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public delete(req: Request, res: Response) {
-    CommentModel.remove({ _id: req.params.commentId }, err => {
-      if (err) {
-        res.send(err);
-      }
-      res.json({ msg: 'Removed' });
-    });
-  }
+function _getAll() {
+  return commentService.getAll();
 }
+
+function _getSingle(commentId: string) {
+  return commentService.getSingle(commentId);
+}
+
+function _update(commentId: string, body: any) {
+  // validation here
+  return commentService.update(commentId, body);
+}
+
+function _add(body: any) {
+  return commentService.add(body);
+}
+
+function _remove(commentId: string) {
+  return commentService.remove(commentId);
+}
+
+export const getAll = baseController(_getAll);
+export const getSingle = baseController(_getSingle, provideIdParam);
+export const update = baseController(_update, provideIdAndBodyParams);
+export const add = baseController(_add, provideBody);
+export const remove = baseController(_remove, provideIdParam);

@@ -1,42 +1,38 @@
 import { Application } from 'express';
 import * as ArticlesController from './controllers/ArticlesController';
-import { CommentsController } from './controllers/CommentsController';
-import { UsersController } from './controllers/UsersController';
-
-// dependency injection - to do
-const commentsController = new CommentsController();
-const usersController = new UsersController();
+import * as CommentsController from './controllers/CommentsController';
+import * as UsersController from './controllers/UsersController';
 
 export class Routes {
   public routes(app: Application): void {
     app
       .route('/articles')
-      .get(ArticlesController.getAllArticles)
-      .post(ArticlesController.addSingleArticle);
+      .get(ArticlesController.getAll)
+      .post(ArticlesController.add);
     app
       .route('/articles/:articleId')
-      .get(ArticlesController.getSingleArticle)
-      .put(ArticlesController.updateSingleArticle)
-      .delete(ArticlesController.deleteSingleArticle);
+      .get(ArticlesController.getSingle)
+      .put(ArticlesController.update)
+      .delete(ArticlesController.remove);
 
     app
       .route('/comments')
-      .get(commentsController.getAll)
-      .post(commentsController.add);
+      .get(CommentsController.getAll)
+      .post(CommentsController.add);
     app
       .route('/comments/:commentId')
-      .get(commentsController.getSingle)
-      .put(commentsController.update)
-      .delete(commentsController.delete);
+      .get(CommentsController.getSingle)
+      .put(CommentsController.update)
+      .delete(CommentsController.remove);
 
     app
       .route('/users')
-      .get(usersController.getAll)
-      .post(usersController.add);
+      .get(UsersController.getAll)
+      .post(UsersController.add);
     app
       .route('/users/:userId')
-      .get(usersController.getSingle)
-      .put(usersController.update)
-      .delete(usersController.delete);
+      .get(UsersController.getSingle)
+      .put(UsersController.update)
+      .delete(UsersController.remove);
   }
 }

@@ -1,59 +1,42 @@
-import { Request, Response } from 'express';
-import { UserModel } from '../models/UserModel';
-import mongoose from 'mongoose';
+import { Request, Response, NextFunction } from 'express';
+import * as userService from './../services/UserService';
+import { baseController } from './BaseController';
 
-export class UsersController {
-  public getAll(req: Request, res: Response) {
-    UserModel.find({}, (err, articles) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(articles);
-    });
-  }
+const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
+  req.params.userId
+];
+const provideIdAndBodyParams = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => [req.params.userId, req.body];
+const provideBody = (req: Request, res: Response, next: NextFunction) => [
+  req.body
+];
 
-  public getSingle(req: Request, res: Response) {
-    UserModel.findById(req.params.userId, (err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public update(req: Request, res: Response) {
-    UserModel.findOneAndUpdate(
-      { _id: req.params.userId },
-      req.body,
-      { new: true },
-      (err, article) => {
-        if (err) {
-          res.send(err);
-        }
-        res.json(article);
-      }
-    );
-  }
-
-  public add(req: Request, res: Response) {
-    const article = new UserModel({
-      ...req.body,
-      _id: new mongoose.Types.ObjectId()
-    });
-    article.save((err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public delete(req: Request, res: Response) {
-    UserModel.remove({ _id: req.params.userId }, err => {
-      if (err) {
-        res.send(err);
-      }
-      res.json({ msg: 'Removed' });
-    });
-  }
+function _getAll() {
+  return userService.getAll();
 }
+
+function _getSingle(userId: string) {
+  return userService.getSingle(userId);
+}
+
+function _update(userId: string, body: any) {
+  // validation here
+  return userService.update(userId, body);
+}
+
+function _add(body: any) {
+  return userService.add(body);
+}
+
+function _remove(userId: string) {
+  return userService.remove(userId);
+}
+
+export const getAll = baseController(_getAll);
+export const getSingle = baseController(_getSingle, provideIdParam);
+export const update = baseController(_update, provideIdAndBodyParams);
+export const add = baseController(_add, provideBody);
+export const remove = baseController(_remove, provideIdParam);
