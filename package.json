@@ -9,7 +9,10 @@
         "build:live": "npx nodemon --watch 'src/**/*.ts' --exec npm run watch",
         "watch": "npx ts-node src/server.ts",
         "start:prod": "nodemon ./dist/server.js",
-        "prod": "npm run build && npm run start"
+        "prod": "npm run build && npm run start",
+        "prettier:base": "prettier --parser typescript --single-quote",
+        "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
+        "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\""
     },
     "author": "",
     "license": "ISC",
@@ -18,8 +21,11 @@
         "@types/mongoose": "^5.3.8",
         "@types/node": "^10.12.18",
         "nodemon": "^1.18.9",
+        "prettier": "^1.16.3",
         "ts-node": "^7.0.1",
-        "typescript": "^3.2.2"
+        "tslint": "^5.12.1",
+        "tslint-config-airbnb": "^5.11.1",
+        "typescript": "^3.2.4"
     },
     "dependencies": {
         "body-parser": "^1.18.3",
