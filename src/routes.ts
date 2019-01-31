@@ -1,9 +1,9 @@
 import { Application } from 'express';
-import { ArticlesController } from './controllers/ArticlesController';
+import * as ArticlesController from './controllers/ArticlesController';
 import { CommentsController } from './controllers/CommentsController';
 import { UsersController } from './controllers/UsersController';
 
-const articlesController = new ArticlesController(); // dependency injection - to do
+// dependency injection - to do
 const commentsController = new CommentsController();
 const usersController = new UsersController();
 
@@ -11,13 +11,13 @@ export class Routes {
   public routes(app: Application): void {
     app
       .route('/articles')
-      .get(articlesController.getAll)
-      .post(articlesController.add);
+      .get(ArticlesController.getAllArticles)
+      .post(ArticlesController.addSingleArticle);
     app
       .route('/articles/:articleId')
-      .get(articlesController.getSingle)
-      .put(articlesController.update)
-      .delete(articlesController.delete);
+      .get(ArticlesController.getSingleArticle)
+      .put(ArticlesController.updateSingleArticle)
+      .delete(ArticlesController.deleteSingleArticle);
 
     app
       .route('/comments')

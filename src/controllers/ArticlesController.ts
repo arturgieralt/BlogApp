@@ -1,61 +1,58 @@
-import { Request, Response } from 'express';
-import { ArticleModel } from './../models/ArticleModel';
-import mongoose from 'mongoose';
+import {
+  getAllArticles as getAllArticlesService,
+  getSingleArticle as getSingleArticleService,
+  updateArticle,
+  addArticle,
+  deleteArticle as deleteArticleService
+} from './../services/ArticleService';
+import { baseController } from './BaseController';
+import { Request, Response, NextFunction } from 'express';
 
-export class ArticlesController {
-  public getAll(req: Request, res: Response) {
-    ArticleModel.find({})
-      .populate('author')
-      .exec((err, articles) => {
-        if (err) {
-          res.send(err);
-        }
-        res.json(articles);
-      });
-  }
+const provideArticleIdParam = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => [req.params.articleId];
+const provideArticleIdAndBodyParams = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => [req.params.articleId, req.body];
+const provideBody = (req: Request, res: Response, next: NextFunction) => [
+  req.body
+];
 
-  public getSingle(req: Request, res: Response) {
-    ArticleModel.findById(req.params.articleId, (err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public update(req: Request, res: Response) {
-    ArticleModel.findOneAndUpdate(
-      { _id: req.params.articleId },
-      req.body,
-      { new: true },
-      (err, article) => {
-        if (err) {
-          res.send(err);
-        }
-        res.json(article);
-      }
-    );
-  }
-
-  public add(req: Request, res: Response) {
-    const article = new ArticleModel({
-      ...req.body,
-      _id: new mongoose.Types.ObjectId()
-    });
-    article.save((err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public delete(req: Request, res: Response) {
-    ArticleModel.remove({ _id: req.params.articleId }, err => {
-      if (err) {
-        res.send(err);
-      }
-      res.json({ msg: 'Removed' });
-    });
-  }
+function getAll() {
+  return getAllArticlesService();
 }
+
+function getSingle(articleId: string) {
+  return getSingleArticleService(articleId);
+}
+
+function update(articleId: string, body: any) {
+  return updateArticle(articleId, body);
+}
+
+function add(body: any) {
+  return addArticle(body);
+}
+
+function deleteArticle(articleId: string) {
+  return deleteArticleService(articleId);
+}
+
+export const getAllArticles = baseController(getAll);
+export const getSingleArticle = baseController(
+  getSingle,
+  provideArticleIdParam
+);
+export const updateSingleArticle = baseController(
+  update,
+  provideArticleIdAndBodyParams
+);
+export const addSingleArticle = baseController(add, provideBody);
+export const deleteSingleArticle = baseController(
+  deleteArticle,
+  provideArticleIdParam
+);
