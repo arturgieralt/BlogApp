@@ -2,6 +2,7 @@ import { Application } from 'express';
 import * as ArticlesController from './controllers/ArticlesController';
 import * as CommentsController from './controllers/CommentsController';
 import * as UsersController from './controllers/UsersController';
+import passport = require('passport');
 
 export class Routes {
   public routes(app: Application): void {
@@ -27,8 +28,13 @@ export class Routes {
 
     app
       .route('/users')
-      .get(UsersController.getAll)
-      .post(UsersController.add);
+      .get(
+        passport.authenticate('jwt', { session: false }),
+        UsersController.getAll
+      );
+    app.route('/register').post(UsersController.register);
+    app.route('/login').post(UsersController.login);
+
     app
       .route('/users/:userId')
       .get(UsersController.getSingle)
