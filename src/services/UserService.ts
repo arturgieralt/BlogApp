@@ -10,13 +10,23 @@ export function getSingle(id: string): Promise<Document | null> {
   return UserModel.findById(id).exec();
 }
 
+export function getSingleByName(name: string): Promise<Document | null> {
+  return UserModel.findOne({ name }).exec();
+}
+
 export function update(id: string, body: any): Promise<Document | null> {
   return UserModel.findOneAndUpdate({ _id: id }, body, { new: true }).exec();
 }
 
-export function add(body: any): Promise<Document> {
+export function add(
+  name: string,
+  passwordHash: string,
+  email: string
+): Promise<Document> {
   const article = new UserModel({
-    ...body,
+    name,
+    passwordHash,
+    email,
     _id: new mongoose.Types.ObjectId()
   });
   return article.save();

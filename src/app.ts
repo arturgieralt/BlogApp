@@ -2,6 +2,8 @@ import express from 'express';
 import * as bodyParser from 'body-parser';
 import { Routes } from './routes';
 import mongoose from 'mongoose';
+import passport = require('passport');
+import { initPassport } from './auth/passportSetup';
 
 class App {
   public app: express.Application;
@@ -18,6 +20,8 @@ class App {
   private config() {
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(passport.initialize());
+    initPassport();
   }
 
   private mongoSetup(): void {

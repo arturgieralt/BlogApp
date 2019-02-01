@@ -13,6 +13,10 @@ export const UserSchema = new Schema({
     type: String,
     unique: true,
     required: [true, 'Please provide an email']
+  },
+  passwordHash: {
+    type: String,
+    required: true
   }
 });
 
