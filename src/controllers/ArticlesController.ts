@@ -1,61 +1,44 @@
-import { Request, Response } from 'express';
-import { ArticleModel } from './../models/ArticleModel';
-import mongoose from 'mongoose';
+import * as articleService from './../services/ArticleService';
+import { baseController } from './BaseController';
+import { Request, Response, NextFunction } from 'express';
 
-export class ArticlesController {
-  public getAll(req: Request, res: Response) {
-    ArticleModel.find({})
-      .populate('author')
-      .exec((err, articles) => {
-        if (err) {
-          res.send(err);
-        }
-        res.json(articles);
-      });
-  }
+const provideArticleIdParam = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => [req.params.articleId];
+const provideArticleIdAndBodyParams = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => [req.params.articleId, req.body];
+const provideBody = (req: Request, res: Response, next: NextFunction) => [
+  req.body
+];
 
-  public getSingle(req: Request, res: Response) {
-    ArticleModel.findById(req.params.articleId, (err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public update(req: Request, res: Response) {
-    ArticleModel.findOneAndUpdate(
-      { _id: req.params.articleId },
-      req.body,
-      { new: true },
-      (err, article) => {
-        if (err) {
-          res.send(err);
-        }
-        res.json(article);
-      }
-    );
-  }
-
-  public add(req: Request, res: Response) {
-    const article = new ArticleModel({
-      ...req.body,
-      _id: new mongoose.Types.ObjectId()
-    });
-    article.save((err, article) => {
-      if (err) {
-        res.send(err);
-      }
-      res.json(article);
-    });
-  }
-
-  public delete(req: Request, res: Response) {
-    ArticleModel.remove({ _id: req.params.articleId }, err => {
-      if (err) {
-        res.send(err);
-      }
-      res.json({ msg: 'Removed' });
-    });
-  }
+function _getAll() {
+  return articleService.getAll();
 }
+
+function _getSingle(articleId: string) {
+  return articleService.getSingle(articleId);
+}
+
+function _update(articleId: string, body: any) {
+  // validation here
+  return articleService.update(articleId, body);
+}
+
+function _add(body: any) {
+  return articleService.add(body);
+}
+
+function _remove(articleId: string) {
+  return articleService.remove(articleId);
+}
+
+export const getAll = baseController(_getAll);
+export const getSingle = baseController(_getSingle, provideArticleIdParam);
+export const update = baseController(_update, provideArticleIdAndBodyParams);
+export const add = baseController(_add, provideBody);
+export const remove = baseController(_remove, provideArticleIdParam);
