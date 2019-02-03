@@ -25,7 +25,7 @@ export const StyledBanner = styled(Banner)`
 function Banner ({className}) {
     return (
         <div className={className}>
-            <h4>the art of the web</h4>
+            <h4>the art of web dev</h4>
         </div>
     )
 };

@@ -5,9 +5,10 @@ import Root from './views/Root';
 import * as serviceWorker from './serviceWorker';
 import { configureStore } from './store/configure';
 import { BrowserRouter as Router} from "react-router-dom";
+import { fetchArticles } from './actions/articles';
 
 const store = configureStore();
-
+store.dispatch(fetchArticles());
 render(
   <Router>
     <Root store={store} />

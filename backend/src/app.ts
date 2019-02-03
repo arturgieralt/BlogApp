@@ -4,6 +4,7 @@ import { Routes } from './routes';
 import mongoose from 'mongoose';
 import passport = require('passport');
 import { initPassport } from './auth/passportSetup';
+import cors from 'cors';
 
 class App {
   public app: express.Application;
@@ -18,8 +19,14 @@ class App {
   }
 
   private config() {
+    const corsOptions = {
+      origin: 'http://localhost:3000',
+      optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+    };
+
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: false }));
+    this.app.use(cors(corsOptions));
     this.app.use(passport.initialize());
     initPassport();
   }

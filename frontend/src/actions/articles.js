@@ -10,3 +10,17 @@ export const fetchArticlesSuccess = (articles) => ({
     type: ARTICLES_FETCH_SUCCESS,
     payload: articles
 });
+
+export const ARTICLE_ADD_REQUEST = '[ARTICLE]_ADD_REQUEST';
+export const ARTICLE_ADD_SUCCESS = '[ARTICLE]_ADD_SUCCESS';
+export const ARTICLE_ADD_FAILURE = '[ARTICLE]_ADD_FAILURE';
+
+export const addArticle = (articleToAdd) => ({
+    type: ARTICLE_ADD_REQUEST,
+    payload: articleToAdd
+});
+
+export const addArticleSuccess = (articleCreated) => ({
+    type: ARTICLE_ADD_SUCCESS,
+    payload: articleCreated
+});
