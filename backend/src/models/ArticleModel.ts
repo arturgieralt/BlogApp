@@ -5,6 +5,7 @@ export const ArticleSchema = new Schema({
   content: { type: String, required: [true, 'Please provide a content'] },
   author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   tags: [{ type: String }],
+  commentsAllowed: {type: Boolean, default: true},
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
   created_date: {
     type: Date,
