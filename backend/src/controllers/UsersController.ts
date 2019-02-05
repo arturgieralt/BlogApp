@@ -6,11 +6,7 @@ import passport = require('passport');
 import { Document } from 'mongoose';
 import * as jwt from 'jsonwebtoken';
 import { IVerifyOptions } from 'passport-local';
-
-const provideAll = (req: Request, res: Response, next: NextFunction) => [
-  req,
-  res
-];
+import { getRolesPerUser } from './../services/RolesService';
 
 const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
   req.params.userId
@@ -48,16 +44,24 @@ export function login(req: Request, res: Response, next: NextFunction) {
   passport.authenticate(
     'local',
     { session: false },
-    (error: any, user: Document, options?: IVerifyOptions) => {
+    async (error: any, user: Document, options?: IVerifyOptions) => {
       if (error || !user) {
         res.status(400).json({ ...error, ...options });
       }
 
+      const rolesDocs = await getRolesPerUser(user.id);
+      const userRoles =
+        rolesDocs === null
+          ? []
+          : rolesDocs.map((roleDoc: Document) => roleDoc.toObject().roleName);
+
       const expiryTime = Number(process.env.JWT_EXP_TIME_MS);
       const secret = process.env.SECRET_JWT;
       const payload = {
+        id: user.toObject()._id,
         username: user.toObject().name,
-        expires: Date.now() + expiryTime
+        expires: Date.now() + expiryTime,
+        userRoles
       };
 
       req.login(payload, { session: false }, error => {
