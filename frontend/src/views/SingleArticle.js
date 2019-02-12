@@ -2,21 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router";
 import { connect } from 'react-redux';
-import { StyledCard } from "../components/Card/Card";
-
-function SingleArticle ({ match, location, history, articles }) {
+import Article from './../components/Article/Article';
+ 
+const SingleArticle = ({ match, articles }) => {
 
 if(articles && match.params.id) {
     const article = articles.find((art) => art._id === match.params.id);
-    if(article) {
-        return (
-            <StyledCard width="90%" margin="20px auto" title={article.title}>
-             {article.content}
-            </StyledCard>
-        );
+    return <Article article={article} />;
     }
-}
-    return 'No such article.';
 }
 
 SingleArticle.propTypes = {

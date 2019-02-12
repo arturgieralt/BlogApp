@@ -1,16 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { StyledCard } from '../components/Card/Card';
 import photo from './../static/photo.png'
 import ArticleList from '../containers/ArticleList';
 
-class App extends Component {
-  render() {
-    return (
+const Main = () => (
         <React.Fragment>
           <div style={{float: 'left', width:'75%', boxSizing: 'border-box'}}>
           <StyledCard width="calc(100% - 20px)" margin="20px 0 20px 20px" title="Welcome on my blog">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras finibus, lorem sit amet faucibus lobortis, nunc sapien molestie leo, vitae porta nunc neque eu ipsum. Fusce sed nulla et lacus feugiat suscipit. Integer facilisis in ante non mattis. Sed at dapibus turpis. Nullam ornare non velit luctus aliquet. Mauris lacinia sem nisi, sed fringilla augue viverra et. Aliquam lacinia purus sed tortor fermentum dictum.
-
+          </StyledCard>
+          <StyledCard width="calc(100% - 20px)" margin="20px 0 20px 20px" title="Last articles">
           <ArticleList />
           </StyledCard>
           </div>
@@ -32,7 +31,5 @@ class App extends Component {
         </React.Fragment>
         
     );
-  }
-}
 
-export default App;
+export default Main;

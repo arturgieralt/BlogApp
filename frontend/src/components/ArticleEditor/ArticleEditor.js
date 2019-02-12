@@ -1,5 +1,9 @@
 import React from 'react';
-
+import Button from './../formElements/Button';
+import Input from './../formElements/Input';
+import TextArea from '../formElements/TextArea';
+import {StyledCard} from './../Card/Card';
+import ElementLabel from '../formElements/ControlLabel';
 export class ArticleEditor extends React.Component {
     state = {
         title: '',
@@ -42,14 +46,24 @@ export class ArticleEditor extends React.Component {
 
     render () {
         return (
-            <div>
-                <input type="text" name="title" onChange={this.handleChange} value={this.state.title} />
-                <textarea name="summary" onChange={this.handleChange}>{this.state.summary}</textarea>
-                <textarea name="content" onChange={this.handleChange}>{this.state.content}</textarea>
-                <input type="text" name="tags"  onChange={this.handleChange} value={this.state.tags.toString()} />
-                <input type="checkbox"  onChange={this.handleChange} name="commentsAllowed" checked={this.state.commentsAllowed} />
-                <button onClick={this.handleSubmit}>Send</button>
-            </div>   
+            <StyledCard width="90%" margin="20px auto" title="Add article">
+                <ElementLabel name="Title">
+                    <Input type="text" name="title" onChange={this.handleChange} value={this.state.title} placeholder='Title...' />
+                </ElementLabel>
+                <ElementLabel name="Summary">
+                    <TextArea name="summary" onChange={this.handleChange}>{this.state.summary}</TextArea>
+                </ElementLabel>
+                <ElementLabel name="Content">
+                    <TextArea name="content" onChange={this.handleChange}>{this.state.content}</TextArea>
+                </ElementLabel>
+                <ElementLabel name="Tags">
+                    <Input type="text" name="tags"  onChange={this.handleChange} value={this.state.tags.toString()} placeholder='Tags...' />
+                </ElementLabel>
+                <ElementLabel name="Allow comments">
+                    <Input type="checkbox"  onChange={this.handleChange} name="commentsAllowed" checked={this.state.commentsAllowed} />
+                </ElementLabel>
+                <Button  type="button" onClick={this.handleSubmit}>Send</Button>
+            </StyledCard>   
         );
 
     }
