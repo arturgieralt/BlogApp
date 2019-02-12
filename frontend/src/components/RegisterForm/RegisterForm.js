@@ -13,6 +13,8 @@ export class RegisterForm extends React.Component {
         passwordCheck: '',
     };
 
+    form = React.createRef();
+
     handleChange (event) {
         const { type, name, value, checked} = event.target;
         switch (type) {
@@ -35,11 +37,18 @@ export class RegisterForm extends React.Component {
     }
 
     handleSubmit () {
-        const {addArticle} = this.props;
-        const tags = this.state.tags.split('#').splice(1);
-        console.log(this.state);
-        addArticle({...this.state, tags});
+        this.form.current.reportValidity();
+        console.log(this.form.current.elements);
         console.log('goweno');
+    }
+
+    validateControl() {
+        return (event) => {
+            const { type, name, value, checked} = event.target;
+            return {
+
+            }
+        }
     }
 
     handleChange = this.handleChange.bind(this);
@@ -48,23 +57,27 @@ export class RegisterForm extends React.Component {
     render () {
         return (
             <StyledCard width="90%" margin="20px auto" title="Register">
-                <ElementLabel name="Name">
-                    <Input type="text" name="name" onChange={this.handleChange} value={this.state.name} placeholder='Name...' />
+            <form ref={this.form} onSubmit={e => e.preventDefault()}>
+            <ElementLabel name="Name">
+                    <Input type="text" name="name" required onChange={this.handleChange} value={this.state.name} placeholder='Name...' />
                 </ElementLabel>
                 <ElementLabel name="Email">
-                    <Input type="email" name="email" onChange={this.handleChange} value={this.state.email} placeholder='Email...' />
+                    <Input type="email" name="email" required onChange={this.handleChange} value={this.state.email} placeholder='Email...' />
                 </ElementLabel>
                 <ElementLabel name="Repeat Email">
-                    <Input type="email" name="emailCheck" onChange={this.handleChange} value={this.state.emailCheck} placeholder='Repet Email...' />
+                    <Input type="email" name="emailCheck" required onChange={this.handleChange} value={this.state.emailCheck} placeholder='Repet Email...' />
                 </ElementLabel>
                 <ElementLabel name="Password">
-                    <Input type="password" name="password" onChange={this.handleChange} value={this.state.password} placeholder='Password...' />
+                    <Input type="password" name="password" required pattern=".{5,10}" onChange={this.handleChange} value={this.state.password} placeholder='Password...' />
                 </ElementLabel>
                 <ElementLabel name="Repeat password">
-                    <Input type="password" name="passwordCheck" onChange={this.handleChange} value={this.state.passwordCheck} placeholder='Repeat password...' />
+                    <Input type="password" name="passwordCheck" required pattern=".{5,10}" onChange={this.handleChange} value={this.state.passwordCheck} placeholder='Repeat password...' />
                 </ElementLabel>
                 <Button  type="button" onClick={this.handleSubmit}>Register</Button>
-            </StyledCard>   
+                </form>
+            </StyledCard>
+            
+                   
         );
 
     }
