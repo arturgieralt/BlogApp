@@ -1,11 +1,10 @@
-import React from 'react';
+import React from "react";
 
-const ElementLabel = ({name, children}) => 
-(
-    <label>
-        {name}
-        {children}
-    </label>
+const ElementLabel = ({ name, children }) => (
+  <div>
+    {name}
+    {children}
+  </div>
 );
 
 export default ElementLabel;
