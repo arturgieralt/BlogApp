@@ -12,9 +12,7 @@ export const fetchArticlesEpic = action$ =>
   action$.pipe(
     ofType(ARTICLES_FETCH_REQUEST),
     mergeMap(action =>
-      ajax
-        .getJSON('https://localhost:3001/articles')
-        .pipe(map(response => fetchArticlesSuccess(response)))
+      ajax.getJSON('https://localhost:3001/articles').pipe(map(response => fetchArticlesSuccess(response)))
     )
   );
 
@@ -23,7 +21,9 @@ export const addArticleEpic = action$ =>
     ofType(ARTICLE_ADD_REQUEST),
     mergeMap(action =>
       ajax
-        .post('https://localhost:3001/articles', { ...action.payload })
+        .post('https://localhost:3001/articles', {
+          ...action.payload
+        })
         .pipe(map(response => addArticleSuccess(response)))
     )
   );

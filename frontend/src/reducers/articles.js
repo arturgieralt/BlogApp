@@ -1,7 +1,4 @@
-import {
-  ARTICLES_FETCH_SUCCESS,
-  ARTICLES_FETCH_FAILURE
-} from '../actions/articles';
+import { ARTICLES_FETCH_SUCCESS, ARTICLES_FETCH_FAILURE } from '../actions/articles';
 
 export function articles(state = [], action) {
   switch (action.type) {

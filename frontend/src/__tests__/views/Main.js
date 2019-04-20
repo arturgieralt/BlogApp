@@ -10,15 +10,13 @@ import ArticleList from '../../containers/ArticleList';
 Enzyme.configure({ adapter: new Adapter() });
 
 describe('<App />', () => {
-    let wrapper;
-    beforeAll(() => 
-        wrapper = shallow(<Main />)
-    );
-    it ('renders four <StyledCard /> components', () => {
-        expect(wrapper.find(StyledCard).length).toBe(4);
-    });
+  let wrapper;
+  beforeAll(() => (wrapper = shallow(<Main />)));
+  it('renders four <StyledCard /> components', () => {
+    expect(wrapper.find(StyledCard).length).toBe(4);
+  });
 
-    it ('renders ArticleList', () => {
-        expect(wrapper.find(ArticleList).length).toBe(1);
-    });
+  it('renders ArticleList', () => {
+    expect(wrapper.find(ArticleList).length).toBe(1);
+  });
 });
