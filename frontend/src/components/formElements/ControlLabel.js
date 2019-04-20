@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 const ElementLabel = ({ name, children }) => (
-  <label>
+  <div>
     {name}
     {children}
-  </label>
+  </div>
 );
 
 export default ElementLabel;

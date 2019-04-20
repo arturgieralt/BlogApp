@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyledCard } from '../Card/Card';
+import React from "react";
+import StyledCard from "../Card/Card";
 
 const Article = article => {
   if (article) {
@@ -9,7 +9,7 @@ const Article = article => {
       </StyledCard>
     );
   }
-  return 'No such article.';
+  return "No such article.";
 };
 
 export default Article;

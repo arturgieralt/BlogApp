@@ -1,8 +1,16 @@
-import React from 'react';
-import background from './background.jpg';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
+import background from "./background.jpg";
 
-export const StyledBanner = styled(Banner)`
+function Banner({ className }) {
+  return (
+    <div className={className}>
+      <h4>the art of web dev</h4>
+    </div>
+  );
+}
+
+export default styled(Banner)`
   width: 100%;
   height: 280px;
   background-image: url(${background});
@@ -21,11 +29,3 @@ export const StyledBanner = styled(Banner)`
     text-align: center;
   }
 `;
-
-function Banner({ className }) {
-  return (
-    <div className={className}>
-      <h4>the art of web dev</h4>
-    </div>
-  );
-}

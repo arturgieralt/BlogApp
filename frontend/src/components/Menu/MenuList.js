@@ -1,7 +1,37 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-export const StyledMenuList = styled(MenuList)`
+function MenuList({ className }) {
+  return (
+    <ul className={className}>
+      <li>
+        <a href="/" id="mainLink">
+          arturgieralt.pl
+        </a>
+      </li>
+      <li>
+        <a href="/" id="mainLink">
+          Articles
+        </a>
+      </li>
+      <li>
+        <a href="/" id="mainLink">
+          Main
+        </a>
+      </li>
+      <li>
+        <a href="/" id="mainLink">
+          Main
+        </a>
+      </li>
+      <li>
+        <span>search...</span>
+      </li>
+    </ul>
+  );
+}
+
+export default styled(MenuList)`
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -43,33 +73,3 @@ export const StyledMenuList = styled(MenuList)`
     border-radius: 5px;
   }
 `;
-
-function MenuList({ className }) {
-  return (
-    <ul className={className}>
-      <li>
-        <a href="/" id="mainLink">
-          arturgieralt.pl
-        </a>
-      </li>
-      <li>
-        <a href="/" id="mainLink">
-          Articles
-        </a>
-      </li>
-      <li>
-        <a href="/" id="mainLink">
-          Main
-        </a>
-      </li>
-      <li>
-        <a href="/" id="mainLink">
-          Main
-        </a>
-      </li>
-      <li>
-        <span>search...</span>
-      </li>
-    </ul>
-  );
-}

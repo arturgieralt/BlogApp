@@ -1,29 +1,30 @@
-import React from 'react';
-import Button from './../formElements/Button';
-import Input from './../formElements/Input';
-import TextArea from '../formElements/TextArea';
-import { StyledCard } from './../Card/Card';
-import ElementLabel from '../formElements/ControlLabel';
-export class ArticleEditor extends React.Component {
+import React from "react";
+import Button from "../formElements/Button";
+import Input from "../formElements/Input";
+import TextArea from "../formElements/TextArea";
+import StyledCard from "../Card/Card";
+import ElementLabel from "../formElements/ControlLabel";
+
+export default class ArticleEditor extends React.Component {
   state = {
-    title: '',
-    summary: '',
-    content: '',
-    tags: '',
+    title: "",
+    summary: "",
+    content: "",
+    tags: "",
     commentsAllowed: true,
-    author: '5c51ed63aaa04a70f2531700'
+    author: "5c51ed63aaa04a70f2531700"
   };
 
   handleChange(event) {
     const { type, name, value, checked } = event.target;
     switch (type) {
-      case 'checkbox':
+      case "checkbox":
         this.setState({
           [name]: checked
         });
         break;
-      case 'text':
-      case 'textarea':
+      case "text":
+      case "textarea":
         this.setState({
           [name]: value
         });
@@ -35,16 +36,18 @@ export class ArticleEditor extends React.Component {
 
   handleSubmit() {
     const { addArticle } = this.props;
-    const tags = this.state.tags.split('#').splice(1);
-    console.log(this.state);
-    addArticle({ ...this.state, tags });
-    console.log('goweno');
+    const { tags } = this.state;
+    const tagsArray = tags.split("#").splice(1);
+    addArticle({ ...this.state, tags: tagsArray });
   }
 
   handleChange = this.handleChange.bind(this);
+
   handleSubmit = this.handleSubmit.bind(this);
 
   render() {
+    const { title, summary, content, tags, commentsAllowed } = this.state;
+
     return (
       <StyledCard width="90%" margin="20px auto" title="Add article">
         <ElementLabel name="Title">
@@ -52,18 +55,18 @@ export class ArticleEditor extends React.Component {
             type="text"
             name="title"
             onChange={this.handleChange}
-            value={this.state.title}
+            value={title}
             placeholder="Title..."
           />
         </ElementLabel>
         <ElementLabel name="Summary">
           <TextArea name="summary" onChange={this.handleChange}>
-            {this.state.summary}
+            {summary}
           </TextArea>
         </ElementLabel>
         <ElementLabel name="Content">
           <TextArea name="content" onChange={this.handleChange}>
-            {this.state.content}
+            {content}
           </TextArea>
         </ElementLabel>
         <ElementLabel name="Tags">
@@ -71,7 +74,7 @@ export class ArticleEditor extends React.Component {
             type="text"
             name="tags"
             onChange={this.handleChange}
-            value={this.state.tags.toString()}
+            value={tags.toString()}
             placeholder="Tags..."
           />
         </ElementLabel>
@@ -80,7 +83,7 @@ export class ArticleEditor extends React.Component {
             type="checkbox"
             onChange={this.handleChange}
             name="commentsAllowed"
-            checked={this.state.commentsAllowed}
+            checked={commentsAllowed}
           />
         </ElementLabel>
         <Button type="button" onClick={this.handleSubmit}>
