@@ -12,23 +12,23 @@ import ArticleEditor from '../containers/ArticleEditor';
 import { RegisterForm } from '../components/RegisterForm/RegisterForm';
 
 const Root = ({ store }) => (
-    <Provider store={store}>
-        <StyledBar>
-            <StyledMenuList />
-          </StyledBar>
-          <StyledBanner />
-        <Switch>
-            <Route exact={true} path="/" component={Main} />
-            <Route exact={true} path="/articles" component={ArticleList} />
-            <Route exact={true} path="/articles/add" component={ArticleEditor} />
-            <Route path="/articles/:id" component={SingleArticle} />
-            <Route path="/register" component={RegisterForm} />
-          </Switch>
-    </Provider>
+  <Provider store={store}>
+    <StyledBar>
+      <StyledMenuList />
+    </StyledBar>
+    <StyledBanner />
+    <Switch>
+      <Route exact={true} path="/" component={Main} />
+      <Route exact={true} path="/articles" component={ArticleList} />
+      <Route exact={true} path="/articles/add" component={ArticleEditor} />
+      <Route path="/articles/:id" component={SingleArticle} />
+      <Route path="/register" component={RegisterForm} />
+    </Switch>
+  </Provider>
 );
-  
+
 Root.propTypes = {
-    store: PropTypes.object.isRequired,
-}
+  store: PropTypes.object.isRequired
+};
 
 export default Root;
