@@ -21,8 +21,9 @@ export const USER_REGISTER_REQUEST = "[USER]_REGISTER_REQUEST";
 export const USER_REGISTER_SUCCESS = "[USER]_REGISTER_SUCCESS";
 export const USER_REGISTER_FAILURE = "[USER]_REGISTER_FAILURE";
 
-export const registerUser = () => ({
-  type: USER_REGISTER_REQUEST
+export const registerUser = user => ({
+  type: USER_REGISTER_REQUEST,
+  user
 });
 
 export const registerUserSuccess = token => ({

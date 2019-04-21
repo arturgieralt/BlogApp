@@ -37,14 +37,17 @@ export const getRoleNames = (rolesDocs: Document[] | null): string[] => rolesDoc
   : rolesDocs.map((roleDoc: Document) => roleDoc.toObject().roleName);
 
 
-export const createTokenPayload = (user: Document, userRoles: string[], expiryTime: number) => (
-  {
-      id: user.toObject()._id,
-      username: user.toObject().name,
-      expires: expiryTime,
-      userRoles
+export const createTokenPayload = (user: Document, userRoles: string[], expiryTime: number) => {
+   const { _id, name, email} = user.toObject()
+   return {
+    id: _id,
+    name,
+    email,
+    expires: expiryTime,
+    userRoles
   }
-)
+}
+  
 
 export const getSecret = (): string | undefined =>  process.env.SECRET_JWT;
 

@@ -46,7 +46,7 @@ export default class LoginForm extends React.Component {
     const { name, password } = this.state;
 
     return (
-      <StyledCard width="90%" margin="20px auto" title="Register">
+      <StyledCard width="500px" margin="20px auto" title="Login">
         <ElementLabel name="Name">
           <Input
             type="text"

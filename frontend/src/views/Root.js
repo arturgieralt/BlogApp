@@ -9,7 +9,7 @@ import StyledMenuList from "../components/Menu/MenuList";
 import ArticleList from "../containers/ArticleList";
 import SingleArticle from "./SingleArticle";
 import ArticleEditor from "../containers/ArticleEditor";
-import RegisterForm from "../components/RegisterForm/RegisterForm";
+import RegisterForm from "../containers/RegisterForm";
 import LoginForm from "../containers/LoginForm";
 
 const Root = ({ store }) => (

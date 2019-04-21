@@ -1,5 +1,6 @@
 import React from "react";
 import { pipe, all } from "ramda";
+import PropTypes from "prop-types";
 import Button from "../formElements/Button";
 import Input from "../formElements/Input";
 import StyledCard from "../Card/Card";
@@ -21,11 +22,23 @@ export default class RegisterForm extends React.Component {
   };
 
   handleChange(event) {
-    this.setState(updateFormElement(event));
+    event.persist();
+    const { target } = event;
+    this.setState(updateFormElement(target));
   }
 
   handleSubmit() {
     const isFormValid = this.validate();
+
+    if (isFormValid) {
+      const { name, email, password } = this.state;
+      const { registerUser } = this.props;
+      registerUser({
+        name,
+        email,
+        password
+      });
+    }
     console.log(isFormValid);
   }
 
@@ -48,7 +61,7 @@ export default class RegisterForm extends React.Component {
     const { name, password, passwordCheck, email, emailCheck } = this.state;
 
     return (
-      <StyledCard width="90%" margin="20px auto" title="Register">
+      <StyledCard width="500px" margin="20px auto" title="Register">
         <ElementLabel name="Name">
           <Input
             type="text"
@@ -108,3 +121,7 @@ export default class RegisterForm extends React.Component {
     );
   }
 }
+
+RegisterForm.propTypes = {
+  registerUser: PropTypes.func.isRequired
+};
