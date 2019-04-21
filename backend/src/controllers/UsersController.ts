@@ -7,6 +7,7 @@ import { Document } from 'mongoose';
 import * as jwt from 'jsonwebtoken';
 import { IVerifyOptions } from 'passport-local';
 import { getRolesPerUser } from './../services/RolesService';
+import { getRoleNames, getExpiryTime, getSecret, createTokenPayload } from './../auth/helpers';
 
 const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
   req.params.userId
@@ -17,7 +18,7 @@ const provideIdAndBodyParams = (
   next: NextFunction
 ) => [req.params.userId, req.body];
 const provideBody = (req: Request, res: Response, next: NextFunction) => [
-  req.body
+  req, res, next
 ];
 
 function _getAll() {
@@ -33,11 +34,18 @@ function _update(userId: string, body: any) {
   return userService.update(userId, body);
 }
 
-async function _register(body: any) {
+export async function register(req: Request, res: Response, next: NextFunction) {
   const rounds: number = Number(process.env.PASS_ROUNDS);
-  const { name, password, email } = body;
-  const passwordHash = await bcrypt.hash(password, rounds);
-  return userService.add(name, passwordHash, email);
+  const { name, password, email } = req.body;
+  
+  try {
+    const passwordHash = await bcrypt.hash(password, rounds);
+    const user = await userService.add(name, passwordHash, email)
+    login(req, res, next)
+  } catch (e) {
+    res.status(400).send({...e})
+  }
+
 }
 
 export function login(req: Request, res: Response, next: NextFunction) {
@@ -50,19 +58,10 @@ export function login(req: Request, res: Response, next: NextFunction) {
       }
 
       const rolesDocs = await getRolesPerUser(user.id);
-      const userRoles =
-        rolesDocs === null
-          ? []
-          : rolesDocs.map((roleDoc: Document) => roleDoc.toObject().roleName);
-
-      const expiryTime = Number(process.env.JWT_EXP_TIME_MS);
-      const secret = process.env.SECRET_JWT;
-      const payload = {
-        id: user.toObject()._id,
-        username: user.toObject().name,
-        expires: Date.now() + expiryTime,
-        userRoles
-      };
+      const userRoles = getRoleNames(rolesDocs);
+      const expTime =  Date.now() + (getExpiryTime() as number);
+      const secret = getSecret();
+      const payload = createTokenPayload(user, userRoles, expTime);
 
       req.login(payload, { session: false }, error => {
         if (error) {
@@ -82,5 +81,4 @@ function _remove(userId: string) {
 export const getAll = baseController(_getAll);
 export const getSingle = baseController(_getSingle, provideIdParam);
 export const update = baseController(_update, provideIdAndBodyParams);
-export const register = baseController(_register, provideBody);
 export const remove = baseController(_remove, provideIdParam);

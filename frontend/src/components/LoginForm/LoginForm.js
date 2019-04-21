@@ -4,36 +4,34 @@ import Button from "../formElements/Button";
 import Input from "../formElements/Input";
 import StyledCard from "../Card/Card";
 import ElementLabel from "../formElements/ControlLabel";
-import {
-  validateName,
-  validateEmail,
-  validatePassword
-} from "../formElements/validators";
+import { validateName } from "../formElements/validators";
 import updateFormElement from "../formElements/stateSetters";
 
-export default class RegisterForm extends React.Component {
+export default class LoginForm extends React.Component {
   state = {
     name: "",
-    email: "",
-    emailCheck: "",
-    password: "",
-    passwordCheck: ""
+    password: ""
   };
 
   handleChange(event) {
-    this.setState(updateFormElement(event));
+    event.persist();
+    const { target } = event;
+    this.setState(updateFormElement(target));
   }
 
   handleSubmit() {
     const isFormValid = this.validate();
-    console.log(isFormValid);
+
+    if (isFormValid) {
+      const { name, password } = this.state;
+      const { loginUser } = this.props;
+      loginUser({ name, password });
+    }
   }
 
   validate() {
     const formValidator = pipe(
       validateName(this.state),
-      validateEmail(this.state),
-      validatePassword(this.state),
       all(condition => condition)
     )([]);
 
@@ -45,7 +43,7 @@ export default class RegisterForm extends React.Component {
   handleSubmit = this.handleSubmit.bind(this);
 
   render() {
-    const { name, password, passwordCheck, email, emailCheck } = this.state;
+    const { name, password } = this.state;
 
     return (
       <StyledCard width="90%" margin="20px auto" title="Register">
@@ -59,26 +57,6 @@ export default class RegisterForm extends React.Component {
             placeholder="Name..."
           />
         </ElementLabel>
-        <ElementLabel name="Email">
-          <Input
-            type="email"
-            name="email"
-            required
-            onChange={this.handleChange}
-            value={email}
-            placeholder="Email..."
-          />
-        </ElementLabel>
-        <ElementLabel name="Repeat Email">
-          <Input
-            type="email"
-            name="emailCheck"
-            required
-            onChange={this.handleChange}
-            value={emailCheck}
-            placeholder="Repet Email..."
-          />
-        </ElementLabel>
         <ElementLabel name="Password">
           <Input
             type="password"
@@ -90,19 +68,8 @@ export default class RegisterForm extends React.Component {
             placeholder="Password..."
           />
         </ElementLabel>
-        <ElementLabel name="Repeat password">
-          <Input
-            type="password"
-            name="passwordCheck"
-            required
-            pattern=".{5,10}"
-            onChange={this.handleChange}
-            value={passwordCheck}
-            placeholder="Repeat password..."
-          />
-        </ElementLabel>
         <Button type="button" onClick={this.handleSubmit}>
-          Register
+          Login
         </Button>
       </StyledCard>
     );

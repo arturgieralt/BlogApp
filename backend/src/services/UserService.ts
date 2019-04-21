@@ -29,7 +29,7 @@ export function add(
     email,
     _id: new mongoose.Types.ObjectId()
   });
-  return article.save();
+ return article.save();
 }
 
 export function remove(id: string): Promise<any> {

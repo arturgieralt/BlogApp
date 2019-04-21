@@ -10,6 +10,7 @@ import ArticleList from "../containers/ArticleList";
 import SingleArticle from "./SingleArticle";
 import ArticleEditor from "../containers/ArticleEditor";
 import RegisterForm from "../components/RegisterForm/RegisterForm";
+import LoginForm from "../containers/LoginForm";
 
 const Root = ({ store }) => (
   <Provider store={store}>
@@ -23,6 +24,7 @@ const Root = ({ store }) => (
       <Route exact path="/articles/add" component={ArticleEditor} />
       <Route path="/articles/:id" component={SingleArticle} />
       <Route path="/register" component={RegisterForm} />
+      <Route path="/login" component={LoginForm} />
     </Switch>
   </Provider>
 );

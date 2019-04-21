@@ -28,8 +28,8 @@ export class Routes {
       .delete(authorize(), CommentsController.remove);
 
     app.route('/users').get(authorize(), UsersController.getAll);
-    app.route('/register').post(UsersController.register);
-    app.route('/login').post(UsersController.login);
+    app.route('/user/register').post(UsersController.register);
+    app.route('/user/login').post(UsersController.login);
 
     app
       .route('/users/:userId')

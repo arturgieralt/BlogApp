@@ -6,10 +6,8 @@ import "./index.css";
 import Root from "./views/Root";
 import * as serviceWorker from "./serviceWorker";
 import configureStore from "./store/configure";
-import { fetchArticles } from "./actions/articles";
 
 const store = configureStore();
-store.dispatch(fetchArticles());
 render(
   <Router>
     <Root store={store} />
