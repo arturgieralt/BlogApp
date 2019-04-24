@@ -20,11 +20,7 @@ export default class ArticlesList extends React.Component {
             <Link to={`/articles/${article._id}`}>{article.title}</Link>
           </h2>
           <p>Added on {article.created_date}</p>
-          <p>
-            {article.summary
-              ? article.summary
-              : article.content.substring(0, 200)}{" "}
-          </p>
+          <p>{article.summary}</p>
         </div>
       );
     });

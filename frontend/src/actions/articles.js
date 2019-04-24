@@ -8,19 +8,48 @@ export const fetchArticles = () => ({
 
 export const fetchArticlesSuccess = articles => ({
   type: ARTICLES_FETCH_SUCCESS,
-  payload: articles
+  articles
+});
+
+export const fetchArticlesFailure = error => ({
+  type: ARTICLES_FETCH_FAILURE,
+  error
+});
+
+export const ARTICLE_FETCH_REQUEST = "[ARTICLE]_FETCH_REQUEST";
+export const ARTICLE_FETCH_SUCCESS = "[ARTICLE]_FETCH_SUCCESS";
+export const ARTICLE_FETCH_FAILURE = "[ARTICLE]_FETCH_FAILURE";
+
+export const fetchArticle = id => ({
+  type: ARTICLE_FETCH_REQUEST,
+  id
+});
+
+export const fetchArticleSuccess = article => ({
+  type: ARTICLE_FETCH_SUCCESS,
+  article
+});
+
+export const fetchArticleFailure = error => ({
+  type: ARTICLE_FETCH_FAILURE,
+  error
 });
 
 export const ARTICLE_ADD_REQUEST = "[ARTICLE]_ADD_REQUEST";
 export const ARTICLE_ADD_SUCCESS = "[ARTICLE]_ADD_SUCCESS";
 export const ARTICLE_ADD_FAILURE = "[ARTICLE]_ADD_FAILURE";
 
-export const addArticle = articleToAdd => ({
+export const addArticle = article => ({
   type: ARTICLE_ADD_REQUEST,
-  payload: articleToAdd
+  article
 });
 
 export const addArticleSuccess = articleCreated => ({
   type: ARTICLE_ADD_SUCCESS,
-  payload: articleCreated
+  articleCreated
+});
+
+export const addArticleFailure = error => ({
+  type: ARTICLE_ADD_FAILURE,
+  error
 });

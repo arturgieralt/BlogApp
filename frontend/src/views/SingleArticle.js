@@ -1,23 +1,21 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withRouter } from "react-router";
 import { connect } from "react-redux";
-import Article from "../components/Article/Article";
+import SingleArticle from "../components/Article/Article";
+import { fetchArticle } from "../actions/articles";
+import { isAuthenticated } from "../store/selectors";
 
-const SingleArticle = ({ match, articles }) => {
-  if (articles && match.params.id) {
-    const article = articles.find(art => art._id === match.params.id);
-    return <Article article={article} />;
-  }
-  return <div>Article is not found</div>;
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchArticle: id => dispatch(fetchArticle(id))
+  };
 };
 
-SingleArticle.propTypes = {
-  articles: PropTypes.arrayOf(PropTypes.object).isRequired
-};
-
-const mapStateToProps = state => ({
-  articles: state.articles
+const mapStateToProps = (state, ownProps) => ({
+  article: state.articles.full[ownProps.match.params.id],
+  user: state.user,
+  isAuthenticated: isAuthenticated(state)
 });
 
-export default withRouter(connect(mapStateToProps)(SingleArticle));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SingleArticle);

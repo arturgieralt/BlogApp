@@ -1,32 +1,35 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
-function MenuList({ className }) {
+function MenuList({ className, isAdmin, isAuthenticated, user }) {
   return (
     <ul className={className}>
       <li>
-        <a href="/" id="mainLink">
-          arturgieralt.pl
-        </a>
+        <Link to="/">arturgieralt.pl</Link>
       </li>
       <li>
-        <a href="/" id="mainLink">
-          Articles
-        </a>
+        <Link to="/articles">Articles</Link>
       </li>
-      <li>
-        <a href="/" id="mainLink">
-          Main
-        </a>
-      </li>
-      <li>
-        <a href="/" id="mainLink">
-          Main
-        </a>
-      </li>
-      <li>
+      {isAuthenticated && isAdmin && (
+        <li>
+          <Link to="/articles/add">Add article</Link>
+        </li>
+      )}
+      {!isAuthenticated && (
+        <React.Fragment>
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+          <li>
+            <Link to="/register">Register</Link>
+          </li>
+        </React.Fragment>
+      )}
+      {/* <li>
         <span>search...</span>
-      </li>
+      </li> */}
+      {isAuthenticated && <li>Welcome {user.claims.name}</li>}
     </ul>
   );
 }

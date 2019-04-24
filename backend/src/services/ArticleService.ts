@@ -4,12 +4,23 @@ import mongoose from 'mongoose';
 
 export function getAll(): Promise<Document | {}> {
   return ArticleModel.find({})
-    .populate('author')
+    .select('title summary tags created_date')
+    .populate({
+      path: 'author',
+      select: 'name'
+    })
     .exec();
 }
 
 export function getSingle(id: string): Promise<Document | null> {
-  return ArticleModel.findById(id).exec();
+  return ArticleModel
+    .findById(id)
+    .populate({
+      path: 'author',
+      select: 'name'
+    })
+    .populate('comments')
+    .exec();
 }
 
 export function update(id: string, body: any): Promise<Document | null> {

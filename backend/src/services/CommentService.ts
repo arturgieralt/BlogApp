@@ -6,6 +6,10 @@ export function getAll(): Promise<Document | {}> {
   return CommentModel.find({}).exec();
 }
 
+// export function getAllForArticle(id): Promise<Document | {}> {
+//   return CommentModel.find({}).exec();
+// }
+
 export function getSingle(id: string): Promise<Document | null> {
   return CommentModel.findById(id).exec();
 }

@@ -5,7 +5,7 @@ import { Route, Switch } from "react-router-dom";
 import Main from "./Main";
 import StyledBanner from "../components/Banner/Banner";
 import StyledBar from "../components/Bar/Bar";
-import StyledMenuList from "../components/Menu/MenuList";
+import StyledMenuList from "../containers/MenuList";
 import ArticleList from "../containers/ArticleList";
 import SingleArticle from "./SingleArticle";
 import ArticleEditor from "../containers/ArticleEditor";

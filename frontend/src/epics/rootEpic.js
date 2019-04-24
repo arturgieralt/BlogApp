@@ -1,5 +1,9 @@
 import { combineEpics } from "redux-observable";
-import { fetchArticlesEpic, addArticleEpic } from "./articles";
+import {
+  fetchArticlesEpic,
+  addArticleEpic,
+  fetchArticleEpic
+} from "./articles";
 import { loginUserEpic, registerUserEpic } from "./users";
 import decodeTokenEpic from "./token";
 
@@ -8,5 +12,6 @@ export default combineEpics(
   addArticleEpic,
   loginUserEpic,
   decodeTokenEpic,
-  registerUserEpic
+  registerUserEpic,
+  fetchArticleEpic
 );
