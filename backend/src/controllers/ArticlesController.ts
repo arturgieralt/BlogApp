@@ -1,6 +1,7 @@
 import * as articleService from './../services/ArticleService';
 import { baseController } from './BaseController';
 import { Request, Response, NextFunction } from 'express';
+import { getAllForArticle } from './../services/CommentService';
 
 const provideArticleIdParam = (
   req: Request,
@@ -21,7 +22,12 @@ function _getAll() {
 }
 
 function _getSingle(articleId: string) {
-  return articleService.getSingle(articleId);
+  const article = articleService.getSingle(articleId);
+  const comments = getAllForArticle(articleId);
+  return Promise.all([article, comments]).then(([artDoc, comDoc]) => ({
+    ...artDoc,
+    comments: comDoc
+  }));
 }
 
 function _update(articleId: string, body: any) {

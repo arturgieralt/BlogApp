@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import jwt from 'jsonwebtoken';
 import { add } from './services/CommentService';
+import { getSingle } from './services/TokenService';
 
 const PORT = 3001;
 const httpsOptions = {
@@ -25,10 +26,15 @@ iot
   if (socket.handshake.query && socket.handshake.query.token){
     jwt.verify(socket.handshake.query.token, process.env.SECRET_JWT as string, function(err: any, decoded: any) {
       if(!err) {
-        (socket as any).decodedToken = {...decoded};
-        (socket as any).articleId = socket.handshake.query.articleId;
-        return next();
+        const tokenEntry = getSingle((decoded as any).tokenId)
+
+        if( tokenEntry && (tokenEntry as any).isActive) {
+          (socket as any).decodedToken = {...decoded};
+          (socket as any).articleId = socket.handshake.query.articleId;
+          return next();
+        }
       }
+      socket.disconnect();
       next(new Error('Authentication error'));
       
     });
@@ -43,16 +49,32 @@ iot
     socket.join(roomID);
     socket.on('message', function(message) {
 
-      add({
-        content: message,
-        author: (socket as any).decodedToken.id,
-        article: roomID
-      });
+    const comment = {
+      content: message,
+      author: (socket as any).decodedToken.id,
+      article: roomID
+    };
 
-        iot
+    add(comment)
+    .then(comDoc => {
+      const com = comDoc.toObject()
+      iot
+      .of('/commentStream')
+      .to(roomID)
+      .emit('new comment', { 
+        ...com, 
+        author: {
+          _id: com.author,
+          name: (socket as any).decodedToken.name
+        }
+      });
+    })
+    .catch(e => {
+      iot
         .of('/commentStream')
         .to(roomID)
-        .emit('new comment', message + 'from '+ (socket as any).decodedToken.name);
+        .emit('comment save fail', e);
+      });
     });
 });
 

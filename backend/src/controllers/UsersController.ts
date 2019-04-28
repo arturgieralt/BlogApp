@@ -8,6 +8,7 @@ import * as jwt from 'jsonwebtoken';
 import { IVerifyOptions } from 'passport-local';
 import { getRolesPerUser } from './../services/RolesService';
 import { getRoleNames, getExpiryTime, getSecret, createTokenPayload } from './../auth/helpers';
+import { add, blacklist } from './../services/TokenService';
 
 const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
   req.params.userId
@@ -17,7 +18,7 @@ const provideIdAndBodyParams = (
   res: Response,
   next: NextFunction
 ) => [req.params.userId, req.body];
-const provideBody = (req: Request, res: Response, next: NextFunction) => [
+const provideAll = (req: Request, res: Response, next: NextFunction) => [
   req, res, next
 ];
 
@@ -61,23 +62,55 @@ export function login(req: Request, res: Response, next: NextFunction) {
       const userRoles = getRoleNames(rolesDocs);
       const expTime =  Date.now() + (getExpiryTime() as number);
       const secret = getSecret();
-      const payload = createTokenPayload(user, userRoles, expTime);
+      
 
-      req.login(payload, { session: false }, error => {
-        if (error) {
-          res.status(400).json({ error });
-        }
-        const token = jwt.sign(JSON.stringify(payload), secret as string);
-        res.status(200).send({ token });
-      });
+      const tokenEntry = await add({
+          userId: user.id,
+          expTime: expTime,
+          isActive: true
+        }).catch(e => {
+          res.status(400).json({ e });
+        });
+  
+      if(tokenEntry) {
+        const payload = createTokenPayload(
+          user, 
+          userRoles, 
+          expTime, 
+          tokenEntry.id
+          );
+      
+        req.login(payload, { session: false }, error => {
+          if (error) {
+            blacklist(tokenEntry.id);
+            res.status(400).json({ error });
+          }
+          const token = jwt.sign(JSON.stringify(payload), secret as string);
+          res.status(200).send({ token });
+        });
+      }
+      
     }
   )(req, res, next);
+}
+
+function _logout (req: Request, res: Response){
+  try {
+    const { user } = req;
+    blacklist(user.tokenId)
+    req.logout();
+    return Promise.resolve();
+  }  catch(e) {
+    return Promise.reject(e);
+  }
+  
 }
 
 function _remove(userId: string) {
   return userService.remove(userId);
 }
 
+export const logout = baseController(_logout, provideAll);
 export const getAll = baseController(_getAll);
 export const getSingle = baseController(_getSingle, provideIdParam);
 export const update = baseController(_update, provideIdAndBodyParams);

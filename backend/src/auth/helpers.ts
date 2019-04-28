@@ -37,14 +37,15 @@ export const getRoleNames = (rolesDocs: Document[] | null): string[] => rolesDoc
   : rolesDocs.map((roleDoc: Document) => roleDoc.toObject().roleName);
 
 
-export const createTokenPayload = (user: Document, userRoles: string[], expiryTime: number) => {
+export const createTokenPayload = (user: Document, userRoles: string[], expiryTime: number, tokenId: string) => {
    const { _id, name, email} = user.toObject()
    return {
     id: _id,
     name,
     email,
     expires: expiryTime,
-    userRoles
+    userRoles,
+    tokenId
   }
 }
   

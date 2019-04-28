@@ -17,6 +17,23 @@ export const loginUserFailure = error => ({
   error
 });
 
+export const USER_LOGOUT_REQUEST = "[USER]_LOGOUT_REQUEST";
+export const USER_LOGOUT_SUCCESS = "[USER]_LOGOUT_SUCCESS";
+export const USER_LOGOUT_FAILURE = "[USER]_LOGOUT_FAILURE";
+
+export const logoutUser = () => ({
+  type: USER_LOGOUT_REQUEST
+});
+
+export const logoutUserSuccess = () => ({
+  type: USER_LOGOUT_SUCCESS
+});
+
+export const logoutUserFailure = error => ({
+  type: USER_LOGOUT_FAILURE,
+  error
+});
+
 export const USER_REGISTER_REQUEST = "[USER]_REGISTER_REQUEST";
 export const USER_REGISTER_SUCCESS = "[USER]_REGISTER_SUCCESS";
 export const USER_REGISTER_FAILURE = "[USER]_REGISTER_FAILURE";

@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import { map, mergeMap, catchError } from "rxjs/operators";
+import { map, mergeMap, catchError, withLatestFrom } from "rxjs/operators";
 import { ajax } from "rxjs/ajax";
 import { ofType, ActionsObservable } from "redux-observable";
 import {
@@ -9,7 +9,10 @@ import {
   loginUserFailure,
   USER_REGISTER_REQUEST,
   registerUserFailure,
-  registerUserSuccess
+  registerUserSuccess,
+  USER_LOGOUT_REQUEST,
+  logoutUserSuccess,
+  logoutUserFailure
 } from "../actions/users";
 
 export const loginUserEpic = action$ =>
@@ -30,6 +33,26 @@ export const loginUserEpic = action$ =>
         catchError(error => ActionsObservable.of(loginUserFailure(error)))
       );
     })
+  );
+
+export const logoutUserEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(USER_LOGOUT_REQUEST),
+    withLatestFrom(state$),
+    mergeMap(([, state]) =>
+      ajax({
+        url: "https://localhost:3001/user/logout",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.user.token}`
+        },
+        cache: false,
+        method: "POST"
+      }).pipe(
+        map(() => logoutUserSuccess()),
+        catchError(error => ActionsObservable.of(logoutUserFailure(error)))
+      )
+    )
   );
 
 export const registerUserEpic = action$ =>

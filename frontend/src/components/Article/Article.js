@@ -1,5 +1,7 @@
+/* eslint-disable react/no-unused-state */
+
 import React from "react";
-import { path } from "ramda";
+import { path, pathOr } from "ramda";
 import * as io from "socket.io-client";
 import PropTypes from "prop-types";
 import StyledCard from "../Card/Card";
@@ -8,9 +10,24 @@ import Button from "../formElements/Button";
 import updateFormElement from "../formElements/stateSetters";
 
 class Article extends React.Component {
+  static getDerivedStateFromProps(props, state) {
+    const newComments = pathOr([], ["article", "comments"], props);
+    const oldComments = pathOr([], ["commentsDefault"], state);
+
+    if (newComments.length !== oldComments.length) {
+      return {
+        commentsDefault: newComments,
+        commentsLive: newComments
+      };
+    }
+    return null;
+  }
+
   state = {
     comment: "",
-    socket: null
+    socket: null,
+    commentsDefault: [],
+    commentsLive: []
   };
 
   componentDidMount() {
@@ -29,12 +46,10 @@ class Article extends React.Component {
         }
       });
 
-      socket.on("new comment", function(msg) {
-        console.log(msg);
-      });
-
-      socket.on("all comments", function(msg) {
-        console.log(msg);
+      socket.on("new comment", msg => {
+        this.setState(state => ({
+          commentsLive: [...state.commentsLive, msg]
+        }));
       });
 
       this.setState({
@@ -60,7 +75,7 @@ class Article extends React.Component {
 
   render() {
     const { article, isAuthenticated } = this.props;
-    const { comment } = this.state;
+    const { comment, commentsLive } = this.state;
     if (article) {
       return (
         <React.Fragment>
@@ -84,8 +99,10 @@ class Article extends React.Component {
             </StyledCard>
           )}
           <StyledCard width="90%" margin="20px auto" title="Comments">
-            {article.comments.map(com => (
-              <div key={com._id}>{com.content}</div>
+            {commentsLive.map(com => (
+              <div key={com._id}>
+                {com.content} by {com.author.name}
+              </div>
             ))}
           </StyledCard>
         </React.Fragment>

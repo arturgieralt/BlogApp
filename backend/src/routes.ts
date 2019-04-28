@@ -30,6 +30,7 @@ export class Routes {
     app.route('/users').get(authorize(), UsersController.getAll);
     app.route('/user/register').post(UsersController.register);
     app.route('/user/login').post(UsersController.login);
+    app.route('/user/logout').post(authorize(), UsersController.logout);
 
     app
       .route('/users/:userId')

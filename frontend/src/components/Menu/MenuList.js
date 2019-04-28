@@ -1,8 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import Button from "../formElements/Button";
 
-function MenuList({ className, isAdmin, isAuthenticated, user }) {
+function MenuList({ className, isAdmin, isAuthenticated, user, logout }) {
   return (
     <ul className={className}>
       <li>
@@ -29,7 +30,14 @@ function MenuList({ className, isAdmin, isAuthenticated, user }) {
       {/* <li>
         <span>search...</span>
       </li> */}
-      {isAuthenticated && <li>Welcome {user.claims.name}</li>}
+      {isAuthenticated && (
+        <React.Fragment>
+          <li>Welcome {user.claims.name}</li>
+          <li>
+            <Button onClick={() => logout()}>Logout</Button>
+          </li>
+        </React.Fragment>
+      )}
     </ul>
   );
 }

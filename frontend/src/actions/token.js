@@ -16,3 +16,9 @@ export const decodeTokenFailure = error => ({
   type: TOKEN_DECODE_FAILURE,
   error
 });
+
+export const TOKEN_CLEAN = "TOKEN_CLEAN";
+
+export const cleanToken = () => ({
+  type: TOKEN_CLEAN
+});

@@ -1,6 +1,7 @@
 import { connect } from "react-redux";
 import MenuList from "../components/Menu/MenuList";
 import { isAdmin, isAuthenticated } from "../store/selectors";
+import { logoutUser } from "../actions/users";
 
 const mapStateToProps = state => {
   return {
@@ -10,4 +11,11 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(MenuList);
+const mapDispatchToProps = {
+  logout: logoutUser
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MenuList);

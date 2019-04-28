@@ -12,14 +12,14 @@ export function getAll(): Promise<Document | {}> {
     .exec();
 }
 
-export function getSingle(id: string): Promise<Document | null> {
+export function getSingle(id: string): Promise<Object | null> {
   return ArticleModel
     .findById(id)
     .populate({
       path: 'author',
       select: 'name'
     })
-    .populate('comments')
+    .lean()
     .exec();
 }
 

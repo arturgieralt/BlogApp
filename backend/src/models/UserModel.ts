@@ -17,7 +17,11 @@ export const UserSchema = new Schema({
   passwordHash: {
     type: String,
     required: true
-  }
+  },
+  created_date: {
+    type: Date,
+    default: Date.now()
+  },
 });
 
 export const UserModel = model('User', UserSchema, 'users');

@@ -1,6 +1,5 @@
 import React from "react";
 import { render } from "react-dom";
-import { BrowserRouter as Router } from "react-router-dom";
 
 import "./index.css";
 import Root from "./views/Root";
@@ -8,12 +7,7 @@ import * as serviceWorker from "./serviceWorker";
 import configureStore from "./store/configure";
 
 const store = configureStore();
-render(
-  <Router>
-    <Root store={store} />
-  </Router>,
-  document.getElementById("root")
-);
+render(<Root store={store} />, document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
