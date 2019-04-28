@@ -13,6 +13,7 @@ import ArticleEditor from "../containers/ArticleEditor";
 import RegisterForm from "../containers/RegisterForm";
 import LoginForm from "../containers/LoginForm";
 import { history } from "../store/configure";
+import UserPanel from "../containers/UserPanel";
 
 const Root = ({ store }) => (
   <Provider store={store}>
@@ -27,8 +28,9 @@ const Root = ({ store }) => (
           <Route exact path="/articles" component={ArticleList} />
           <Route exact path="/articles/add" component={ArticleEditor} />
           <Route path="/articles/:id" component={SingleArticle} />
-          <Route path="/register" component={RegisterForm} />
-          <Route path="/login" component={LoginForm} />
+          <Route exact path="/user/register" component={RegisterForm} />
+          <Route exact path="/user/login" component={LoginForm} />
+          <Route exact path="/user/view" component={UserPanel} />
         </Switch>
       </React.Fragment>
     </ConnectedRouter>

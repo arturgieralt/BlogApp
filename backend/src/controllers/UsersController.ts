@@ -9,6 +9,8 @@ import { IVerifyOptions } from 'passport-local';
 import { getRolesPerUser } from './../services/RolesService';
 import { getRoleNames, getExpiryTime, getSecret, createTokenPayload } from './../auth/helpers';
 import { add, blacklist } from './../services/TokenService';
+import MailService from './../mailer/MailService';
+import { welcomeMail, accountActivated } from './../mailer/templates';
 
 const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
   req.params.userId
@@ -42,10 +44,36 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   try {
     const passwordHash = await bcrypt.hash(password, rounds);
     const user = await userService.add(name, passwordHash, email)
+    const userData = user.toObject();
+    const expTime =  Date.now() + (getExpiryTime() as number);
+    const secret = getSecret();
+    const token = jwt.sign(JSON.stringify({
+      id: userData._id,
+      expTime,
+      scopes: ['user:verify']
+    }), secret as string);
+    MailService.sendMail(welcomeMail(userData, token))
     login(req, res, next)
   } catch (e) {
     res.status(400).send({...e})
   }
+
+}
+
+export async function verify(req: Request, res: Response, next: NextFunction) {
+  const { verifyToken } = req.body;
+
+  jwt.verify(verifyToken, process.env.SECRET_JWT as string, async function(err: any, decoded: any) {
+    if(!err) {
+      const user = await userService.verify(decoded.id);
+      const userData = user!.toObject();
+      MailService.sendMail(accountActivated(userData));
+      res.status(200).send();
+    } else {
+      res.status(400).send({...err})
+    }
+
+  });
 
 }
 

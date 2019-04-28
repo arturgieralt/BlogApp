@@ -31,6 +31,7 @@ export class Routes {
     app.route('/user/register').post(UsersController.register);
     app.route('/user/login').post(UsersController.login);
     app.route('/user/logout').post(authorize(), UsersController.logout);
+    app.route('/user/verify').post(authorize(), UsersController.verify);
 
     app
       .route('/users/:userId')

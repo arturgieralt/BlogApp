@@ -52,3 +52,22 @@ export const registerUserFailure = error => ({
   type: USER_REGISTER_FAILURE,
   error
 });
+
+export const USER_VERIFY_REQUEST = "[USER]_VERIFY_REQUEST";
+export const USER_VERIFY_SUCCESS = "[USER]_VERIFY_SUCCESS";
+export const USER_VERIFY_FAILURE = "[USER]_VERIFY_FAILURE";
+
+export const verifyUser = verifyToken => ({
+  type: USER_VERIFY_REQUEST,
+  verifyToken
+});
+
+export const verifyUserSuccess = token => ({
+  type: USER_VERIFY_SUCCESS,
+  token
+});
+
+export const verifyUserFailure = error => ({
+  type: USER_VERIFY_FAILURE,
+  error
+});

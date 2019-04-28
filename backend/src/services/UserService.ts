@@ -18,6 +18,10 @@ export function update(id: string, body: any): Promise<Document | null> {
   return UserModel.findOneAndUpdate({ _id: id }, body, { new: true }).exec();
 }
 
+export function verify(id: string): Promise<Document | null> {
+  return UserModel.findOneAndUpdate({ _id: id }, {isActive: true}).exec();
+}
+
 export function add(
   name: string,
   passwordHash: string,

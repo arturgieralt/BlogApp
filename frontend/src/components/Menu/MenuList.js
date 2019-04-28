@@ -20,10 +20,10 @@ function MenuList({ className, isAdmin, isAuthenticated, user, logout }) {
       {!isAuthenticated && (
         <React.Fragment>
           <li>
-            <Link to="/login">Login</Link>
+            <Link to="/user/login">Login</Link>
           </li>
           <li>
-            <Link to="/register">Register</Link>
+            <Link to="/user/register">Register</Link>
           </li>
         </React.Fragment>
       )}
@@ -32,7 +32,9 @@ function MenuList({ className, isAdmin, isAuthenticated, user, logout }) {
       </li> */}
       {isAuthenticated && (
         <React.Fragment>
-          <li>Welcome {user.claims.name}</li>
+          <li>
+            <Link to="/user/view">Welcome {user.claims.name}</Link>
+          </li>
           <li>
             <Button onClick={() => logout()}>Logout</Button>
           </li>

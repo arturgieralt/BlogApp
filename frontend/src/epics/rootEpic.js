@@ -4,7 +4,12 @@ import {
   addArticleEpic,
   fetchArticleEpic
 } from "./articles";
-import { loginUserEpic, registerUserEpic, logoutUserEpic } from "./users";
+import {
+  loginUserEpic,
+  registerUserEpic,
+  logoutUserEpic,
+  verifyUserEpic
+} from "./users";
 import {
   decodeTokenEpic,
   decodeTokenSuccessEpic,
@@ -20,5 +25,6 @@ export default combineEpics(
   registerUserEpic,
   fetchArticleEpic,
   logoutUserEpic,
-  cleanTokenEpic
+  cleanTokenEpic,
+  verifyUserEpic
 );

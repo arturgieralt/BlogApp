@@ -6,6 +6,8 @@ export const isAdmin = pipe(
   any(isAdminRole)
 );
 
+export const isActive = pathOr(false, ["user", "claims", "isActive"]);
+
 export const isAuthenticated = pipe(
   pathOr({}, ["user", "claims"]),
   isEmpty,

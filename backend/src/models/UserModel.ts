@@ -14,6 +14,11 @@ export const UserSchema = new Schema({
     unique: true,
     required: [true, 'Please provide an email']
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
   passwordHash: {
     type: String,
     required: true

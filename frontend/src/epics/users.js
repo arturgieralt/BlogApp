@@ -12,7 +12,10 @@ import {
   registerUserSuccess,
   USER_LOGOUT_REQUEST,
   logoutUserSuccess,
-  logoutUserFailure
+  logoutUserFailure,
+  USER_VERIFY_REQUEST,
+  verifyUserSuccess,
+  verifyUserFailure
 } from "../actions/users";
 
 export const loginUserEpic = action$ =>
@@ -51,6 +54,27 @@ export const logoutUserEpic = (action$, state$) =>
       }).pipe(
         map(() => logoutUserSuccess()),
         catchError(error => ActionsObservable.of(logoutUserFailure(error)))
+      )
+    )
+  );
+
+export const verifyUserEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(USER_VERIFY_REQUEST),
+    withLatestFrom(state$),
+    mergeMap(([action, state]) =>
+      ajax({
+        url: "https://localhost:3001/user/verify",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.user.token}`
+        },
+        body: JSON.stringify({ verifyToken: action.verifyToken }),
+        cache: false,
+        method: "POST"
+      }).pipe(
+        map(token => verifyUserSuccess(token)),
+        catchError(error => ActionsObservable.of(verifyUserFailure(error)))
       )
     )
   );
