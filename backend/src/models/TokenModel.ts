@@ -1,7 +1,8 @@
 import { Schema, model } from 'mongoose';
+import { ITokenModel } from './ITokenModel';
 
 export const TokenSchema = new Schema({
-  _id: Schema.Types.ObjectId,
+  _id: { type: Schema.Types.ObjectId, auto: true },
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   expTime: { type: Number,  required: true },
   isActive: { type: Boolean, required: true },
@@ -11,4 +12,4 @@ export const TokenSchema = new Schema({
   },
 });
 
-export const TokenModel = model('Token', TokenSchema, 'tokens');
+export const TokenModel = model<ITokenModel>('Token', TokenSchema, 'tokens');

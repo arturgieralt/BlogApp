@@ -1,8 +1,9 @@
 import { Schema, model } from 'mongoose';
 import { validateUsername } from './../validators/UserValidators';
+import { IUserModel } from './IUserModel';
 
 export const UserSchema = new Schema({
-  _id: Schema.Types.ObjectId,
+  _id: { type: Schema.Types.ObjectId, auto: true },
   name: {
     type: String,
     unique: true,
@@ -29,4 +30,4 @@ export const UserSchema = new Schema({
   },
 });
 
-export const UserModel = model('User', UserSchema, 'users');
+export const UserModel = model<IUserModel>('User', UserSchema, 'users');

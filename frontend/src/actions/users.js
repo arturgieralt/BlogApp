@@ -62,9 +62,8 @@ export const verifyUser = verifyToken => ({
   verifyToken
 });
 
-export const verifyUserSuccess = token => ({
-  type: USER_VERIFY_SUCCESS,
-  token
+export const verifyUserSuccess = () => ({
+  type: USER_VERIFY_SUCCESS
 });
 
 export const verifyUserFailure = error => ({

@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import passport = require('passport');
 import { getRolesPerUser } from './../services/RolesService';
-import { Document } from 'mongoose';
-import { getSingle } from './../services/TokenService';
+import TokenServiceInstance from './../services/TokenService/TokenService';
 
 export const authorize = (roles: string[] = []) => [
   passport.authenticate('jwt', { session: false }),
@@ -13,19 +12,15 @@ export const authorize = (roles: string[] = []) => [
     }
 
     try {
-      const tokenStatus = await getSingle(user.tokenId);
+      const tokenStatus = await TokenServiceInstance.getSingle(user.tokenId);
       if( tokenStatus && (tokenStatus as any).isActive) {
         if (roles.length > 0) {
-          const rolesDocs = await getRolesPerUser(user.id);
-          if (rolesDocs === null) {
+          const roles = await getRolesPerUser(user.id);
+          if (roles.length === 0) {
             return res.status(401).json({ message: 'Unauthorized' });
           }
     
-          const userRoles: string[] = rolesDocs.map(
-            (roleDoc: Document) => roleDoc.toObject().roleName
-          );
-    
-          const hasRole = userRoles.some(r => (roles as any).includes(r));
+          const hasRole = roles.some(r => (roles as any).includes(r));
           if (!hasRole) {
             return res.status(401).json({ message: 'Unauthorized' });
           }

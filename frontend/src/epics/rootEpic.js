@@ -8,7 +8,8 @@ import {
   loginUserEpic,
   registerUserEpic,
   logoutUserEpic,
-  verifyUserEpic
+  verifyUserEpic,
+  userLogoutSuccessEpic
 } from "./users";
 import {
   decodeTokenEpic,
@@ -26,5 +27,6 @@ export default combineEpics(
   fetchArticleEpic,
   logoutUserEpic,
   cleanTokenEpic,
-  verifyUserEpic
+  verifyUserEpic,
+  userLogoutSuccessEpic
 );

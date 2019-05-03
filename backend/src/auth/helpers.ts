@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt';
 import { getSingleByName } from './../services/UserService';
 import { VerifiedCallback } from 'passport-jwt';
 import { IVerifyOptions } from 'passport-local';
-import { Document } from 'mongoose';
 
 export const verifyUser = async (
   name: string,
@@ -11,9 +10,8 @@ export const verifyUser = async (
 ) => {
   try {
     const user = await getSingleByName(name);
-
     if (user) {
-      const storedPass = user.toObject().passwordHash;
+      const storedPass = user.passwordHash;
       const doesPasswordMatch = await bcrypt.compare(password, storedPass);
 
       if (doesPasswordMatch) {
@@ -32,25 +30,6 @@ export const validateToken = (payload: any, done: VerifiedCallback) => {
   return hasTokenExpired ? done('jwt expired') : done(null, payload);
 };
 
-export const getRoleNames = (rolesDocs: Document[] | null): string[] => rolesDocs === null
-  ? []
-  : rolesDocs.map((roleDoc: Document) => roleDoc.toObject().roleName);
 
-
-export const createTokenPayload = (user: Document, userRoles: string[], expiryTime: number, tokenId: string) => {
-   const { _id, name, email} = user.toObject()
-   return {
-    id: _id,
-    name,
-    email,
-    expires: expiryTime,
-    userRoles,
-    tokenId
-  }
-}
   
 
-export const getSecret = (): string | undefined =>  process.env.SECRET_JWT;
-
-export const getExpiryTime = (): number | undefined =>  Number(process.env.JWT_EXP_TIME_MS);
-  

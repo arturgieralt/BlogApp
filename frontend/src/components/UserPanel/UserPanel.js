@@ -31,8 +31,12 @@ export default class UserPanel extends React.Component {
 
   validate() {
     const { verifyToken } = this.state;
-    const decodedToken = JwtDecode(verifyToken);
-    return !R.isNil(decodedToken);
+    try {
+      const decodedToken = JwtDecode(verifyToken);
+      return !R.isNil(decodedToken);
+    } catch (e) {
+      return false;
+    }
   }
 
   handleChange = this.handleChange.bind(this);

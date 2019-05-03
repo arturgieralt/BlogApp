@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import jwt from 'jsonwebtoken';
 import { add } from './services/CommentService';
-import { getSingle } from './services/TokenService';
+import TokenServiceInstance from './services/TokenService/TokenService';
 
 const PORT = 3001;
 const httpsOptions = {
@@ -24,18 +24,20 @@ iot
 .of('/commentStream')
 .use(function(socket, next){
   if (socket.handshake.query && socket.handshake.query.token){
-    jwt.verify(socket.handshake.query.token, process.env.SECRET_JWT as string, function(err: any, decoded: any) {
+    jwt.verify(socket.handshake.query.token, process.env.SECRET_JWT as string, async function(err: any, decoded: any) {
       if(!err) {
-        const tokenEntry = getSingle((decoded as any).tokenId)
+        const tokenEntry = await TokenServiceInstance.getSingle((decoded as any).tokenId)
 
         if( tokenEntry && (tokenEntry as any).isActive) {
           (socket as any).decodedToken = {...decoded};
           (socket as any).articleId = socket.handshake.query.articleId;
           return next();
         }
+      } else {
+        socket.disconnect();
+        next(new Error('Authentication error'));
       }
-      socket.disconnect();
-      next(new Error('Authentication error'));
+      
       
     });
   } else {

@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import { map, mergeMap, catchError, withLatestFrom } from "rxjs/operators";
+import { push } from "connected-react-router";
 import { ajax } from "rxjs/ajax";
 import { ofType, ActionsObservable } from "redux-observable";
 import {
@@ -15,7 +16,9 @@ import {
   logoutUserFailure,
   USER_VERIFY_REQUEST,
   verifyUserSuccess,
-  verifyUserFailure
+  verifyUserFailure,
+  loginUser,
+  USER_LOGOUT_SUCCESS
 } from "../actions/users";
 
 export const loginUserEpic = action$ =>
@@ -58,6 +61,12 @@ export const logoutUserEpic = (action$, state$) =>
     )
   );
 
+export const userLogoutSuccessEpic = action$ =>
+  action$.pipe(
+    ofType(USER_LOGOUT_SUCCESS),
+    mergeMap(() => ActionsObservable.of(push("/")))
+  );
+
 export const verifyUserEpic = (action$, state$) =>
   action$.pipe(
     ofType(USER_VERIFY_REQUEST),
@@ -73,7 +82,7 @@ export const verifyUserEpic = (action$, state$) =>
         cache: false,
         method: "POST"
       }).pipe(
-        map(token => verifyUserSuccess(token)),
+        mergeMap(() => [verifyUserSuccess(), logoutUserSuccess()]),
         catchError(error => ActionsObservable.of(verifyUserFailure(error)))
       )
     )
@@ -92,10 +101,7 @@ export const registerUserEpic = action$ =>
         cache: false,
         method: "POST"
       }).pipe(
-        mergeMap(({ response }) => [
-          loginUserSuccess(response.token),
-          registerUserSuccess(response.token)
-        ]),
+        mergeMap(() => [loginUser(action.user), registerUserSuccess()]),
         catchError(error => ActionsObservable.of(registerUserFailure(error)))
       );
     })
