@@ -1,7 +1,8 @@
 import { connect } from "react-redux";
 import UserPanel from "../components/UserPanel/UserPanel";
 import { isAuthenticated, isActive } from "../store/selectors";
-import { verifyUser } from "../actions/users";
+import { verifyUser, removeUser } from "../actions/users";
+import { uploadAvatar } from "../actions/avatar";
 
 const mapStateToProps = state => {
   return {
@@ -12,7 +13,9 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  verifyUser
+  verifyUser,
+  removeUser,
+  uploadAvatar
 };
 
 export default connect(

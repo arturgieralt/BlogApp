@@ -1,8 +1,9 @@
 
 import * as jwt from 'jsonwebtoken';
 import Permissions from './Permissions';
-import { Document } from 'mongoose';
 import { IUserModel } from 'models/IUserModel';
+import { IVerifyToken } from './IVerifyToken';
+import { IAuthToken } from './IAuthToken';
 
 type Authorization = 'AuthToken';
 export const Authorization: Authorization = 'AuthToken';
@@ -13,7 +14,7 @@ export const PassReset: PassReset = 'PassResetToken';
 type VerifyAccount = 'VerifyAccountToken';
 export const VerifyAccount: VerifyAccount = 'VerifyAccountToken';
 
-type TokenType = Authorization | PassReset | VerifyAccount;
+export type TokenType = Authorization | PassReset | VerifyAccount;
 
 export const getSecret = (): string  =>  {
 
@@ -23,18 +24,6 @@ export const getSecret = (): string  =>  {
     }
     return secret;
 }
-
-export const createTokenPayload = (user: IUserModel, userRoles: string[], expiryTime: number, tokenId: string) => {
-    const { _id, name, email} = user;
-    return {
-     id: _id,
-     name,
-     email,
-     expires: expiryTime,
-     userRoles,
-     tokenId
-   }
- }
 
 export default class TokenFactory {
     
@@ -46,9 +35,9 @@ export default class TokenFactory {
     }
     
     static Permissions = {
-        [Authorization]: Permissions.APP.USE,
-        [PassReset]: Permissions.USER.PASS_RESET,
-        [VerifyAccount]: Permissions.USER.VERIFY
+        [Authorization]: [Permissions.APP.USE],
+        [PassReset]: [Permissions.USER.PASS_RESET],
+        [VerifyAccount]: [Permissions.USER.VERIFY]
     }
 
     static ExpTime = {
@@ -57,19 +46,36 @@ export default class TokenFactory {
         [VerifyAccount]: 3600000
     }
 
+    private static TokenOptions = {
+        aud: "webdevag:client",
+        iss: "webdevag:issuer"
+    }
+
+    private static TokenOptionsVerify = {
+        audience: "webdevag:client",
+        issuer: "webdevag:issuer"
+    }
+
     private secret: string;
     constructor() {
         this.secret = getSecret();
     }
 
     getAuthToken(user: IUserModel, userRoles: string[], tokenId: string){
-      const payload = createTokenPayload(
-        user, 
-        userRoles, 
-        Number(Date.now() + TokenFactory.ExpTime[Authorization]), 
-        tokenId
-        );
-    
+
+        const { _id, name, email, isActive } = user;
+        const payload: IAuthToken =  {
+            id: _id,
+            name,
+            email,
+            exp: Date.now() + TokenFactory.ExpTime[Authorization],
+            userRoles,
+            tokenId,
+            scopes: TokenFactory.Permissions[Authorization],
+            isUserActive: isActive,
+            ...TokenFactory.TokenOptions
+        };
+
       const token = jwt.sign(JSON.stringify(payload), this.secret);
       return {
         token,
@@ -77,13 +83,47 @@ export default class TokenFactory {
       };
     }
 
-    getVerificationToken(id: string) {
-        return jwt.sign(JSON.stringify({
+    getVerificationToken(id: string, tokenId: string): string {
+
+        const payload: IVerifyToken = {
             id,
-            expTime: TokenFactory.ExpTime[VerifyAccount],
-            scopes: TokenFactory.Permissions[VerifyAccount]
-          }), this.secret);
+            exp: Date.now() + TokenFactory.ExpTime[VerifyAccount],
+            scopes: TokenFactory.Permissions[VerifyAccount],
+            tokenId,
+            ...TokenFactory.TokenOptions
+        }
+
+        return jwt.sign(JSON.stringify(payload), this.secret);
     }
+
+    decodeToken(token: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+          jwt.verify(token, this.secret, TokenFactory.TokenOptionsVerify,
+             async function(err: any, decoded: any) {
+            if(!err) {
+              resolve(decoded);
+            } else {
+              reject(err)
+            }
+          });
+        });
+      }
+    
+    verifyToken(token: string, tokenType:TokenType ): Promise<any> {
+        return new Promise(async (resolve, reject) => {
+         try{
+          const decoded: IAuthToken | IVerifyToken = await this.decodeToken(token);
+          const doScopesMatch = JSON.stringify(decoded.scopes) === JSON.stringify(TokenFactory.Permissions[tokenType]);
+          if(doScopesMatch) {
+            resolve(decoded);
+          } else {
+            reject('Wrong scopes');
+          }
+        }catch(e) {
+           reject(e);
+         }
+        });
+      }
     
 
 }

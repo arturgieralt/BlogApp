@@ -2,11 +2,13 @@ import bcrypt from 'bcrypt';
 import { getSingleByName } from './../services/UserService';
 import { VerifiedCallback } from 'passport-jwt';
 import { IVerifyOptions } from 'passport-local';
+import { IAuthToken } from 'services/TokenService/IAuthToken';
+import { IUserModel } from 'models/IUserModel';
 
 export const verifyUser = async (
   name: string,
   password: string,
-  done: (error: any, user?: any, options?: IVerifyOptions) => void
+  done: (error: any, user?: IUserModel | boolean, options?: IVerifyOptions) => void
 ) => {
   try {
     const user = await getSingleByName(name);
@@ -25,8 +27,8 @@ export const verifyUser = async (
   }
 };
 
-export const validateToken = (payload: any, done: VerifiedCallback) => {
-  const hasTokenExpired = Date.now() > payload.expires;
+export const validateToken = (payload: IAuthToken, done: VerifiedCallback) => {
+  const hasTokenExpired = Date.now() > payload.exp;
   return hasTokenExpired ? done('jwt expired') : done(null, payload);
 };
 

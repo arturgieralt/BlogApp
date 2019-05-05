@@ -2,10 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import * as userService from './../services/UserService';
 import { baseController } from './BaseController';
 import MailService from './../mailer/MailService';
-import { welcomeMail, accountActivated } from './../mailer/templates';
+import { welcomeMail, accountActivated, accountRemoved } from './../mailer/templates';
 import { getRolesPerUser } from './../services/RolesService';
 import TokenServiceInstance from './../services/TokenService/TokenService';
 import { IUserModel } from 'models/IUserModel';
+import { IVerifyToken } from 'services/TokenService/IVerifyToken';
+import { VerifyAccount } from './../services/TokenService/TokenFactory';
 
 const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
   req.params.userId
@@ -36,7 +38,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   const { name, password, email } = req.body;  
   try {
     const user = await userService.add(name, password, email);
-    const token = TokenServiceInstance.createVerificationToken(user._id);
+    const token = await TokenServiceInstance.createVerificationToken(user._id);
     MailService.sendMail(welcomeMail(user, token));
     res.status(200).send();
   } catch (e) {
@@ -49,8 +51,10 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
   const { verifyToken: token } = req.body;
 
   try{
-    const decoded = await TokenServiceInstance.verifyToken(token);
-    const user = await userService.verify(decoded.id);
+    const decoded: IVerifyToken = await TokenServiceInstance
+      .verifyToken(token, VerifyAccount);
+    const user: IUserModel = await userService.verify(decoded.id);
+    await TokenServiceInstance.blacklist(decoded.tokenId)
     MailService.sendMail(accountActivated(user));
     await _logout(req, res);
     res.status(200).send();
@@ -94,12 +98,24 @@ function _logout (req: Request, res: Response){
   
 }
 
-function _remove(userId: string) {
-  return userService.remove(userId);
+export async function remove(req: Request, res: Response, next: NextFunction) {
+
+    try{
+
+      const { user } = req;
+      await TokenServiceInstance.blacklistAllForUser(user.id);
+      await userService.remove(user.id);
+      MailService.sendMail(accountRemoved(user));
+      req.logout();
+      res.status(200).send();  
+    }
+    catch(e) {
+
+      res.status(400).send(e);
+    }
 }
 
 export const logout = baseController(_logout, provideAll);
 export const getAll = baseController(_getAll);
 export const getSingle = baseController(_getSingle, provideIdParam);
 export const update = baseController(_update, provideIdAndBodyParams);
-export const remove = baseController(_remove, provideIdParam);

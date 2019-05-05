@@ -70,3 +70,20 @@ export const verifyUserFailure = error => ({
   type: USER_VERIFY_FAILURE,
   error
 });
+
+export const USER_REMOVE_REQUEST = "[USER]_REMOVE_REQUEST";
+export const USER_REMOVE_SUCCESS = "[USER]_REMOVE_SUCCESS";
+export const USER_REMOVE_FAILURE = "[USER]_REMOVE_FAILURE";
+
+export const removeUser = () => ({
+  type: USER_REMOVE_REQUEST
+});
+
+export const removeUserSuccess = () => ({
+  type: USER_REMOVE_SUCCESS
+});
+
+export const removeUserFailure = error => ({
+  type: USER_REMOVE_FAILURE,
+  error
+});

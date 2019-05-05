@@ -4,12 +4,21 @@ import * as fileStorage from './../services/FileStorageService';
 import { baseController } from './BaseController';
 import multer from 'multer';
 
-const FILE_FIELD_NAME = 'file';
-const DEST = 'uploads/';
+// const FILE_FIELD_NAME = 'file';
+// const DEST = 'uploads/';
 
-export const FILE_UPLOAD_SETTINGS = multer({
-  dest: DEST
-}).single(FILE_FIELD_NAME);
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+  cb(null, 'uploads')
+},
+filename: function (req, file, cb) {
+  cb(null, Date.now() + '-' + file.originalname )
+}
+})
+
+export const uploadMulter = multer({
+  storage: storage
+}).single('file');
 
 const provideAll = (req: Request, res: Response, next: NextFunction) => [
   req,
@@ -48,23 +57,26 @@ async function _remove(fileId: string) {
     .catch(error => Promise.reject(error));
 }
 
-async function _upload(file: any, body: any) {
-  const {
-    fieldName,
-    originalname,
-    encoding,
-    mimetype,
-    size,
-    destination,
-    filename,
-    path
-  } = file;
-  const { uploadBy } = body; // chamge!
+export async function upload(req: Request, res: Response, next: NextFunction) {
 
+  uploadMulter(req, res, async (err) => {
+  if (err) {
+      return res.status(500).json(err)
+  } 
   try {
-    return fileService.add({
-      fieldName,
-      uploadBy,
+    const {
+      originalname,
+      encoding,
+      mimetype,
+      size,
+      destination,
+      filename,
+      path
+    } = req.file;
+    const { id } = req.user;
+    
+    const fileEntry = await fileService.add({
+      uploadBy: id,
       originalname,
       encoding,
       mimetype,
@@ -73,12 +85,16 @@ async function _upload(file: any, body: any) {
       filename,
       path
     });
-  } catch (e) {
-    return Promise.reject(e);
+  
+    return res.status(200).send(req.file)
+  } catch(e) {
+    return res.status(500).json(err)
   }
+  
+});
+
 }
 
 export const getAll = baseController(_getAll);
 export const getSingle = baseController(_getSingle, provideIdParam);
 export const remove = baseController(_remove, provideIdParam);
-export const upload = baseController(_upload, provideFileAndBodyParams);

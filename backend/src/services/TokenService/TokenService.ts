@@ -1,10 +1,8 @@
-import * as jwt from 'jsonwebtoken';
 import { Document, Model } from 'mongoose';
 import { ITokenModel } from 'models/ITokenModel';
-import TokenFactory, { Authorization } from './TokenFactory';
+import TokenFactory, { Authorization, VerifyAccount, TokenType } from './TokenFactory';
 import { TokenModel } from './../../models/TokenModel';
 import { IUserModel } from 'models/IUserModel';
-
 
 export class TokenService {
   constructor(private TokenRepository: Model<ITokenModel, {}>, private TokenFactory: TokenFactory) {
@@ -20,7 +18,10 @@ export class TokenService {
   blacklist(id: string): Promise<Document | null> {
     return this.TokenRepository.findOneAndUpdate({ _id: id }, {isActive: false}, { new: true }).exec();
   }
-  
+
+  blacklistAllForUser(id: string): Promise<Document | null> {
+    return this.TokenRepository.updateMany({ userId: id }, {isActive: false}, { new: true }).exec();
+  }
   getAll(): Promise<Document | {}> {
     return this.TokenRepository.find({}).exec();
   }
@@ -38,22 +39,30 @@ export class TokenService {
   remove(id: string): Promise<any> {
     return this.TokenRepository.remove({ _id: id }).exec();
   }
-  
-  verifyToken(token: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.SECRET_JWT as string, async function(err: any, decoded: any) {
-        if(!err) {
-          resolve(decoded);
-        } else {
-          reject(err)
-        }
-      });
-    });
+
+  verifyToken(token: string, tokenType:TokenType ): Promise<any> {
+    return this.TokenFactory.verifyToken(token, tokenType);
   }
   
+  createVerificationToken (id: string): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
   
-  createVerificationToken (id: string): string {
-      return this.TokenFactory.getVerificationToken(id);
+        const tokenEntry = await this.add({
+            userId: id,
+            expTime: TokenFactory.ExpTime[VerifyAccount],
+            isActive: true
+          });
+        
+        resolve(this.TokenFactory
+          .getVerificationToken(id, 
+              tokenEntry.id));
+      }
+  
+        catch(e) {
+          reject(e);
+        }
+    })
   }
   
  createToken(user: IUserModel, userRoles: string[]): Promise<any> {

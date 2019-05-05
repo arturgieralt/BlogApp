@@ -9,13 +9,15 @@ import {
   registerUserEpic,
   logoutUserEpic,
   verifyUserEpic,
-  userLogoutSuccessEpic
+  userLogoutSuccessEpic,
+  removeUserEpic
 } from "./users";
 import {
   decodeTokenEpic,
   decodeTokenSuccessEpic,
   cleanTokenEpic
 } from "./token";
+import { uploadAvatarEpic } from "./avatar";
 
 export default combineEpics(
   fetchArticlesEpic,
@@ -28,5 +30,7 @@ export default combineEpics(
   logoutUserEpic,
   cleanTokenEpic,
   verifyUserEpic,
-  userLogoutSuccessEpic
+  userLogoutSuccessEpic,
+  removeUserEpic,
+  uploadAvatarEpic
 );

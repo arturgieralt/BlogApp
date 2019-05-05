@@ -10,8 +10,18 @@ import TextArea from "../formElements/TextArea";
 
 export default class UserPanel extends React.Component {
   state = {
-    verifyToken: ""
+    verifyToken: "",
+    url: "",
+    avatar: null
   };
+
+  handleAccountRemoval() {
+    const shouldRemove = window.confirm("Are you sure to remove your account?");
+    if (shouldRemove) {
+      const { removeUser } = this.props;
+      removeUser();
+    }
+  }
 
   handleChange(event) {
     event.persist();
@@ -39,12 +49,38 @@ export default class UserPanel extends React.Component {
     }
   }
 
+  onAvatarUpload(e) {
+    const avatar = R.path(["target", "files", "0"], e);
+    if (avatar) {
+      this.setState({
+        url: URL.createObjectURL(avatar),
+        avatar
+      });
+    }
+  }
+
+  onAvatarSend() {
+    const { avatar } = this.state;
+    const { uploadAvatar } = this.props;
+    if (avatar) {
+      const data = new FormData();
+      data.append("file", avatar);
+      uploadAvatar(data);
+    }
+  }
+
+  onAvatarSend = this.onAvatarSend.bind(this);
+
+  onAvatarUpload = this.onAvatarUpload.bind(this);
+
   handleChange = this.handleChange.bind(this);
 
   handleSubmit = this.handleSubmit.bind(this);
 
+  handleAccountRemoval = this.handleAccountRemoval.bind(this);
+
   render() {
-    const { verifyToken } = this.state;
+    const { verifyToken, url } = this.state;
     const {
       isActive,
       user: { claims }
@@ -54,6 +90,23 @@ export default class UserPanel extends React.Component {
       <React.Fragment>
         <StyledCard margin="20px auto" title={`Welcome ${claims.name}`}>
           You can manage your account here.
+        </StyledCard>
+        <StyledCard margin="20px auto" title="Remove account">
+          <Button type="button" onClick={this.handleAccountRemoval}>
+            Remove account
+          </Button>
+        </StyledCard>
+        <StyledCard margin="20px auto" title="Add photo">
+          <input
+            type="file"
+            name="avatar"
+            onChange={this.onAvatarUpload}
+            accept="image/*"
+          />
+          <img src={url} alt="Your avatar" style={{ width: "200px" }} />
+          <Button type="button" onClick={this.onAvatarSend}>
+            Add photo
+          </Button>
         </StyledCard>
         {!isActive && (
           <StyledCard width="500px" margin="20px auto" title="Verify account">
@@ -74,6 +127,8 @@ export default class UserPanel extends React.Component {
 
 UserPanel.propTypes = {
   verifyUser: PropTypes.func.isRequired,
+  uploadAvatar: PropTypes.func.isRequired,
+  removeUser: PropTypes.func.isRequired,
   isActive: PropTypes.bool.isRequired,
   user: PropTypes.object.isRequired
 };

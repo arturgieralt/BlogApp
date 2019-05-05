@@ -11,3 +11,9 @@ export const accountActivated = ({email, name}: any) => ({
     subject: 'Your account was activated!.', // Subject line
     html: `<b>Hello ${name}</b><br /> You can comment now!` // html body
 })
+
+export const accountRemoved = ({email, name}: any) => ({
+    to: email,
+    subject: 'Your account was removed!.', // Subject line
+    html: `<b>Hello ${name}</b><br /> Your account was fully removed!` // html body
+})

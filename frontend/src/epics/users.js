@@ -18,7 +18,10 @@ import {
   verifyUserSuccess,
   verifyUserFailure,
   loginUser,
-  USER_LOGOUT_SUCCESS
+  USER_LOGOUT_SUCCESS,
+  USER_REMOVE_REQUEST,
+  removeUserSuccess,
+  removeUserFailure
 } from "../actions/users";
 
 export const loginUserEpic = action$ =>
@@ -105,4 +108,24 @@ export const registerUserEpic = action$ =>
         catchError(error => ActionsObservable.of(registerUserFailure(error)))
       );
     })
+  );
+
+export const removeUserEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(USER_REMOVE_REQUEST),
+    withLatestFrom(state$),
+    mergeMap(([, state]) =>
+      ajax({
+        url: "https://localhost:3001/user/remove",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.user.token}`
+        },
+        cache: false,
+        method: "POST"
+      }).pipe(
+        mergeMap(() => [removeUserSuccess(), logoutUserSuccess()]),
+        catchError(error => ActionsObservable.of(removeUserFailure(error)))
+      )
+    )
   );
