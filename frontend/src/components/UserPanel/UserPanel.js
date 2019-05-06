@@ -9,11 +9,15 @@ import updateFormElement from "../formElements/stateSetters";
 import TextArea from "../formElements/TextArea";
 
 export default class UserPanel extends React.Component {
-  state = {
-    verifyToken: "",
-    url: "",
-    avatar: null
-  };
+  constructor(props) {
+    super(props);
+    const { user } = this.props;
+    this.state = {
+      verifyToken: "",
+      url: `https://localhost:3001/${user.info.avatarUrl}`,
+      avatar: null
+    };
+  }
 
   handleAccountRemoval() {
     const shouldRemove = window.confirm("Are you sure to remove your account?");
@@ -83,12 +87,12 @@ export default class UserPanel extends React.Component {
     const { verifyToken, url } = this.state;
     const {
       isActive,
-      user: { claims }
+      user: { info }
     } = this.props;
 
     return (
       <React.Fragment>
-        <StyledCard margin="20px auto" title={`Welcome ${claims.name}`}>
+        <StyledCard margin="20px auto" title={`Welcome ${info.name}`}>
           You can manage your account here.
         </StyledCard>
         <StyledCard margin="20px auto" title="Remove account">
@@ -103,7 +107,11 @@ export default class UserPanel extends React.Component {
             onChange={this.onAvatarUpload}
             accept="image/*"
           />
-          <img src={url} alt="Your avatar" style={{ width: "200px" }} />
+          <img
+            src={url || info.avatarUrl}
+            alt="Your avatar"
+            style={{ width: "200px" }}
+          />
           <Button type="button" onClick={this.onAvatarSend}>
             Add photo
           </Button>

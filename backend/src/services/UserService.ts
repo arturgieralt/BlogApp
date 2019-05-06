@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import passport = require('passport');
 import { IVerifyOptions } from 'passport-local';
 import { Request, Response, NextFunction } from 'express';
-import { IUserModel } from 'models/IUserModel';
+import { IUserModel, IUserDto } from 'models/IUserModel';
 
 
 export function getAll(): Promise<IUserModel> {
@@ -14,6 +14,14 @@ export function getAll(): Promise<IUserModel> {
 
 export function getSingle(id: string): Promise<IUserModel> {
   return UserModel.findById(id).lean().exec();
+}
+
+export function getUserProfile(id: string): Promise<IUserDto> {
+  return UserModel
+  .findById(id)
+  .select('name email isActive avatarUrl -_id')
+  .lean()
+  .exec();
 }
 
 export function getSingleByName(name: string): Promise<IUserModel> {

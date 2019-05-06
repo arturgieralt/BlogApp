@@ -87,3 +87,21 @@ export const removeUserFailure = error => ({
   type: USER_REMOVE_FAILURE,
   error
 });
+
+export const USER_PROFILE_FETCH_REQUEST = "[USER]_PROFILE_FETCH_REQUEST";
+export const USER_PROFILE_FETCH_SUCCESS = "[USER]_PROFILE_FETCH_SUCCESS";
+export const USER_PROFILE_FETCH_FAILURE = "[USER]_PROFILE_FETCH_FAILURE";
+
+export const fetchUserProfile = () => ({
+  type: USER_PROFILE_FETCH_REQUEST
+});
+
+export const fetchUserProfileSuccess = user => ({
+  type: USER_PROFILE_FETCH_SUCCESS,
+  user
+});
+
+export const fetchUserProfileFailure = error => ({
+  type: USER_PROFILE_FETCH_FAILURE,
+  error
+});

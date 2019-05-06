@@ -21,7 +21,12 @@ import {
   USER_LOGOUT_SUCCESS,
   USER_REMOVE_REQUEST,
   removeUserSuccess,
-  removeUserFailure
+  removeUserFailure,
+  fetchUserProfile,
+  USER_LOGIN_SUCCESS,
+  USER_PROFILE_FETCH_REQUEST,
+  fetchUserProfileSuccess,
+  fetchUserProfileFailure
 } from "../actions/users";
 
 export const loginUserEpic = action$ =>
@@ -70,6 +75,12 @@ export const userLogoutSuccessEpic = action$ =>
     mergeMap(() => ActionsObservable.of(push("/")))
   );
 
+export const userLoginSuccessEpic = action$ =>
+  action$.pipe(
+    ofType(USER_LOGIN_SUCCESS),
+    mergeMap(() => ActionsObservable.of(fetchUserProfile()))
+  );
+
 export const verifyUserEpic = (action$, state$) =>
   action$.pipe(
     ofType(USER_VERIFY_REQUEST),
@@ -85,7 +96,7 @@ export const verifyUserEpic = (action$, state$) =>
         cache: false,
         method: "POST"
       }).pipe(
-        mergeMap(() => [verifyUserSuccess(), logoutUserSuccess()]),
+        mergeMap(() => [verifyUserSuccess(), fetchUserProfile()]),
         catchError(error => ActionsObservable.of(verifyUserFailure(error)))
       )
     )
@@ -126,6 +137,28 @@ export const removeUserEpic = (action$, state$) =>
       }).pipe(
         mergeMap(() => [removeUserSuccess(), logoutUserSuccess()]),
         catchError(error => ActionsObservable.of(removeUserFailure(error)))
+      )
+    )
+  );
+
+export const fetchUserProfileEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(USER_PROFILE_FETCH_REQUEST),
+    withLatestFrom(state$),
+    mergeMap(([, state]) =>
+      ajax({
+        url: "https://localhost:3001/user/profile",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.user.token}`
+        },
+        cache: false,
+        method: "GET"
+      }).pipe(
+        map(({ response }) => fetchUserProfileSuccess(response)),
+        catchError(error =>
+          ActionsObservable.of(fetchUserProfileFailure(error))
+        )
       )
     )
   );

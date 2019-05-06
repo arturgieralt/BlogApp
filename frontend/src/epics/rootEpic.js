@@ -10,7 +10,9 @@ import {
   logoutUserEpic,
   verifyUserEpic,
   userLogoutSuccessEpic,
-  removeUserEpic
+  removeUserEpic,
+  userLoginSuccessEpic,
+  fetchUserProfileEpic
 } from "./users";
 import {
   decodeTokenEpic,
@@ -18,6 +20,7 @@ import {
   cleanTokenEpic
 } from "./token";
 import { uploadAvatarEpic } from "./avatar";
+import { notifierEpic } from "./notifier/notifierEpic";
 
 export default combineEpics(
   fetchArticlesEpic,
@@ -32,5 +35,8 @@ export default combineEpics(
   verifyUserEpic,
   userLogoutSuccessEpic,
   removeUserEpic,
-  uploadAvatarEpic
+  uploadAvatarEpic,
+  userLoginSuccessEpic,
+  fetchUserProfileEpic,
+  notifierEpic
 );

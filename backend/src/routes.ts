@@ -33,6 +33,7 @@ export class Routes {
     app.route('/user/logout').post(authorize(), UsersController.logout);
     app.route('/user/verify').post(authorize(), UsersController.verify);
     app.route('/user/remove').post(authorize(), UsersController.remove);
+    app.route('/user/profile').get(authorize(), UsersController.getMyProfile);
 
     app
       .route('/users/:userId')

@@ -33,7 +33,7 @@ function MenuList({ className, isAdmin, isAuthenticated, user, logout }) {
       {isAuthenticated && (
         <React.Fragment>
           <li>
-            <Link to="/user/view">Welcome {user.claims.name}</Link>
+            <Link to="/user/view">Welcome {user.info.name}</Link>
           </li>
           <li>
             <Button onClick={() => logout()}>Logout</Button>

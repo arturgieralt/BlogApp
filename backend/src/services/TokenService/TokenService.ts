@@ -32,7 +32,7 @@ export class TokenService {
       .exec();
   }
   
-  getSingle(id: string): Promise<Object | null> {
+  getSingle(id: string): Promise<ITokenModel> {
     return this.TokenRepository.findById(id).lean().exec();
   }
   

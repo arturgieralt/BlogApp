@@ -5,9 +5,10 @@ import MailService from './../mailer/MailService';
 import { welcomeMail, accountActivated, accountRemoved } from './../mailer/templates';
 import { getRolesPerUser } from './../services/RolesService';
 import TokenServiceInstance from './../services/TokenService/TokenService';
-import { IUserModel } from 'models/IUserModel';
+import { IUserModel, IUserDto } from 'models/IUserModel';
 import { IVerifyToken } from 'services/TokenService/IVerifyToken';
 import { VerifyAccount } from './../services/TokenService/TokenFactory';
+import { IAuthToken } from 'services/TokenService/IAuthToken';
 
 const provideIdParam = (req: Request, res: Response, next: NextFunction) => [
   req.params.userId
@@ -34,6 +35,20 @@ function _update(userId: string, body: any) {
   return userService.update(userId, body);
 }
 
+
+export async function getMyProfile(req: Request, res: Response, next: NextFunction) {
+
+  try {
+    const { user }: {user?: IAuthToken} = req;
+    const userData = await userService.getUserProfile(user!.id)
+    res.status(200).send(userData);
+  } catch (e) {
+    res.status(400).send({...e});
+  }
+
+
+}
+
 export async function register(req: Request, res: Response, next: NextFunction) {
   const { name, password, email } = req.body;  
   try {
@@ -56,7 +71,6 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
     const user: IUserModel = await userService.verify(decoded.id);
     await TokenServiceInstance.blacklist(decoded.tokenId)
     MailService.sendMail(accountActivated(user));
-    await _logout(req, res);
     res.status(200).send();
   } catch(e) {
     res.status(400).send(e);
@@ -88,8 +102,8 @@ export async function login(req: Request, res: Response, next: NextFunction) {
 
 function _logout (req: Request, res: Response){
   try {
-    const { user } = req;
-    TokenServiceInstance.blacklist(user.tokenId)
+    const { user }: {user?: IAuthToken} = req;
+    TokenServiceInstance.blacklist(user!.tokenId)
     req.logout();
     return Promise.resolve();
   }  catch(e) {
@@ -102,9 +116,9 @@ export async function remove(req: Request, res: Response, next: NextFunction) {
 
     try{
 
-      const { user } = req;
-      await TokenServiceInstance.blacklistAllForUser(user.id);
-      await userService.remove(user.id);
+      const { user }: {user?: IAuthToken} = req;
+      await TokenServiceInstance.blacklistAllForUser(user!.id);
+      await userService.remove(user!.id);
       MailService.sendMail(accountRemoved(user));
       req.logout();
       res.status(200).send();  

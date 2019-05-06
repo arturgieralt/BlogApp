@@ -63,16 +63,13 @@ export default class TokenFactory {
 
     getAuthToken(user: IUserModel, userRoles: string[], tokenId: string){
 
-        const { _id, name, email, isActive } = user;
+        const { _id } = user;
         const payload: IAuthToken =  {
             id: _id,
-            name,
-            email,
             exp: Date.now() + TokenFactory.ExpTime[Authorization],
             userRoles,
             tokenId,
             scopes: TokenFactory.Permissions[Authorization],
-            isUserActive: isActive,
             ...TokenFactory.TokenOptions
         };
 

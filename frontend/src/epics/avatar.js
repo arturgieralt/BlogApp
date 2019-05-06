@@ -1,4 +1,4 @@
-import { map, mergeMap, withLatestFrom, catchError } from "rxjs/operators";
+import { mergeMap, withLatestFrom, catchError } from "rxjs/operators";
 import { ofType, ActionsObservable } from "redux-observable";
 import { ajax } from "rxjs/ajax";
 
@@ -7,6 +7,7 @@ import {
   uploadAvatarSuccess,
   uploadAvatarFailure
 } from "../actions/avatar";
+import { fetchUserProfile } from "../actions/users";
 
 export const uploadAvatarEpic = (action$, state$) =>
   action$.pipe(
@@ -22,7 +23,7 @@ export const uploadAvatarEpic = (action$, state$) =>
         cache: false,
         method: "POST"
       }).pipe(
-        map(() => uploadAvatarSuccess()),
+        mergeMap(() => [uploadAvatarSuccess(), fetchUserProfile()]),
         catchError(error => ActionsObservable.of(uploadAvatarFailure(error)))
       )
     )
