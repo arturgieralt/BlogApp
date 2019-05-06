@@ -1,5 +1,6 @@
 import React from "react";
-import { pipe } from "ramda";
+import { pipe, all } from "ramda";
+import PropTypes from "prop-types";
 import Button from "../formElements/Button";
 import Input from "../formElements/Input";
 import StyledCard from "../Card/Card";
@@ -8,7 +9,8 @@ import {
   validateName,
   validateEmail,
   validatePassword
-} from "./helpers/validators";
+} from "../formElements/validators";
+import updateFormElement from "../formElements/stateSetters";
 
 export default class RegisterForm extends React.Component {
   state = {
@@ -20,28 +22,23 @@ export default class RegisterForm extends React.Component {
   };
 
   handleChange(event) {
-    const { type, name, value, checked } = event.target;
-    switch (type) {
-      case "checkbox":
-        this.setState({
-          [name]: checked
-        });
-        break;
-      case "text":
-      case "email":
-      case "password":
-      case "textarea":
-        this.setState({
-          [name]: value
-        });
-        break;
-      default:
-        break;
-    }
+    event.persist();
+    const { target } = event;
+    this.setState(updateFormElement(target));
   }
 
   handleSubmit() {
     const isFormValid = this.validate();
+
+    if (isFormValid) {
+      const { name, email, password } = this.state;
+      const { registerUser } = this.props;
+      registerUser({
+        name,
+        email,
+        password
+      });
+    }
     console.log(isFormValid);
   }
 
@@ -49,10 +46,11 @@ export default class RegisterForm extends React.Component {
     const formValidator = pipe(
       validateName(this.state),
       validateEmail(this.state),
-      validatePassword(this.state)
+      validatePassword(this.state),
+      all(condition => condition)
     )([]);
 
-    return formValidator.every(condition => condition);
+    return formValidator;
   }
 
   handleChange = this.handleChange.bind(this);
@@ -63,7 +61,7 @@ export default class RegisterForm extends React.Component {
     const { name, password, passwordCheck, email, emailCheck } = this.state;
 
     return (
-      <StyledCard width="90%" margin="20px auto" title="Register">
+      <StyledCard width="500px" margin="20px auto" title="Register">
         <ElementLabel name="Name">
           <Input
             type="text"
@@ -123,3 +121,7 @@ export default class RegisterForm extends React.Component {
     );
   }
 }
+
+RegisterForm.propTypes = {
+  registerUser: PropTypes.func.isRequired
+};

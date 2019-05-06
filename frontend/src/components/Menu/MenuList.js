@@ -1,32 +1,45 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
+import Button from "../formElements/Button";
 
-function MenuList({ className }) {
+function MenuList({ className, isAdmin, isAuthenticated, user, logout }) {
   return (
     <ul className={className}>
       <li>
-        <a href="/" id="mainLink">
-          arturgieralt.pl
-        </a>
+        <Link to="/">arturgieralt.pl</Link>
       </li>
       <li>
-        <a href="/" id="mainLink">
-          Articles
-        </a>
+        <Link to="/articles">Articles</Link>
       </li>
-      <li>
-        <a href="/" id="mainLink">
-          Main
-        </a>
-      </li>
-      <li>
-        <a href="/" id="mainLink">
-          Main
-        </a>
-      </li>
-      <li>
+      {isAuthenticated && isAdmin && (
+        <li>
+          <Link to="/articles/add">Add article</Link>
+        </li>
+      )}
+      {!isAuthenticated && (
+        <React.Fragment>
+          <li>
+            <Link to="/user/login">Login</Link>
+          </li>
+          <li>
+            <Link to="/user/register">Register</Link>
+          </li>
+        </React.Fragment>
+      )}
+      {/* <li>
         <span>search...</span>
-      </li>
+      </li> */}
+      {isAuthenticated && (
+        <React.Fragment>
+          <li>
+            <Link to="/user/view">Welcome {user.info.name}</Link>
+          </li>
+          <li>
+            <Button onClick={() => logout()}>Logout</Button>
+          </li>
+        </React.Fragment>
+      )}
     </ul>
   );
 }

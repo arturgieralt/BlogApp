@@ -28,8 +28,12 @@ export class Routes {
       .delete(authorize(), CommentsController.remove);
 
     app.route('/users').get(authorize(), UsersController.getAll);
-    app.route('/register').post(UsersController.register);
-    app.route('/login').post(UsersController.login);
+    app.route('/user/register').post(UsersController.register);
+    app.route('/user/login').post(UsersController.login);
+    app.route('/user/logout').post(authorize(), UsersController.logout);
+    app.route('/user/verify').post(authorize(), UsersController.verify);
+    app.route('/user/remove').post(authorize(), UsersController.remove);
+    app.route('/user/profile').get(authorize(), UsersController.getMyProfile);
 
     app
       .route('/users/:userId')
@@ -37,14 +41,18 @@ export class Routes {
       .put(authorize(), UsersController.update)
       .delete(authorize(), UsersController.remove);
 
+    // app
+    //   .route('/files')
+    //   .get(authorize(['Admin']), FilesController.getAll)
+    //   .post(
+    //     authorize(['Admin']),
+    //     FilesController.FILE_UPLOAD_SETTINGS,
+    //     FilesController.upload
+
     app
-      .route('/files')
-      .get(authorize(['Admin']), FilesController.getAll)
-      .post(
-        authorize(['Admin']),
-        FilesController.FILE_UPLOAD_SETTINGS,
-        FilesController.upload
-      );
+      .route('/avatar/upload')
+      .post(authorize(), FilesController.upload)
+
     app
       .route('/files/:fileId')
       .get(authorize(['Admin']), FilesController.getSingle)

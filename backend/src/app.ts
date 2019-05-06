@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import passport = require('passport');
 import { initPassport } from './auth/passportSetup';
 import cors from 'cors';
+import path from 'path';
 
 class App {
   public app: express.Application;
@@ -29,6 +30,7 @@ class App {
     this.app.use(cors(corsOptions));
     this.app.use(passport.initialize());
     initPassport();
+    this.app.use('/uploads', express.static(path.dirname(__dirname) + '/uploads'));
   }
 
   private mongoSetup(): void {
