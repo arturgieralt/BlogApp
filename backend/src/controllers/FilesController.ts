@@ -3,7 +3,7 @@ import * as fileService from './../services/FileService';
 import * as fileStorage from './../services/FileStorageService';
 import { baseController } from './BaseController';
 import multer from 'multer';
-import { update } from './../services/UserService';
+import UserService from './../services/UserService';
 
 // const FILE_FIELD_NAME = 'file';
 // const DEST = 'uploads/';
@@ -87,7 +87,7 @@ export async function upload(req: Request, res: Response, next: NextFunction) {
       path
     });
 
-    await update(id, {avatarUrl: path});
+    await UserService.update(id, {avatarName: filename});
   
     return res.status(200).send(req.file)
   } catch(e) {

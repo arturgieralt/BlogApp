@@ -11,7 +11,7 @@ export const notificationsMapping = {
     type: "success"
   },
   [USER_LOGOUT_SUCCESS]: {
-    message: "You've logged in!",
+    message: "You've logged out!",
     type: "success"
   },
   [USER_LOGIN_FAILURE]: {

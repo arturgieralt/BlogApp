@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { getSingleByName } from './../services/UserService';
+import UserService from './../services/UserService';
 import { VerifiedCallback } from 'passport-jwt';
 import { IVerifyOptions } from 'passport-local';
 import { IAuthToken } from 'services/TokenService/IAuthToken';
@@ -11,7 +11,7 @@ export const verifyUser = async (
   done: (error: any, user?: IUserModel | boolean, options?: IVerifyOptions) => void
 ) => {
   try {
-    const user = await getSingleByName(name);
+    const user = await UserService.getSingleByName(name);
     if (user) {
       const storedPass = user.passwordHash;
       const doesPasswordMatch = await bcrypt.compare(password, storedPass);

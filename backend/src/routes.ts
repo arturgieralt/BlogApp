@@ -1,7 +1,7 @@
 import { Application } from 'express';
 import * as ArticlesController from './controllers/ArticlesController';
 import * as CommentsController from './controllers/CommentsController';
-import * as UsersController from './controllers/UsersController';
+import UsersController from './controllers/UsersController';
 import * as FilesController from './controllers/FilesController';
 import { authorize } from './auth/authorize';
 
