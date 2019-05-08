@@ -2,7 +2,7 @@ import { Application } from 'express';
 import * as ArticlesController from './controllers/ArticlesController';
 import * as CommentsController from './controllers/CommentsController';
 import UsersController from './controllers/UsersController';
-import * as FilesController from './controllers/FilesController';
+import FilesController from './controllers/FilesController';
 import { authorize } from './auth/authorize';
 
 export class Routes {
@@ -51,11 +51,11 @@ export class Routes {
 
     app
       .route('/avatar/upload')
-      .post(authorize(), FilesController.upload)
+      .post(authorize(), FilesController.uploadAvatar)
 
-    app
-      .route('/files/:fileId')
-      .get(authorize(['Admin']), FilesController.getSingle)
-      .delete(authorize(['Admin']), FilesController.remove);
+    // app
+    //   .route('/files/:fileId')
+    //   .get(authorize(['Admin']), FilesController.getSingle)
+    //   .delete(authorize(['Admin']), FilesController.remove);
   }
 }
