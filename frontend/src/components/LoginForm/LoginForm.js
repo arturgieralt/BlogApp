@@ -53,33 +53,42 @@ export default class LoginForm extends React.Component {
 
   render() {
     const { name, password } = this.state;
+    const { isHuman } = this.props;
 
     return (
       <StyledCard width="500px" margin="20px auto" title="Login">
-        <ElementLabel name="Name">
-          <Input
-            type="text"
-            name="name"
-            required
-            onChange={this.handleChange}
-            value={name}
-            placeholder="Name..."
-          />
-        </ElementLabel>
-        <ElementLabel name="Password">
-          <Input
-            type="password"
-            name="password"
-            required
-            pattern=".{5,10}"
-            onChange={this.handleChange}
-            value={password}
-            placeholder="Password..."
-          />
-        </ElementLabel>
-        <Button type="button" onClick={this.handleSubmit}>
-          Login
-        </Button>
+        {isHuman ? (
+          <React.Fragment>
+            <ElementLabel name="Name">
+              <Input
+                type="text"
+                name="name"
+                required
+                onChange={this.handleChange}
+                value={name}
+                placeholder="Name..."
+              />
+            </ElementLabel>
+            <ElementLabel name="Password">
+              <Input
+                type="password"
+                name="password"
+                required
+                pattern=".{5,10}"
+                onChange={this.handleChange}
+                value={password}
+                placeholder="Password..."
+              />
+            </ElementLabel>
+            <Button type="button" onClick={this.handleSubmit}>
+              Login
+            </Button>
+          </React.Fragment>
+        ) : (
+          <span>
+            The form is locked. Please wait till reCaptcha verify you.
+          </span>
+        )}
         <ReCaptcha
           sitekey={CAPTCHA_KEY}
           action="login"
