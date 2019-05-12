@@ -7,7 +7,7 @@ export const notifierEpic = action$ =>
   action$.pipe(
     ofType(...keys(notificationsMapping)),
     map(action => {
-      toastWrapper(action.type);
+      toastWrapper(action);
       return {
         type: "NOTIFIED"
       };
