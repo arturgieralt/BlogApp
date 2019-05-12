@@ -1,9 +1,9 @@
 import { Application } from 'express';
 import * as ArticlesController from './controllers/ArticlesController';
-import * as CommentsController from './controllers/CommentsController';
 import UsersController from './controllers/UsersController';
 import FilesController from './controllers/FilesController';
 import { authorize } from './auth/authorize';
+import CaptchaController from './controllers/CaptchaController';
 
 export class Routes {
   public routes(app: Application): void {
@@ -17,15 +17,15 @@ export class Routes {
       .put(authorize(['Admin']), ArticlesController.update)
       .delete(authorize(['Admin']), ArticlesController.remove);
 
-    app
-      .route('/comments')
-      .get(authorize(), CommentsController.getAll)
-      .post(authorize(), CommentsController.add);
-    app
-      .route('/comments/:commentId')
-      .get(authorize(), CommentsController.getSingle)
-      .put(authorize(), CommentsController.update)
-      .delete(authorize(), CommentsController.remove);
+    // app
+    //   .route('/comments')
+    //   .get(authorize(), CommentsController.getAll)
+    //   .post(authorize(), CommentsController.add);
+    // app
+    //   .route('/comments/:commentId')
+    //   .get(authorize(), CommentsController.getSingle)
+    //   .put(authorize(), CommentsController.update)
+    //   .delete(authorize(), CommentsController.remove);
 
     app.route('/users').get(authorize(), UsersController.getAll);
     app.route('/user/register').post(UsersController.register);
@@ -34,6 +34,7 @@ export class Routes {
     app.route('/user/verify').post(authorize(), UsersController.verify);
     app.route('/user/remove').post(authorize(), UsersController.remove);
     app.route('/user/profile').get(authorize(), UsersController.getMyProfile);
+    app.route('/captcha/verify').post(CaptchaController.verifyToken);
 
     app
       .route('/users/:userId')

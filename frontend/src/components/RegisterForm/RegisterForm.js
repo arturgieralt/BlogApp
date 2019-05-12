@@ -1,5 +1,6 @@
 import React from "react";
 import { pipe, all } from "ramda";
+import { ReCaptcha } from "react-recaptcha-v3";
 import PropTypes from "prop-types";
 import Button from "../formElements/Button";
 import Input from "../formElements/Input";
@@ -11,6 +12,7 @@ import {
   validatePassword
 } from "../formElements/validators";
 import updateFormElement from "../formElements/stateSetters";
+import { CAPTCHA_KEY } from "../../views/Root";
 
 export default class RegisterForm extends React.Component {
   state = {
@@ -52,6 +54,13 @@ export default class RegisterForm extends React.Component {
 
     return formValidator;
   }
+
+  verifyCaptcha = token => {
+    const { verifyCaptcha: verifyCaptchaToken } = this.props;
+    verifyCaptchaToken(token);
+  };
+
+  verifyCaptcha = this.verifyCaptcha.bind(this);
 
   handleChange = this.handleChange.bind(this);
 
@@ -117,6 +126,11 @@ export default class RegisterForm extends React.Component {
         <Button type="button" onClick={this.handleSubmit}>
           Register
         </Button>
+        <ReCaptcha
+          sitekey={CAPTCHA_KEY}
+          action="register"
+          verifyCallback={this.verifyCaptcha}
+        />
       </StyledCard>
     );
   }

@@ -1,4 +1,5 @@
 import React from "react";
+import { ReCaptcha } from "react-recaptcha-v3";
 import { pipe, all } from "ramda";
 import Button from "../formElements/Button";
 import Input from "../formElements/Input";
@@ -6,6 +7,7 @@ import StyledCard from "../Card/Card";
 import ElementLabel from "../formElements/ControlLabel";
 import { validateName } from "../formElements/validators";
 import updateFormElement from "../formElements/stateSetters";
+import { CAPTCHA_KEY } from "../../views/Root";
 
 export default class LoginForm extends React.Component {
   state = {
@@ -38,9 +40,16 @@ export default class LoginForm extends React.Component {
     return formValidator;
   }
 
+  verifyCaptcha = token => {
+    const { verifyCaptcha: verifyCaptchaToken } = this.props;
+    verifyCaptchaToken(token);
+  };
+
   handleChange = this.handleChange.bind(this);
 
   handleSubmit = this.handleSubmit.bind(this);
+
+  verifyCaptcha = this.verifyCaptcha.bind(this);
 
   render() {
     const { name, password } = this.state;
@@ -71,6 +80,11 @@ export default class LoginForm extends React.Component {
         <Button type="button" onClick={this.handleSubmit}>
           Login
         </Button>
+        <ReCaptcha
+          sitekey={CAPTCHA_KEY}
+          action="login"
+          verifyCallback={this.verifyCaptcha}
+        />
       </StyledCard>
     );
   }

@@ -1,11 +1,11 @@
 import { connect } from "react-redux";
 import { loginUser } from "../actions/users";
 import LoginForm from "../components/LoginForm/LoginForm";
+import { verifyCaptcha } from "../actions/captcha";
 
-const mapDispatchToProps = dispatch => {
-  return {
-    loginUser: user => dispatch(loginUser(user))
-  };
+const mapDispatchToProps = {
+  loginUser,
+  verifyCaptcha
 };
 
 export default connect(
