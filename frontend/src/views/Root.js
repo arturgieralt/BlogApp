@@ -17,6 +17,8 @@ import RegisterForm from "../containers/RegisterForm";
 import LoginForm from "../containers/LoginForm";
 import { history } from "../store/configure";
 import UserPanel from "../containers/UserPanel";
+import Can from "../containers/Can";
+import NoAcess from "../components/NoAccess/NoAccess";
 
 export const CAPTCHA_KEY = "6LckFKMUAAAAACb6b-gTNT0QCIQj6c3ml2xBwWIo";
 
@@ -27,6 +29,7 @@ class Root extends React.Component {
 
   render() {
     const { store } = this.props;
+
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
@@ -37,12 +40,36 @@ class Root extends React.Component {
             <StyledBanner />
             <Switch>
               <Route exact path="/" component={Main} />
-              <Route exact path="/articles" component={ArticleList} />
-              <Route exact path="/articles/add" component={ArticleEditor} />
+              <Route
+                exact
+                path="/articles"
+                component={Can({
+                  permission: "articles:list",
+                  Component: ArticleList,
+                  NoAccessComponent: NoAcess
+                })}
+              />
+              <Route
+                exact
+                path="/articles/add"
+                component={Can({
+                  permission: "articles:add",
+                  Component: ArticleEditor,
+                  NoAccessComponent: NoAcess
+                })}
+              />
               <Route path="/articles/:id" component={SingleArticle} />
               <Route exact path="/user/register" component={RegisterForm} />
               <Route exact path="/user/login" component={LoginForm} />
-              <Route exact path="/user/view" component={UserPanel} />
+              <Route
+                exact
+                path="/user/view"
+                component={Can({
+                  permission: "user-page:visit",
+                  Component: UserPanel,
+                  NoAccessComponent: NoAcess
+                })}
+              />
             </Switch>
             <ToastContainer
               position="top-right"

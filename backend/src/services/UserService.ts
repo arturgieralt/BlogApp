@@ -27,8 +27,8 @@ export class UserService {
     .exec();
   }
   
-  getSingleByName = (name: string): Promise<IUserModel> => {
-    return this.UserRepository.findOne({ name }).lean().exec();
+  getSingleByName = (name: string): Promise<IUserModel | null> => {
+    return this.UserRepository.findOne({ name }).exec();
   }
   
   update = (id: string, body: any): Promise<IUserModel> => {

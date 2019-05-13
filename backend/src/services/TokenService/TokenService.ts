@@ -73,7 +73,7 @@ export class TokenService {
       try {
   
         const tokenEntry = await this.add({
-            userId: user._id,
+            userId: user.id,
             expTime: TokenFactory.ExpTime[Authorization],
             isActive: true
           });

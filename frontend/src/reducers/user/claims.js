@@ -6,7 +6,7 @@ import {
 } from "../../actions/token";
 import { USER_LOGIN_FAILURE, USER_LOGOUT_SUCCESS } from "../../actions/users";
 
-export default function claims(state = {}, action) {
+export default function claims(state = { userRoles: ["Guest"] }, action) {
   switch (action.type) {
     case TOKEN_DECODE_REQUEST:
     case TOKEN_DECODE_FAILURE:

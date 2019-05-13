@@ -8,19 +8,18 @@ export const getRoleNames = (rolesDocs: Document[] | null): string[] => rolesDoc
 
 export function getRolesPerUser(userId: string): Promise<string[]> {
   
-  return new Promise(async (res, rej) => {
+  return new Promise(async (resolve, reject) => {
     try {
       const roles =  await RoleModel
       .find({ userId })
-      .select('name -_id')
-      .lean()
+      .select('roleName -_id')
       .exec();
 
       const roleNames = getRoleNames(roles);
-      res(roleNames);
+      resolve(['User', ...roleNames]);
       
     } catch(e) {
-      rej(e);
+      reject(e);
     }
     
   })

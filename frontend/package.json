@@ -10,10 +10,12 @@
     "ramda": "^0.26.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-helmet": "^5.2.1",
     "react-recaptcha-v3": "^1.1.0",
     "react-redux": "^6.0.1",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
+    "react-snap": "^1.23.0",
     "react-toastify": "^5.1.0",
     "redux": "^4.0.1",
     "redux-observable": "^1.1.0",
@@ -25,7 +27,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "pretty": "prettier --write '**/*.js'"
+    "pretty": "prettier --write '**/*.js'",
+    "postbuild": "react-snap"
   },
   "browserslist": [
     ">0.2%",

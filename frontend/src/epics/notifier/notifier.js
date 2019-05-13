@@ -9,6 +9,10 @@ import {
   CAPTCHA_VERIFY_SUCCESS,
   CAPTCHA_VERIFY_FAILURE
 } from "../../actions/captcha";
+import {
+  AVATAR_UPLOAD_SUCCESS,
+  AVATAR_UPLOAD_FAILURE
+} from "../../actions/avatar";
 
 export const notificationsMapping = {
   [USER_LOGIN_SUCCESS]: () => ({
@@ -35,6 +39,14 @@ export const notificationsMapping = {
   }),
   [CAPTCHA_VERIFY_FAILURE]: () => ({
     message: "Cannot check if you're a human. The form is blocked.",
+    type: "error"
+  }),
+  [AVATAR_UPLOAD_SUCCESS]: () => ({
+    message: "Your photo was successfuly added.",
+    type: "success"
+  }),
+  [AVATAR_UPLOAD_FAILURE]: () => ({
+    message: "Cannot add photo.",
     type: "error"
   })
 };
