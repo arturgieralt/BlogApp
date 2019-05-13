@@ -8,6 +8,8 @@ export const isAdmin = pipe(
 
 export const isActive = pathOr(false, ["user", "info", "isActive"]);
 
+export const isHuman = pathOr(false, ["user", "isHuman"]);
+
 export const isAuthorized = pipe(
   pathOr({}, ["user", "claims"]),
   isEmpty,

@@ -28,7 +28,7 @@ export const UserSchema = new Schema({
     type: Date,
     default: Date.now()
   },
-  avatarUrl: { type: String }
+  avatarName: { type: String }
 });
 
 export const UserModel = model<IUserModel>('User', UserSchema, 'users');

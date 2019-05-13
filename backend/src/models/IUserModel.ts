@@ -1,6 +1,7 @@
 import { Document } from "mongoose";
 
 export interface IUserModel extends Document {
+    _id: string;
     name: string;
     email: string;
     isActive: boolean;

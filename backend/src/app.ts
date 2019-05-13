@@ -30,7 +30,7 @@ class App {
     this.app.use(cors(corsOptions));
     this.app.use(passport.initialize());
     initPassport();
-    this.app.use('/uploads', express.static(path.dirname(__dirname) + '/uploads'));
+    this.app.use('/avatars', express.static(path.dirname(__dirname) + '/uploads'));
   }
 
   private mongoSetup(): void {

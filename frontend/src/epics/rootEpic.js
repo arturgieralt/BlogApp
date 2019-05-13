@@ -21,6 +21,7 @@ import {
 } from "./token";
 import { uploadAvatarEpic } from "./avatar";
 import { notifierEpic } from "./notifier/notifierEpic";
+import { verifyCaptchaEpic } from "./captcha";
 
 export default combineEpics(
   fetchArticlesEpic,
@@ -38,5 +39,6 @@ export default combineEpics(
   uploadAvatarEpic,
   userLoginSuccessEpic,
   fetchUserProfileEpic,
-  notifierEpic
+  notifierEpic,
+  verifyCaptchaEpic
 );
