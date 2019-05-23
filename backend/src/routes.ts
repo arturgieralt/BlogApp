@@ -1,5 +1,5 @@
 import { Application } from 'express';
-import * as ArticlesController from './controllers/ArticlesController';
+import ArticlesController from './controllers/ArticlesController';
 import UsersController from './controllers/UsersController';
 import FilesController from './controllers/FilesController';
 import { authorize } from './auth/authorize';

@@ -1,50 +1,74 @@
 import * as articleService from './../services/ArticleService';
-import { baseController } from './BaseController';
 import { Request, Response, NextFunction } from 'express';
 import { getAllForArticle } from './../services/CommentService';
 
-const provideArticleIdParam = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => [req.params.articleId];
-const provideArticleIdAndBodyParams = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => [req.params.articleId, req.body];
-const provideBody = (req: Request, res: Response, next: NextFunction) => [
-  req.body
-];
 
-function _getAll() {
-  return articleService.getAll();
+class ArticlesController {
+
+   getAll = async (req: Request, res: Response,  next: NextFunction) => {
+
+     try {
+      const articles = await articleService.getAll();
+      res.status(200).json(articles);
+     }catch(e){
+      res.status(400).json({ e });
+     }
+
+  }
+  
+   getSingle = async (req: Request, res: Response,  next: NextFunction) => {
+
+    try {
+      const { articleId } = req.params;
+      const article = await articleService.getSingle(articleId);
+      const comments = await getAllForArticle(articleId);
+      res.status(200).json({
+        ...article,
+        comments
+      });
+     }catch(e){
+      res.status(400).json({ e });
+     }
+    
+  }
+  
+   update = async (req: Request, res: Response,  next: NextFunction) => {
+     
+    try {
+      const { body, params: { articleId } } = req.params;
+      await articleService.update(articleId, body);
+      res.status(200).send();
+     }catch(e){
+      res.status(400).json({ e });
+     }
+    
+  }
+  
+   add = async (req: Request, res: Response,  next: NextFunction) => {
+
+    try {
+      const { body } = req;
+      await articleService.add(body);
+      res.status(200).send();
+     }catch(e){
+      res.status(400).json({ e });
+     }
+
+     
+  }
+  
+   remove = async (req: Request, res: Response,  next: NextFunction) => {
+
+    try {
+      const { articleId } = req.params;
+      await articleService.remove(articleId);
+      res.status(200).send();
+     }catch(e){
+      res.status(400).json({ e });
+     }
+    
+  }
+
 }
 
-function _getSingle(articleId: string) {
-  const article = articleService.getSingle(articleId);
-  const comments = getAllForArticle(articleId);
-  return Promise.all([article, comments]).then(([artDoc, comDoc]) => ({
-    ...artDoc,
-    comments: comDoc
-  }));
-}
-
-function _update(articleId: string, body: any) {
-  // validation here
-  return articleService.update(articleId, body);
-}
-
-function _add(body: any) {
-  return articleService.add(body);
-}
-
-function _remove(articleId: string) {
-  return articleService.remove(articleId);
-}
-
-export const getAll = baseController(_getAll);
-export const getSingle = baseController(_getSingle, provideArticleIdParam);
-export const update = baseController(_update, provideArticleIdAndBodyParams);
-export const add = baseController(_add, provideBody);
-export const remove = baseController(_remove, provideArticleIdParam);
+export default new ArticlesController()

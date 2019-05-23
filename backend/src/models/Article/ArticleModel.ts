@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { IArticleModel } from './IArticleModel';
 
 export const ArticleSchema = new Schema({
   title: { type: String, required: [true, 'Please provide a title'] },
@@ -18,4 +19,4 @@ export const ArticleSchema = new Schema({
   }
 });
 
-export const ArticleModel = model('Article', ArticleSchema, 'articles');
+export const ArticleModel = model<IArticleModel>('Article', ArticleSchema, 'articles');

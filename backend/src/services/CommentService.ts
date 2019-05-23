@@ -1,4 +1,4 @@
-import { CommentModel } from './../models/CommentModel';
+import { CommentModel } from '../models/Comment/CommentModel';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
 

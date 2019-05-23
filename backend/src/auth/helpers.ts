@@ -3,7 +3,7 @@ import UserService from './../services/UserService';
 import { VerifiedCallback } from 'passport-jwt';
 import { IVerifyOptions } from 'passport-local';
 import { IAuthToken } from 'services/TokenService/IAuthToken';
-import { IUserModel } from 'models/IUserModel';
+import { IUserModel } from 'models/User/IUserModel';
 
 export const verifyUser = async (
   name: string,

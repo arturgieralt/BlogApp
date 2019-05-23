@@ -4,7 +4,7 @@ import MailService from './../mailer/MailService';
 import { welcomeMail, accountActivated, accountRemoved } from './../mailer/templates';
 import { getRolesPerUser } from './../services/RolesService';
 import TokenServiceInstance, { TokenService } from './../services/TokenService/TokenService';
-import { IUserModel } from 'models/IUserModel';
+import { IUserModel } from 'models/User/IUserModel';
 import { IVerifyToken } from 'services/TokenService/IVerifyToken';
 import { VerifyAccount } from './../services/TokenService/TokenFactory';
 import { IAuthToken } from 'services/TokenService/IAuthToken';

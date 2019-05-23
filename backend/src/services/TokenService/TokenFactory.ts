@@ -1,7 +1,7 @@
 
 import * as jwt from 'jsonwebtoken';
 import Permissions from './Permissions';
-import { IUserModel } from 'models/IUserModel';
+import { IUserModel } from 'models/User/IUserModel';
 import { IVerifyToken } from './IVerifyToken';
 import { IAuthToken } from './IAuthToken';
 

@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { IRoleModel } from './IRoleModel';
 
 export const RoleSchema = new Schema({
   _id: Schema.Types.ObjectId,
@@ -8,4 +9,4 @@ export const RoleSchema = new Schema({
   }
 });
 
-export const RoleModel = model('Role', RoleSchema, 'roles');
+export const RoleModel = model<IRoleModel>('Role', RoleSchema, 'roles');

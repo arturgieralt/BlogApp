@@ -4,7 +4,7 @@ import { getRolesPerUser } from './../services/RolesService';
 import TokenServiceInstance from './../services/TokenService/TokenService';
 import { IAuthToken } from 'services/TokenService/IAuthToken';
 import TokenFactory, { Authorization } from './../services/TokenService/TokenFactory';
-import { ITokenModel } from 'models/ITokenModel';
+import { ITokenModel } from 'models/Token/ITokenModel';
 
 export const authorize = (roles: string[] = [], scopes: string[] = TokenFactory.Permissions[Authorization]) => [
   passport.authenticate('jwt', { session: false }),

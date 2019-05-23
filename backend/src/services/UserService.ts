@@ -1,10 +1,10 @@
-import { UserModel } from './../models/UserModel';
+import { UserModel } from '../models/User/UserModel';
 import bcrypt from 'bcrypt';
 import {  Model } from 'mongoose';
 import passport = require('passport');
 import { IVerifyOptions } from 'passport-local';
 import { Request, Response, NextFunction } from 'express';
-import { IUserModel, IUserDto } from 'models/IUserModel';
+import { IUserModel, IUserDto } from 'models/User/IUserModel';
 import { IAuthToken } from './TokenService/IAuthToken';
 
 export class UserService {

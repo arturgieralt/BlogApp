@@ -1,8 +1,8 @@
 import {  Model } from 'mongoose';
-import { ITokenModel } from 'models/ITokenModel';
+import { ITokenModel } from 'models/Token/ITokenModel';
 import TokenFactory, { Authorization, VerifyAccount, TokenType } from './TokenFactory';
-import { TokenModel } from './../../models/TokenModel';
-import { IUserModel } from 'models/IUserModel';
+import { TokenModel } from '../../models/Token/TokenModel';
+import { IUserModel } from 'models/User/IUserModel';
 import { IAuthToken } from './IAuthToken';
 import { IVerifyToken } from './IVerifyToken';
 

@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { validateUsername } from './../validators/UserValidators';
+import { validateUsername } from '../../validators/UserValidators';
 import { IUserModel } from './IUserModel';
 
 export const UserSchema = new Schema({

@@ -12,36 +12,27 @@ export class FilesController {
   private requestHandler: RequestHandler
 
   constructor() {
-
-    this.storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-        cb(null, FilesController.DEST)
-      },
-      filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname )
-      }
-      })
-
-    this.requestHandler = multer({
-        storage: this.storage
-      }).single(FilesController.FILE_FIELD_NAME);
-
+    this.storage = this.initStorage();
+    this.requestHandler = this.initRequestHandler()
   }
 
   
-  // async  _remove(fileId: string) {
-  //   // validation here
-  //   return fileService
-  //     .getSingle(fileId)
-  //     .then(fileDoc => {
-  //       if (fileDoc) {
-  //         return fileStorage.removeFromStorage(fileDoc);
-  //       }
-  //       return Promise.reject('No fileId in DB');
-  //     })
-  //     .then(() => fileService.remove(fileId))
-  //     .catch(error => Promise.reject(error));
-  // }
+  private initStorage () {
+    return multer.diskStorage({
+      destination: function (req, file, cb) {
+      cb(null, FilesController.DEST)
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname )
+    }
+    })
+  }
+
+  private initRequestHandler() {
+    return multer({
+      storage: this.storage
+    }).single(FilesController.FILE_FIELD_NAME);
+  }
   
   uploadAvatar = async (req: Request, res: Response, next: NextFunction) => {
   

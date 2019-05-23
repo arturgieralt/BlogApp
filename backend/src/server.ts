@@ -5,6 +5,7 @@ import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
 import { CommentsController } from './controllers/CommentsController';
+import UserServiceInstance from './services/UserService';
 
 const PORT = 3001;
 const httpsOptions = {
@@ -17,6 +18,6 @@ export const server =  https.createServer(httpsOptions, app).listen(PORT, () => 
 });
 
 const iot = io(server);
-const CommentsStream = new CommentsController(iot);
+const CommentsStream = new CommentsController(iot, UserServiceInstance);
 
 

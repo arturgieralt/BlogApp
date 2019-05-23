@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { RoleModel } from './../models/RoleModel';
+import { RoleModel } from '../models/Role/RoleModel';
 
 export const getRoleNames = (rolesDocs: Document[] | null): string[] => rolesDocs === null
   ? []

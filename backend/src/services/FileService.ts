@@ -1,7 +1,7 @@
-import { FileModel } from './../models/FileModel';
+import { FileModel } from '../models/File/FileModel';
 import { Document } from 'mongoose';
 import mongoose from 'mongoose';
-import { IFileModel, IFileModelDto } from './../models/IFileModel';
+import { IFileModel, IFileModelDto } from '../models/File/IFileModel';
 
 export function getAll(): Promise<Document | {}> {
   return FileModel.find({}).exec();
