@@ -1,13 +1,14 @@
 import {  Model } from 'mongoose';
 import { ITokenModel } from 'models/Token/ITokenModel';
-import TokenFactory, { Authorization, VerifyAccount, TokenType } from './TokenFactory';
+import TokenFactory, { Authorization, VerifyAccount, TokenType } from '../../factories/Token/TokenFactory';
 import { TokenModel } from '../../models/Token/TokenModel';
 import { IUserModel } from 'models/User/IUserModel';
-import { IAuthToken } from './IAuthToken';
-import { IVerifyToken } from './IVerifyToken';
+import { IAuthToken } from '../../factories/Token/IAuthToken';
+import { IVerifyToken } from '../../factories/Token/IVerifyToken';
+import { ITokenFactory } from 'factories/Token/ITokenFactory';
 
 export class TokenService {
-  constructor(private TokenRepository: Model<ITokenModel, {}>, private TokenFactoryInstance: TokenFactory) {
+  constructor(private TokenRepository: Model<ITokenModel, {}>, private tokenFactory: ITokenFactory) {
   }
 
   add = (body: any): Promise<ITokenModel> => {
@@ -43,7 +44,7 @@ export class TokenService {
   }
 
   verifyToken = (token: string, tokenType:TokenType ): Promise<IAuthToken | IVerifyToken> => {
-    return this.TokenFactoryInstance.verifyToken(token, tokenType);
+    return this.tokenFactory.verifyToken(token, tokenType);
   }
   
   createVerificationToken =  (id: string): Promise<string> => {
@@ -56,7 +57,7 @@ export class TokenService {
             isActive: true
           });
         
-        resolve(this.TokenFactoryInstance
+        resolve(this.tokenFactory
           .getVerificationToken(id, 
               tokenEntry.id));
       }
@@ -78,7 +79,7 @@ export class TokenService {
             isActive: true
           });
         
-        resolve(this.TokenFactoryInstance
+        resolve(this.tokenFactory
           .getAuthToken(user, 
               userRoles, 
               tokenEntry.id));
@@ -90,6 +91,3 @@ export class TokenService {
     })
   }
 }
-
-const TokenServiceInstance = new TokenService(TokenModel, new TokenFactory());
-export default TokenServiceInstance;
