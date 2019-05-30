@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { IArticleService } from '../../services/Article/IArticleService';
 import { ICommentService } from '../../services/Comment/ICommentService';
 import { IArticlesController } from './IArticlesController';
+import { IAuthToken } from 'factories/Token/IAuthToken';
 
 
 export default class ArticlesController implements IArticlesController{
@@ -20,6 +21,18 @@ export default class ArticlesController implements IArticlesController{
      }
 
   }
+
+  getAllByTags = async (req: Request, res: Response,  next: NextFunction) => {
+
+    try {
+    const { tags, containsAll } = req.body;
+     const articles = await this.ArticleService.getAllByTags(tags, containsAll);
+     res.status(200).json(articles);
+    }catch(e){
+     res.status(400).json({ e });
+    }
+
+ }
   
    getSingle = async (req: Request, res: Response,  next: NextFunction) => {
 
@@ -48,12 +61,25 @@ export default class ArticlesController implements IArticlesController{
      }
     
   }
+
+
+  getTagsCounted = async (req: Request, res: Response,  next: NextFunction) => {
+     
+    try {
+      const tags = await this.ArticleService.getTagsCounted();
+      res.status(200).send(tags);
+     }catch(e){
+      res.status(400).json({ e });
+     }
+    
+  }
   
    add = async (req: Request, res: Response,  next: NextFunction) => {
 
     try {
       const { body } = req;
-      await this.ArticleService.add(body);
+      const { user }: {user?: IAuthToken} = req;
+      await this.ArticleService.add(body, user!.id);
       res.status(200).send();
      }catch(e){
       res.status(400).json({ e });

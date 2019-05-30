@@ -17,12 +17,21 @@ export class Routes {
     app
       .route('/articles')
       .get(ArticlesController.getAll)
+      .post(ArticlesController.getAllByTags);
+
+      app
+      .route('/articles/add')
       .post(AuthorizeMiddleware.authorize(['Admin']), ArticlesController.add);
+
     app
       .route('/articles/:articleId')
       .get(ArticlesController.getSingle)
       .put(AuthorizeMiddleware.authorize(['Admin']), ArticlesController.update)
       .delete(AuthorizeMiddleware.authorize(['Admin']), ArticlesController.remove);
+
+      app
+      .route('/tags')
+      .get(ArticlesController.getTagsCounted)
 
     app
       .route('/users')
