@@ -11,8 +11,7 @@ export default class ArticleEditor extends React.Component {
     summary: "",
     content: "",
     tags: "",
-    commentsAllowed: true,
-    author: "5c51ed63aaa04a70f2531700"
+    commentsAllowed: true
   };
 
   handleChange(event) {
