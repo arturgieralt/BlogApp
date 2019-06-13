@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document } from 'mongoose';
 
 export interface ICommentModel extends Document {
     content: string;

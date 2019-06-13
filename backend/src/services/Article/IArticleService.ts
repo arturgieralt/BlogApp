@@ -1,11 +1,11 @@
-import { IArticleModel } from "models/Article/IArticleModel";
+import { IArticleModel } from 'models/Article/IArticleModel';
 
 export interface IArticleService {
     getAll: () => Promise<IArticleModel | {}>;
-    getSingle: (id: string) => Promise<Object | null>;
-    update:(id: string, body: any) => Promise<IArticleModel | null>;
+    getSingle: (id: string) => Promise<Record<string, any> | null>;
+    update: (id: string, body: any) => Promise<IArticleModel | null>;
     add: (body: any, authorId: string) => Promise<IArticleModel>;
     remove: (id: string) => Promise<any>;
-    getTagsCounted: () => Object;
+    getTagsCounted: () => Record<string, any>;
     getAllByTags: (tags: string[], containsAll: boolean) => Promise<IArticleModel | {}>;
 }

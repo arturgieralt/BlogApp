@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document } from 'mongoose';
 
 export interface IFileModelDto {
     originalname: string;
@@ -11,5 +11,4 @@ export interface IFileModelDto {
     uploadBy: string;
 }
 
-export interface IFileModel extends IFileModelDto, Document{
-}
+export interface IFileModel extends IFileModelDto, Document {}

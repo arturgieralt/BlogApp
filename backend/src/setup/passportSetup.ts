@@ -7,23 +7,23 @@ import { IVerifyUserMiddleware } from '../middlewares/VerifyUser/IVerifyUser';
 const secret = process.env.SECRET_JWT;
 
 export const initPassport = (VerifyUserMiddleware: IVerifyUserMiddleware) => {
-  passport.use(
-    new StrategyLocal(
-      {
-        usernameField: 'name',
-        passwordField: 'password'
-      },
-      VerifyUserMiddleware.verifyUser
-    )
-  );
+    passport.use(
+        new StrategyLocal(
+            {
+                usernameField: 'name',
+                passwordField: 'password'
+            },
+            VerifyUserMiddleware.verifyUser
+        )
+    );
 
-  passport.use(
-    new StrategyJWT(
-      {
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: secret
-      },
-      validateToken
-    )
-  );
+    passport.use(
+        new StrategyJWT(
+            {
+                jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+                secretOrKey: secret
+            },
+            validateToken
+        )
+    );
 };

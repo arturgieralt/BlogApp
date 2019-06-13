@@ -6,4 +6,4 @@ export default createTransport({
         user: process.env.MAIL,
         pass: process.env.MAIL_PASS
     }
-})
+});

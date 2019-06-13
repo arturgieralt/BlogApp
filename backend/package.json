@@ -12,7 +12,11 @@
         "prod": "npm run build && npm run start",
         "prettier:base": "prettier --parser typescript --single-quote",
         "prettier:check": "npm run prettier:base -- --list-different \"src/**/*.{ts,tsx}\"",
-        "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\""
+        "prettier:write": "npm run prettier:base -- --write \"src/**/*.{ts,tsx}\"",
+        "lint": "eslint \"src/**/*.{ts,tsx}\"",
+        "lint:fix": "eslint --fix \"src/**/*.{ts,tsx}\""
+
+
     },
     "author": "",
     "license": "ISC",
@@ -29,8 +33,13 @@
         "@types/passport-jwt": "^3.0.1",
         "@types/passport-local": "^1.0.33",
         "@types/socket.io": "^2.1.2",
+        "@typescript-eslint/eslint-plugin": "^1.10.2",
+        "@typescript-eslint/parser": "^1.10.2",
+        "eslint": "^5.16.0",
+        "eslint-config-prettier": "^4.3.0",
+        "eslint-plugin-prettier": "^3.1.0",
         "nodemon": "^1.18.9",
-        "prettier": "^1.16.3",
+        "prettier": "^1.18.2",
         "ts-node": "^7.0.1",
         "tslint": "^5.12.1",
         "tslint-config-airbnb": "^5.11.1",

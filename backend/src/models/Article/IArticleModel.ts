@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document } from 'mongoose';
 
 export interface IArticleModel extends Document {
     title: string;
@@ -7,7 +7,7 @@ export interface IArticleModel extends Document {
     author: string;
     tags: string[];
     commentsAllowed: boolean;
-    comments:string[];
+    comments: string[];
     created_date: string;
     last_updated: string;
 }

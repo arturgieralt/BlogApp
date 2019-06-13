@@ -1,3 +1,3 @@
 export interface ICaptchaService {
-    verifyToken :  (token: string) => Promise<boolean> 
+    verifyToken: (token: string) => Promise<boolean>;
 }
