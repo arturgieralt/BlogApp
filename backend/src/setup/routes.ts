@@ -19,22 +19,45 @@ export class Routes {
             .get(ArticlesController.getAll)
             .post(ArticlesController.getAllByTags);
 
-        app.route('/articles/add').post(AuthorizeMiddleware.authorize(['Admin']), ArticlesController.add);
+        app.route('/articles/filter').post(ArticlesController.getAllByQuery);
+
+        app.route('/articles/add').post(
+            AuthorizeMiddleware.authorize(['Admin']),
+            ArticlesController.add
+        );
 
         app.route('/articles/:articleId')
             .get(ArticlesController.getSingle)
-            .put(AuthorizeMiddleware.authorize(['Admin']), ArticlesController.update)
-            .delete(AuthorizeMiddleware.authorize(['Admin']), ArticlesController.remove);
+            .put(
+                AuthorizeMiddleware.authorize(['Admin']),
+                ArticlesController.update
+            )
+            .delete(
+                AuthorizeMiddleware.authorize(['Admin']),
+                ArticlesController.remove
+            );
 
         app.route('/tags').get(ArticlesController.getTagsCounted);
 
-        app.route('/users').get(AuthorizeMiddleware.authorize(), UsersController.getAll);
+        app.route('/users').get(
+            AuthorizeMiddleware.authorize(),
+            UsersController.getAll
+        );
 
-        app.route('/user/register').post(...BaseValidator.get('/user/register'), UsersController.register);
+        app.route('/user/register').post(
+            ...BaseValidator.get('/user/register'),
+            UsersController.register
+        );
 
-        app.route('/user/login').post(...BaseValidator.get('/user/login'), UsersController.login);
+        app.route('/user/login').post(
+            ...BaseValidator.get('/user/login'),
+            UsersController.login
+        );
 
-        app.route('/user/logout').post(AuthorizeMiddleware.authorize(), UsersController.logout);
+        app.route('/user/logout').post(
+            AuthorizeMiddleware.authorize(),
+            UsersController.logout
+        );
 
         app.route('/user/verify').post(
             ...BaseValidator.get('/user/verify'),
@@ -42,9 +65,15 @@ export class Routes {
             UsersController.verify
         );
 
-        app.route('/user/remove').post(AuthorizeMiddleware.authorize(), UsersController.remove);
+        app.route('/user/remove').post(
+            AuthorizeMiddleware.authorize(),
+            UsersController.remove
+        );
 
-        app.route('/user/profile').get(AuthorizeMiddleware.authorize(), UsersController.getMyProfile);
+        app.route('/user/profile').get(
+            AuthorizeMiddleware.authorize(),
+            UsersController.getMyProfile
+        );
 
         app.route('/captcha/verify').post(CaptchaController.verifyToken);
 
@@ -53,6 +82,9 @@ export class Routes {
             .put(AuthorizeMiddleware.authorize(), UsersController.update)
             .delete(AuthorizeMiddleware.authorize(), UsersController.remove);
 
-        app.route('/avatar/upload').post(AuthorizeMiddleware.authorize(), FilesController.uploadAvatar);
+        app.route('/avatar/upload').post(
+            AuthorizeMiddleware.authorize(),
+            FilesController.uploadAvatar
+        );
     }
 }

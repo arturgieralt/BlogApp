@@ -4,7 +4,9 @@ import { IRoleService } from './IRoleService';
 
 export default class RoleService implements IRoleService {
     public static getRoleNames = (rolesDocs: Document[] | null): string[] =>
-        rolesDocs === null ? [] : rolesDocs.map((roleDoc: Document) => roleDoc.toObject().roleName);
+        rolesDocs === null
+            ? []
+            : rolesDocs.map((roleDoc: Document) => roleDoc.toObject().roleName);
 
     public constructor(private RoleModel: Model<IRoleModel, {}>) {}
 

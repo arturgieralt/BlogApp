@@ -19,4 +19,8 @@ export const ArticleSchema = new Schema({
     }
 });
 
-export const ArticleModel = model<IArticleModel>('Article', ArticleSchema, 'articles');
+export const ArticleModel = model<IArticleModel>(
+    'Article',
+    ArticleSchema,
+    'articles'
+);

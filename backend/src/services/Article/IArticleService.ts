@@ -7,5 +7,9 @@ export interface IArticleService {
     add: (body: any, authorId: string) => Promise<IArticleModel>;
     remove: (id: string) => Promise<any>;
     getTagsCounted: () => Record<string, any>;
-    getAllByTags: (tags: string[], containsAll: boolean) => Promise<IArticleModel | {}>;
+    getAllByTags: (
+        tags: string[],
+        containsAll: boolean
+    ) => Promise<IArticleModel | {}>;
+    getAllByQuery: (query: string) => Promise<IArticleModel | {}>;
 }

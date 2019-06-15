@@ -3,7 +3,11 @@ import { validationResult } from 'express-validator/check';
 import { UserValidators } from './UserValidators';
 
 export class BaseValidator {
-    private static validatorHandler(req: Request, res: Response, next: NextFunction) {
+    private static validatorHandler(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array() });
@@ -25,6 +29,9 @@ export class BaseValidator {
     }
 
     public static get(route: string) {
-        return [BaseValidator.getValidators(route), BaseValidator.validatorHandler];
+        return [
+            BaseValidator.getValidators(route),
+            BaseValidator.validatorHandler
+        ];
     }
 }

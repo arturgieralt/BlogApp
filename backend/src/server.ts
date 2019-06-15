@@ -19,4 +19,9 @@ export const server = https.createServer(httpsOptions, app).listen(PORT, () => {
 
 export const iot = io(server);
 
-export const commentsController = new CommentsController(iot, userService, tokenService, commentService);
+export const commentsController = new CommentsController(
+    iot,
+    userService,
+    tokenService,
+    commentService
+);

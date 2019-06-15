@@ -15,7 +15,10 @@ export default class ArticleService implements IArticleService {
             .exec();
     };
 
-    public getAllByTags = (tags: string[], containsAll: boolean): Promise<IArticleModel | {}> => {
+    public getAllByTags = (
+        tags: string[],
+        containsAll: boolean
+    ): Promise<IArticleModel | {}> => {
         const query = containsAll
             ? {
                   tags: { $all: tags }
@@ -25,6 +28,22 @@ export default class ArticleService implements IArticleService {
               };
 
         return this.ArticleModel.find(query)
+            .select('title summary tags created_date')
+            .populate({
+                path: 'author',
+                select: 'name'
+            })
+            .exec();
+    };
+
+    public getAllByQuery = (query: string): Promise<IArticleModel | {}> => {
+        return this.ArticleModel.find({
+            $or: [
+                { title: { $regex: query, $options: 'i' } },
+                { summary: { $regex: query, $options: 'i' } },
+                { content: { $regex: query, $options: 'i' } }
+            ]
+        })
             .select('title summary tags created_date')
             .populate({
                 path: 'author',
@@ -65,7 +84,9 @@ export default class ArticleService implements IArticleService {
     };
 
     public update = (id: string, body: any): Promise<IArticleModel | null> => {
-        return this.ArticleModel.findOneAndUpdate({ _id: id }, body, { new: true }).exec();
+        return this.ArticleModel.findOneAndUpdate({ _id: id }, body, {
+            new: true
+        }).exec();
     };
 
     public add = (body: any, authorId: string): Promise<IArticleModel> => {

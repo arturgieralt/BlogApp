@@ -5,6 +5,10 @@ export interface IVerifyUserMiddleware {
     verifyUser: (
         name: string,
         password: string,
-        done: (error: any, user?: IUserModel | boolean, options?: IVerifyOptions) => void
+        done: (
+            error: any,
+            user?: IUserModel | boolean,
+            options?: IVerifyOptions
+        ) => void
     ) => void;
 }

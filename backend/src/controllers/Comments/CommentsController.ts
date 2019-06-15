@@ -19,9 +19,14 @@ export default class CommentsController implements ICommentsController {
             .on('connection', this.onConnection);
     }
 
-    private verifyToken = (socket: ICommentSocket, next: Function) => async (err: any, decoded: any) => {
+    private verifyToken = (socket: ICommentSocket, next: Function) => async (
+        err: any,
+        decoded: any
+    ) => {
         if (!err) {
-            const tokenEntry = await this.TokenService.getSingle(decoded.tokenId);
+            const tokenEntry = await this.TokenService.getSingle(
+                decoded.tokenId
+            );
 
             if (tokenEntry && tokenEntry.isActive) {
                 socket.decodedToken = { ...decoded };
@@ -36,7 +41,10 @@ export default class CommentsController implements ICommentsController {
 
     private verifyUser = (socket: Socket, next: Function) => {
         const commentSocket = socket as ICommentSocket;
-        if (commentSocket.handshake.query && commentSocket.handshake.query.token) {
+        if (
+            commentSocket.handshake.query &&
+            commentSocket.handshake.query.token
+        ) {
             jwt.verify(
                 commentSocket.handshake.query.token,
                 process.env.SECRET_JWT as string,
@@ -47,7 +55,10 @@ export default class CommentsController implements ICommentsController {
         }
     };
 
-    private onMessage = ({ articleId: roomID, decodedToken }: ICommentSocket) => async (message: string) => {
+    private onMessage = ({
+        articleId: roomID,
+        decodedToken
+    }: ICommentSocket) => async (message: string) => {
         const comment = {
             content: message,
             author: decodedToken.id,

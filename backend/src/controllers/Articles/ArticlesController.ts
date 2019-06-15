@@ -5,7 +5,10 @@ import { IArticlesController } from './IArticlesController';
 import { IAuthToken } from 'factories/Token/IAuthToken';
 
 export default class ArticlesController implements IArticlesController {
-    public constructor(private ArticleService: IArticleService, private CommentService: ICommentService) {}
+    public constructor(
+        private ArticleService: IArticleService,
+        private CommentService: ICommentService
+    ) {}
 
     public getAll = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -16,21 +19,48 @@ export default class ArticlesController implements IArticlesController {
         }
     };
 
-    public getAllByTags = async (req: Request, res: Response, next: NextFunction) => {
+    public getAllByTags = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const { tags, containsAll } = req.body;
-            const articles = await this.ArticleService.getAllByTags(tags, containsAll);
+            const articles = await this.ArticleService.getAllByTags(
+                tags,
+                containsAll
+            );
             res.status(200).json(articles);
         } catch (e) {
             res.status(400).json({ e });
         }
     };
 
-    public getSingle = async (req: Request, res: Response, next: NextFunction) => {
+    public getAllByQuery = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
+        try {
+            const { query } = req.body;
+            const articles = await this.ArticleService.getAllByQuery(query);
+            res.status(200).json(articles);
+        } catch (e) {
+            res.status(400).json({ e });
+        }
+    };
+
+    public getSingle = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const { articleId } = req.params;
             const article = await this.ArticleService.getSingle(articleId);
-            const comments = await this.CommentService.getAllForArticle(articleId);
+            const comments = await this.CommentService.getAllForArticle(
+                articleId
+            );
             res.status(200).json({
                 ...article,
                 comments
@@ -53,7 +83,11 @@ export default class ArticlesController implements IArticlesController {
         }
     };
 
-    public getTagsCounted = async (req: Request, res: Response, next: NextFunction) => {
+    public getTagsCounted = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const tags = await this.ArticleService.getTagsCounted();
             res.status(200).send(tags);

@@ -11,7 +11,10 @@ export default class FilesController implements IFilesController {
     private storage: StorageEngine;
     private requestHandler: RequestHandler;
 
-    public constructor(private UserService: IUserService, private FileService: IFileService) {
+    public constructor(
+        private UserService: IUserService,
+        private FileService: IFileService
+    ) {
         this.storage = this.initStorage();
         this.requestHandler = this.initRequestHandler();
     }
@@ -33,13 +36,25 @@ export default class FilesController implements IFilesController {
         }).single(FilesController.FILE_FIELD_NAME);
     }
 
-    public uploadAvatar = async (req: Request, res: Response, next: NextFunction) => {
+    public uploadAvatar = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         this.requestHandler(req, res, async err => {
             if (err) {
                 return res.status(500).json(err);
             }
             try {
-                const { originalname, encoding, mimetype, size, destination, filename, path } = req.file;
+                const {
+                    originalname,
+                    encoding,
+                    mimetype,
+                    size,
+                    destination,
+                    filename,
+                    path
+                } = req.file;
                 const { id } = req.user;
 
                 await this.FileService.add({

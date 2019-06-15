@@ -25,7 +25,9 @@ export default class CommentService implements ICommentService {
     }
 
     public update(id: string, body: any): Promise<ICommentModel | null> {
-        return this.CommentModel.findOneAndUpdate({ _id: id }, body, { new: true }).exec();
+        return this.CommentModel.findOneAndUpdate({ _id: id }, body, {
+            new: true
+        }).exec();
     }
 
     public add(body: any): Promise<ICommentModel> {

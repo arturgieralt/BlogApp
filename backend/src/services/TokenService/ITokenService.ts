@@ -11,8 +11,13 @@ export interface ITokenService {
     getAll: () => Promise<ITokenModel | {}>;
     getAllForUser: (id: string) => Promise<ITokenModel[]>;
     getSingle: (id: string) => Promise<ITokenModel>;
-    remove: (id: string) => Promise<ITokenModel>;
-    verifyToken: (token: string, tokenType: TokenType) => Promise<IAuthToken | IVerifyToken>;
+    remove: (
+        id: string
+    ) => Promise<{ ok?: number | undefined; n?: number | undefined }>;
+    verifyToken: (
+        token: string,
+        tokenType: TokenType
+    ) => Promise<IAuthToken | IVerifyToken>;
     createVerificationToken: (id: string) => Promise<string>;
     createToken: (user: IUserModel, userRoles: string[]) => Promise<any>;
 }

@@ -32,9 +32,19 @@ export const captchaService = new CaptchaService();
 export const fileSerivce = new FileService(FileModel);
 
 export const verifyUserMiddleware = new VerifyUserMiddleware(userService);
-export const authorizeMiddleware = new AuthorizeMiddleware(roleService, tokenService);
+export const authorizeMiddleware = new AuthorizeMiddleware(
+    roleService,
+    tokenService
+);
 
 export const captchaController = new CaptchaController(captchaService);
-export const articlesController = new ArticlesController(articleService, commentService);
-export const usersController = new UsersController(userService, tokenService, roleService);
+export const articlesController = new ArticlesController(
+    articleService,
+    commentService
+);
+export const usersController = new UsersController(
+    userService,
+    tokenService,
+    roleService
+);
 export const filesController = new FilesController(userService, fileSerivce);
