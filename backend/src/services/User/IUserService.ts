@@ -10,6 +10,10 @@ export interface IUserService {
     verify: (id: string) => Promise<IUserModel>;
     add: (name: string, password: string, email: string) => Promise<IUserModel>;
     remove: (id: string) => Promise<any>;
-    authenticate: (req: Request, res: Response, next: NextFunction) => Promise<any>;
+    authenticate: (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => Promise<any>;
     login: (req: Request, payload: any) => Promise<any>;
 }

@@ -35,18 +35,27 @@ export default class UserService implements IUserService {
     };
 
     public update = (id: string, body: any): Promise<IUserModel> => {
-        return this.UserRepository.findOneAndUpdate({ _id: id }, body, { new: true })
+        return this.UserRepository.findOneAndUpdate({ _id: id }, body, {
+            new: true
+        })
             .lean()
             .exec();
     };
 
     public verify = (id: string): Promise<IUserModel> => {
-        return this.UserRepository.findOneAndUpdate({ _id: id }, { isActive: true })
+        return this.UserRepository.findOneAndUpdate(
+            { _id: id },
+            { isActive: true }
+        )
             .lean()
             .exec();
     };
 
-    public add = async (name: string, password: string, email: string): Promise<IUserModel> => {
+    public add = async (
+        name: string,
+        password: string,
+        email: string
+    ): Promise<IUserModel> => {
         return new Promise(async (resolve, reject) => {
             const rounds = Number(process.env.PASS_ROUNDS);
 
@@ -69,12 +78,20 @@ export default class UserService implements IUserService {
         return this.UserRepository.remove({ _id: id }).exec();
     };
 
-    public authenticate = (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    public authenticate = (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<any> => {
         const authPromise = new Promise((resolve, reject) => {
             passport.authenticate(
                 'local',
                 { session: false },
-                async (error: any, user: IAuthToken, options?: IVerifyOptions) => {
+                async (
+                    error: any,
+                    user: IAuthToken,
+                    options?: IVerifyOptions
+                ) => {
                     if (error || !user) {
                         reject({ ...error, ...options });
                     }

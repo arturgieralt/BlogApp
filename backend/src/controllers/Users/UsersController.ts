@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import MailService from '../../mailer/MailService';
-import { welcomeMail, accountActivated, accountRemoved } from '../../mailer/templates';
+import {
+    welcomeMail,
+    accountActivated,
+    accountRemoved
+} from '../../mailer/templates';
 import { IUserModel } from './../../models/User/IUserModel';
 import { IVerifyToken } from '../../factories/Token/IVerifyToken';
 import { VerifyAccount } from '../../factories/Token/TokenFactory';
@@ -26,7 +30,11 @@ export default class UserController implements IUsersController {
         }
     };
 
-    public getSingle = async (req: Request, res: Response, next: NextFunction) => {
+    public getSingle = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const result = await this.UserService.getSingle(req.body.id);
             return res.json(result || { message: 'OK' });
@@ -47,7 +55,11 @@ export default class UserController implements IUsersController {
         }
     };
 
-    public getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
+    public getMyProfile = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         try {
             const { user }: { user?: IAuthToken } = req;
             const userData = await this.UserService.getUserProfile(user!.id);
@@ -57,11 +69,17 @@ export default class UserController implements IUsersController {
         }
     };
 
-    public register = async (req: Request, res: Response, next: NextFunction) => {
+    public register = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) => {
         const { name, password, email } = req.body;
         try {
             const user = await this.UserService.add(name, password, email);
-            const token = await this.TokenService.createVerificationToken(user._id);
+            const token = await this.TokenService.createVerificationToken(
+                user._id
+            );
             MailService.sendMail(welcomeMail(user, token));
             res.status(200).send();
         } catch (e) {
@@ -73,7 +91,10 @@ export default class UserController implements IUsersController {
         const { verifyToken: token } = req.body;
 
         try {
-            const decoded: IVerifyToken = await this.TokenService.verifyToken(token, VerifyAccount);
+            const decoded: IVerifyToken = await this.TokenService.verifyToken(
+                token,
+                VerifyAccount
+            );
             const user: IUserModel = await this.UserService.verify(decoded.id);
             await this.TokenService.blacklist(decoded.tokenId);
             MailService.sendMail(accountActivated(user));
@@ -85,9 +106,16 @@ export default class UserController implements IUsersController {
 
     public login = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const user: IUserModel = await this.UserService.authenticate(req, res, next);
+            const user: IUserModel = await this.UserService.authenticate(
+                req,
+                res,
+                next
+            );
             const roles = await this.RoleService.getRolesPerUser(user.id);
-            const { token, payload } = await this.TokenService.createToken(user, roles);
+            const { token, payload } = await this.TokenService.createToken(
+                user,
+                roles
+            );
             const loginSuccess = await this.UserService.login(req, payload);
 
             if (loginSuccess) {

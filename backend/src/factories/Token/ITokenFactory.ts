@@ -3,7 +3,11 @@ import { IUserModel } from 'models/User/IUserModel';
 import { TokenType } from './TokenFactory';
 
 export interface ITokenFactory {
-    getAuthToken: (user: IUserModel, userRoles: string[], tokenId: string) => { payload: IAuthToken; token: string };
+    getAuthToken: (
+        user: IUserModel,
+        userRoles: string[],
+        tokenId: string
+    ) => { payload: IAuthToken; token: string };
 
     getVerificationToken: (id: string, tokenId: string) => string;
 

@@ -58,7 +58,11 @@ export default class TokenFactory implements ITokenFactory {
         this.secret = getSecret();
     }
 
-    public getAuthToken(user: IUserModel, userRoles: string[], tokenId: string) {
+    public getAuthToken(
+        user: IUserModel,
+        userRoles: string[],
+        tokenId: string
+    ) {
         const { id } = user;
         const payload: IAuthToken = {
             id,
@@ -90,22 +94,30 @@ export default class TokenFactory implements ITokenFactory {
 
     public decodeToken(token: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            jwt.verify(token, this.secret, TokenFactory.TokenOptionsVerify, async function(err: any, decoded: any) {
-                if (!err) {
-                    resolve(decoded);
-                } else {
-                    reject(err);
+            jwt.verify(
+                token,
+                this.secret,
+                TokenFactory.TokenOptionsVerify,
+                async function(err: any, decoded: any) {
+                    if (!err) {
+                        resolve(decoded);
+                    } else {
+                        reject(err);
+                    }
                 }
-            });
+            );
         });
     }
 
     public verifyToken(token: string, tokenType: TokenType): Promise<any> {
         return new Promise(async (resolve, reject) => {
             try {
-                const decoded: IAuthToken | IVerifyToken = await this.decodeToken(token);
+                const decoded:
+                    | IAuthToken
+                    | IVerifyToken = await this.decodeToken(token);
                 const doScopesMatch =
-                    JSON.stringify(decoded.scopes) === JSON.stringify(TokenFactory.Permissions[tokenType]);
+                    JSON.stringify(decoded.scopes) ===
+                    JSON.stringify(TokenFactory.Permissions[tokenType]);
                 if (doScopesMatch) {
                     resolve(decoded);
                 } else {

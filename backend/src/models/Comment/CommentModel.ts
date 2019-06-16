@@ -12,4 +12,8 @@ export const CommentSchema = new Schema({
     article: { type: Schema.Types.ObjectId, ref: 'Article', required: true }
 });
 
-export const CommentModel = model<ICommentModel>('Comment', CommentSchema, 'comments');
+export const CommentModel = model<ICommentModel>(
+    'Comment',
+    CommentSchema,
+    'comments'
+);
