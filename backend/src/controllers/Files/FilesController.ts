@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import multer, { StorageEngine } from 'multer';
+import { StorageEngine } from 'multer';
 import { IUserService } from '../../services/User/IUserService';
 import { IFileService } from '../../services/File/IFileService';
 import { IFilesController } from './IFilesController';
+import { IMulter } from 'types/externals';
 
 export default class FilesController implements IFilesController {
     private static FILE_FIELD_NAME = 'file';
@@ -13,14 +14,15 @@ export default class FilesController implements IFilesController {
 
     public constructor(
         private UserService: IUserService,
-        private FileService: IFileService
+        private FileService: IFileService,
+        private multer: IMulter
     ) {
         this.storage = this.initStorage();
         this.requestHandler = this.initRequestHandler();
     }
 
     private initStorage() {
-        return multer.diskStorage({
+        return this.multer.diskStorage({
             destination: function(req, file, cb) {
                 cb(null, FilesController.DEST);
             },
@@ -31,7 +33,7 @@ export default class FilesController implements IFilesController {
     }
 
     private initRequestHandler() {
-        return multer({
+        return this.multer({
             storage: this.storage
         }).single(FilesController.FILE_FIELD_NAME);
     }

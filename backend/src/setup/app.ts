@@ -12,13 +12,14 @@ import {
     filesController,
     captchaController,
     authorizeMiddleware,
-    verifyUserMiddleware
+    verifyUserMiddleware,
+    envProvider
 } from './container';
 
 class App {
     public app: express.Application;
     public routing: Routes = new Routes();
-    private mongoUrl: string = process.env.DB_CONNECTION_STRING as string;
+    private mongoUrl: string = envProvider.get('DB_CONNECTION_STRING');
 
     public constructor() {
         this.app = express();
@@ -44,7 +45,7 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors(corsOptions));
         this.app.use(passport.initialize());
-        initPassport(verifyUserMiddleware);
+        initPassport(verifyUserMiddleware, envProvider);
         this.app.use(
             '/avatars',
             express.static(path.dirname(__dirname) + '/uploads')
@@ -53,7 +54,12 @@ class App {
 
     private mongoSetup(): void {
         mongoose.Promise = global.Promise;
-        mongoose.connect(this.mongoUrl, { useNewUrlParser: true });
+        mongoose.connect(this.mongoUrl, { useNewUrlParser: true }, e => {
+            if (e) {
+                console.log('ERROR' + e);
+            }
+            console.log('Connected to Mongo');
+        });
     }
 }
 

@@ -5,7 +5,13 @@ import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
 import CommentsController from './controllers/Comments/CommentsController';
-import { userService, tokenService, commentService } from './setup/container';
+import {
+    userService,
+    tokenService,
+    commentService,
+    envProvider,
+    jwtModule
+} from './setup/container';
 
 const PORT = 3001;
 const httpsOptions = {
@@ -23,5 +29,7 @@ export const commentsController = new CommentsController(
     iot,
     userService,
     tokenService,
-    commentService
+    commentService,
+    envProvider,
+    jwtModule
 );

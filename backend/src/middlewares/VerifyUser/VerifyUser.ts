@@ -1,11 +1,14 @@
-import bcrypt from 'bcrypt';
 import { IVerifyOptions } from 'passport-local';
 import { IUserModel } from 'models/User/IUserModel';
 import { IUserService } from 'services/User/IUserService';
 import { IVerifyUserMiddleware } from './IVerifyUser';
+import { IEncryptor } from 'types/externals';
 
 export default class VerifyUserMiddleware implements IVerifyUserMiddleware {
-    public constructor(private UserService: IUserService) {}
+    public constructor(
+        private UserService: IUserService,
+        private bcrypt: IEncryptor
+    ) {}
 
     public verifyUser = async (
         name: string,
@@ -20,7 +23,7 @@ export default class VerifyUserMiddleware implements IVerifyUserMiddleware {
             const user = await this.UserService.getSingleByName(name);
             if (user) {
                 const storedPass = user.passwordHash;
-                const doesPasswordMatch = await bcrypt.compare(
+                const doesPasswordMatch = await this.bcrypt.compare(
                     password,
                     storedPass
                 );

@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import MailService from '../../mailer/MailService';
 import {
     welcomeMail,
     accountActivated,
     accountRemoved
-} from '../../mailer/templates';
+} from '../../builders/MailServiceBuilder/templates';
 import { IUserModel } from './../../models/User/IUserModel';
 import { IVerifyToken } from '../../factories/Token/IVerifyToken';
 import { VerifyAccount } from '../../factories/Token/TokenFactory';
@@ -13,12 +12,14 @@ import { IUserService } from '../../services/User/IUserService';
 import { ITokenService } from '../../services/TokenService/ITokenService';
 import { IRoleService } from '../../services/Role/IRoleService';
 import { IUsersController } from './IUsersController';
+import { Transporter } from 'nodemailer';
 
 export default class UserController implements IUsersController {
     public constructor(
         private UserService: IUserService,
         private TokenService: ITokenService,
-        private RoleService: IRoleService
+        private RoleService: IRoleService,
+        private MailService: Transporter
     ) {}
 
     public getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -80,7 +81,7 @@ export default class UserController implements IUsersController {
             const token = await this.TokenService.createVerificationToken(
                 user._id
             );
-            MailService.sendMail(welcomeMail(user, token));
+            this.MailService.sendMail(welcomeMail(user, token));
             res.status(200).send();
         } catch (e) {
             res.status(400).send({ ...e });
@@ -97,7 +98,7 @@ export default class UserController implements IUsersController {
             );
             const user: IUserModel = await this.UserService.verify(decoded.id);
             await this.TokenService.blacklist(decoded.tokenId);
-            MailService.sendMail(accountActivated(user));
+            this.MailService.sendMail(accountActivated(user));
             res.status(200).send();
         } catch (e) {
             res.status(400).send(e);
@@ -145,7 +146,7 @@ export default class UserController implements IUsersController {
             const { user }: { user?: IAuthToken } = req;
             await this.TokenService.blacklistAllForUser(user!.id);
             await this.UserService.remove(user!.id);
-            MailService.sendMail(accountRemoved(user));
+            this.MailService.sendMail(accountRemoved(user));
             req.logout();
             res.status(200).send();
         } catch (e) {

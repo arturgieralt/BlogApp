@@ -3,10 +3,12 @@ import { Strategy as StrategyLocal } from 'passport-local';
 import { ExtractJwt, Strategy as StrategyJWT } from 'passport-jwt';
 import { validateToken } from '../middlewares/ValidateToken';
 import { IVerifyUserMiddleware } from '../middlewares/VerifyUser/IVerifyUser';
+import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
 
-const secret = process.env.SECRET_JWT;
-
-export const initPassport = (VerifyUserMiddleware: IVerifyUserMiddleware) => {
+export const initPassport = (
+    VerifyUserMiddleware: IVerifyUserMiddleware,
+    EnvProvider: IEnvProvider
+) => {
     passport.use(
         new StrategyLocal(
             {
@@ -21,7 +23,7 @@ export const initPassport = (VerifyUserMiddleware: IVerifyUserMiddleware) => {
         new StrategyJWT(
             {
                 jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-                secretOrKey: secret
+                secretOrKey: EnvProvider.get('SECRET_JWT')
             },
             validateToken
         )
