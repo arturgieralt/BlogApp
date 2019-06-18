@@ -1,4 +1,6 @@
 import express from 'express';
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
 import * as bodyParser from 'body-parser';
 import { Routes } from './routes';
 import mongoose from 'mongoose';
@@ -48,17 +50,27 @@ class App {
         initPassport(verifyUserMiddleware, envProvider);
         this.app.use(
             '/avatars',
-            express.static(path.dirname(__dirname) + '/uploads')
+            express.static(path.dirname(__dirname) + '/backend/uploads') /// change this!!
         );
     }
 
-    private mongoSetup(): void {
+    private async mongoSetup(): Promise<void> {
         mongoose.Promise = global.Promise;
-        mongoose.connect(this.mongoUrl, { useNewUrlParser: true }, e => {
+
+        const mode = envProvider.get('DB_MODE');
+        let url;
+        if (mode === 'INMEMORY') {
+            const mongod = new MongoMemoryServer();
+            url = await mongod.getConnectionString();
+        } else {
+            url = this.mongoUrl;
+        }
+
+        mongoose.connect(url, { useNewUrlParser: true }, e => {
             if (e) {
-                console.log('ERROR' + e);
+                return console.log('ERROR' + e);
             }
-            console.log('Connected to Mongo');
+            return console.log('Connected to Mongo');
         });
     }
 }

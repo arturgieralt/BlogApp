@@ -4,4 +4,5 @@ export type EnvVariables =
     | 'PASS_ROUNDS'
     | 'MAIL'
     | 'MAIL_PASS'
-    | 'CAPTCHA_SECRET';
+    | 'CAPTCHA_SECRET'
+    | 'DB_MODE';
