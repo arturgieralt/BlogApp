@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { stubInterface } from 'ts-sinon';
 import CaptchaService from './CaptchaService';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
-import EnvProvider from 'providers/EnvProvider/EnvProvider';
 import { IAxios } from 'types/externals';
 import forEach from 'mocha-each';
 

@@ -5,20 +5,21 @@ import { IArticleModel } from 'models/Article/IArticleModel';
 export default class ArticleService implements IArticleService {
     public constructor(private ArticleModel: Model<IArticleModel, {}>) {}
 
-    public getAll = (): Promise<IArticleModel | {}> => {
+    public getAll = (): Promise<IArticleModel[]> => {
         return this.ArticleModel.find({})
             .select('title summary tags created_date')
+            .lean()
             .populate({
                 path: 'author',
                 select: 'name'
-            })
+            }) 
             .exec();
     };
 
     public getAllByTags = (
         tags: string[],
         containsAll: boolean
-    ): Promise<IArticleModel | {}> => {
+    ): Promise<IArticleModel[]> => {
         const query = containsAll
             ? {
                   tags: { $all: tags }
@@ -36,7 +37,7 @@ export default class ArticleService implements IArticleService {
             .exec();
     };
 
-    public getAllByQuery = (query: string): Promise<IArticleModel | {}> => {
+    public getAllByQuery = (query: string): Promise<IArticleModel[]> => {
         return this.ArticleModel.find({
             $or: [
                 { title: { $regex: query, $options: 'i' } },
