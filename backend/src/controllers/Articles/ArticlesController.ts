@@ -3,6 +3,7 @@ import { IArticleService } from '../../services/Article/IArticleService';
 import { ICommentService } from '../../services/Comment/ICommentService';
 import { IArticlesController } from './IArticlesController';
 import { IAuthToken } from 'factories/Token/IAuthToken';
+import { IFindArticleDto } from 'dtos/IFindArticle';
 
 export default class ArticlesController implements IArticlesController {
     public constructor(
@@ -10,40 +11,15 @@ export default class ArticlesController implements IArticlesController {
         private CommentService: ICommentService
     ) {}
 
-    public getAll = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const articles = await this.ArticleService.getAll();
-            res.status(200).json(articles);
-        } catch (e) {
-            res.status(400).json({ e });
-        }
-    };
-
-    public getAllByTags = async (
+    public getList = async (
         req: Request,
         res: Response,
         next: NextFunction
     ) => {
         try {
-            const { tags, containsAll } = req.body;
-            const articles = await this.ArticleService.getAllByTags(
-                tags,
-                containsAll
+            const articles = await this.ArticleService.get(
+                req.body as IFindArticleDto
             );
-            res.status(200).json(articles);
-        } catch (e) {
-            res.status(400).json({ e });
-        }
-    };
-
-    public getAllByQuery = async (
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ) => {
-        try {
-            const { query } = req.body;
-            const articles = await this.ArticleService.getAllByQuery(query);
             res.status(200).json(articles);
         } catch (e) {
             res.status(400).json({ e });

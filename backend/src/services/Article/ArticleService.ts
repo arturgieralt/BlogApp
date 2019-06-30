@@ -1,51 +1,16 @@
 import mongoose, { Model } from 'mongoose';
 import { IArticleService } from './IArticleService';
 import { IArticleModel } from 'models/Article/IArticleModel';
+import { getQueryObject } from './helpers';
+import { IFindArticleDto } from 'dtos/IFindArticle';
 
 export default class ArticleService implements IArticleService {
     public constructor(private ArticleModel: Model<IArticleModel, {}>) {}
 
-    public getAll = (): Promise<IArticleModel[]> => {
-        return this.ArticleModel.find({})
+    public get = (data: IFindArticleDto) => {
+        return this.ArticleModel.find(getQueryObject(data))
             .select('title summary tags created_date')
             .lean()
-            .populate({
-                path: 'author',
-                select: 'name'
-            }) 
-            .exec();
-    };
-
-    public getAllByTags = (
-        tags: string[],
-        containsAll: boolean
-    ): Promise<IArticleModel[]> => {
-        const query = containsAll
-            ? {
-                  tags: { $all: tags }
-              }
-            : {
-                  tags: { $in: tags }
-              };
-
-        return this.ArticleModel.find(query)
-            .select('title summary tags created_date')
-            .populate({
-                path: 'author',
-                select: 'name'
-            })
-            .exec();
-    };
-
-    public getAllByQuery = (query: string): Promise<IArticleModel[]> => {
-        return this.ArticleModel.find({
-            $or: [
-                { title: { $regex: query, $options: 'i' } },
-                { summary: { $regex: query, $options: 'i' } },
-                { content: { $regex: query, $options: 'i' } }
-            ]
-        })
-            .select('title summary tags created_date')
             .populate({
                 path: 'author',
                 select: 'name'

@@ -10,12 +10,9 @@ export interface IUser {
     avatarUrl: string;
 }
 
-export interface IUserWithId extends IUser, IIdentity {
+export interface IUserWithId extends IUser, IIdentity {}
 
-}
-
-export interface IUserModel extends IUser, Document {
-}
+export interface IUserModel extends IUser, Document {}
 
 export interface IUserDto {
     name: string;

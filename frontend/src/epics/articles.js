@@ -42,7 +42,7 @@ export const addArticleEpic = (action$, state$) =>
     withLatestFrom(state$),
     mergeMap(([action, state]) =>
       ajax({
-        url: "https://localhost:3001/articles",
+        url: "https://localhost:3001/articles/add",
         body: JSON.stringify({ ...action.article }),
         headers: {
           "Content-Type": "application/json",

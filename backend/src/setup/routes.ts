@@ -16,10 +16,10 @@ export class Routes {
         AuthorizeMiddleware: IAuthorizeMiddleware
     ): void {
         app.route('/articles')
-            .get(ArticlesController.getAll)
-            .post(ArticlesController.getAllByTags);
+            .get(ArticlesController.getList)
+            .post(ArticlesController.getList);
 
-        app.route('/articles/filter').post(ArticlesController.getAllByQuery);
+        // app.route('/articles/filter').post(ArticlesController.getAllByQuery);
 
         app.route('/articles/add').post(
             AuthorizeMiddleware.authorize(['Admin']),

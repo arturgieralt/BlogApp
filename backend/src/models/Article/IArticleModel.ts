@@ -1,7 +1,7 @@
 import { Document } from 'mongoose';
 import { IIdentity } from 'models/common/IIdentity';
 
-export interface IArticle  {
+export interface IArticle {
     title: string;
     content: string;
     summary: string;
@@ -13,9 +13,6 @@ export interface IArticle  {
     last_updated: string;
 }
 
-export interface IArticleWithId extends IArticle, IIdentity {
+export interface IArticleWithId extends IArticle, IIdentity {}
 
-}
-
-export interface IArticleModel extends IArticle, Document {
-}
+export interface IArticleModel extends IArticle, Document {}
