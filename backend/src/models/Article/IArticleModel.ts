@@ -1,5 +1,17 @@
 import { Document } from 'mongoose';
 import { IIdentity } from 'models/common/IIdentity';
+import { IUserLiteWithId } from 'models/User/IUserModel';
+
+export interface IArticleLite {
+    title: string;
+    summary: string;
+    author: IUserLiteWithId;
+    tags: string[];
+    commentsAllowed: boolean;
+    created_date: string;
+}
+
+export interface IArticleLiteWithId extends IArticleLite, IIdentity {}
 
 export interface IArticle {
     title: string;

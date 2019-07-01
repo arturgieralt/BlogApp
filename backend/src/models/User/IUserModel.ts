@@ -1,6 +1,12 @@
 import { Document } from 'mongoose';
 import { IIdentity } from 'models/common/IIdentity';
 
+export interface IUserLite {
+    name: string;
+}
+
+export interface IUserLiteWithId extends IUserLite, IIdentity {}
+
 export interface IUser {
     name: string;
     email: string;

@@ -2,11 +2,9 @@ import { IArticleWithId } from 'models/Article/IArticleModel';
 import mongoose from 'mongoose';
 import { IUserWithId } from 'models/User/IUserModel';
 
-export const userId = new mongoose.Types.ObjectId().toHexString();
-
 export const usersSeed: IUserWithId[] = [
     {
-        _id: userId,
+        _id: '5d1a44b66970a011ed25ca0e',
         name: 'myUser',
         email: 'mymail@op.pl',
         isActive: true,
@@ -18,33 +16,35 @@ export const usersSeed: IUserWithId[] = [
 
 export const articlesSeed: IArticleWithId[] = [
     {
-        _id: new mongoose.Types.ObjectId().toHexString(),
+        _id: '6d1a44b66970a011ed25ca0e',
         title: 'Why tags are important',
         content: 'It is important to use tags to make user be able to search..',
         summary: 'This is about tagging.',
-        author: userId,
+        author: '5d1a44b66970a011ed25ca0e',
         tags: ['tag1', 'tag2'],
         commentsAllowed: true,
         created_date: '2019-10-04T00:00:00.000Z',
         last_updated: '2019-10-04T00:00:00.000Z'
     },
     {
-        _id: new mongoose.Types.ObjectId().toHexString(),
+        _id: '7d1a44b66970a011ed25ca0e',
         title: 'New way to code. Javascript is cool',
-        content: 'There are many patterns we can use in Javascript. TDD, observer pattern, bla bla bla .',
+        content:
+            'There are many patterns we can use in Javascript. TDD, observer pattern, bla bla bla .',
         summary: 'My summary',
-        author: userId,
+        author: '5d1a44b66970a011ed25ca0e',
         tags: ['es6', 'tag2'],
         commentsAllowed: true,
         created_date: '2019-10-04T00:00:00.000Z',
         last_updated: '2019-10-04T00:00:00.000Z'
     },
     {
-        _id: new mongoose.Types.ObjectId().toHexString(),
+        _id: '9d1a44b66970a011ed25ca0e',
         title: 'What to do in the free time?',
-        content: 'You have more time than me? Than you can play tennis, games, football...',
+        content:
+            'You have more time than me? Than you can play tennis, games, football...',
         summary: 'About hobbies and activities',
-        author: userId,
+        author: '5d1a44b66970a011ed25ca0e',
         tags: ['tag1', 'lifestyle'],
         commentsAllowed: false,
         created_date: '2019-10-04T00:00:00.000Z',

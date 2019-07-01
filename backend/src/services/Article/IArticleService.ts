@@ -1,11 +1,16 @@
-import { IArticleModel } from 'models/Article/IArticleModel';
-import { IFindArticleDto } from 'dtos/IFindArticle';
+import {
+    IArticleModel,
+    IArticleWithId,
+    IArticleLiteWithId
+} from 'models/Article/IArticleModel';
+import { IFindArticleDto } from 'dtos/article/IFindArticle';
+import { ITag } from 'models/Tag/ITagModel';
 
 export interface IArticleService {
-    get: (data: IFindArticleDto) => Promise<IArticleModel | {}>;
-    getSingle: (id: string) => Promise<Record<string, any> | null>;
-    update: (id: string, body: any) => Promise<IArticleModel | null>;
+    get: (data: IFindArticleDto) => Promise<IArticleLiteWithId[]>;
+    getSingle: (id: string) => Promise<IArticleWithId | null>;
+    update: (id: string, body: any) => Promise<IArticleWithId | null>;
     add: (body: any, authorId: string) => Promise<IArticleModel>;
     remove: (id: string) => Promise<any>;
-    getTagsCounted: () => Record<string, any>;
+    getTagsCounted: () => Promise<ITag[]>;
 }

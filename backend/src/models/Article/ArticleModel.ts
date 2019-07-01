@@ -8,7 +8,6 @@ export const ArticleSchema = new Schema({
     author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     tags: [{ type: String }],
     commentsAllowed: { type: Boolean, default: true },
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
     created_date: {
         type: Date,
         default: Date.now()

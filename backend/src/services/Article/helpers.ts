@@ -1,4 +1,4 @@
-import { IFindArticleDto } from 'dtos/IFindArticle';
+import { IFindArticleDto } from 'dtos/article/IFindArticle';
 
 export const provideTagQueryObject = (
     tags: string[],
@@ -6,10 +6,10 @@ export const provideTagQueryObject = (
 ): Object =>
     containsAll
         ? {
-              'tags': { $all: tags }
+              tags: { $all: tags }
           }
         : {
-              'tags': { $in: tags }
+              tags: { $in: tags }
           };
 
 export const provideFilterQueryObject = (query: string): Object => ({

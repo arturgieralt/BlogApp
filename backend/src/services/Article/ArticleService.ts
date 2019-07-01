@@ -1,13 +1,20 @@
 import mongoose, { Model } from 'mongoose';
 import { IArticleService } from './IArticleService';
-import { IArticleModel } from 'models/Article/IArticleModel';
+import {
+    IArticleModel,
+    IArticle,
+    IArticleWithId,
+    IArticleLiteWithId
+} from 'models/Article/IArticleModel';
 import { getQueryObject } from './helpers';
-import { IFindArticleDto } from 'dtos/IFindArticle';
+import { IFindArticleDto } from 'dtos/article/IFindArticle';
+import { ITag } from 'models/Tag/ITagModel';
+import { IUpdateArticle } from 'dtos/article/IUpdateArticle';
 
 export default class ArticleService implements IArticleService {
     public constructor(private ArticleModel: Model<IArticleModel, {}>) {}
 
-    public get = (data: IFindArticleDto) => {
+    public get = (data: IFindArticleDto): Promise<IArticleLiteWithId[]> => {
         return this.ArticleModel.find(getQueryObject(data))
             .select('title summary tags created_date')
             .lean()
@@ -18,8 +25,9 @@ export default class ArticleService implements IArticleService {
             .exec();
     };
 
-    public getSingle = (id: string): Promise<Record<string, any> | null> => {
+    public getSingle = (id: string): Promise<IArticleWithId | null> => {
         return this.ArticleModel.findById(id)
+            .select('-__v')
             .populate({
                 path: 'author',
                 select: 'name'
@@ -28,7 +36,7 @@ export default class ArticleService implements IArticleService {
             .exec();
     };
 
-    public getTagsCounted = (): Record<string, any> => {
+    public getTagsCounted = (): Promise<ITag[]> => {
         return new Promise(async (resolve, reject) => {
             await this.ArticleModel.aggregate(
                 [
@@ -39,9 +47,10 @@ export default class ArticleService implements IArticleService {
                             _id: '$tags',
                             count: { $sum: 1 }
                         }
-                    }
+                    },
+                    { $sort: { count: -1 } }
                 ],
-                (err: Error, res: Record<string, any>) => {
+                (err: Error, res: ITag[]) => {
                     if (err) return reject(err);
                     return resolve(res);
                 }
@@ -49,10 +58,20 @@ export default class ArticleService implements IArticleService {
         });
     };
 
-    public update = (id: string, body: any): Promise<IArticleModel | null> => {
+    public update = (
+        id: string,
+        body: IUpdateArticle
+    ): Promise<IArticleWithId | null> => {
         return this.ArticleModel.findOneAndUpdate({ _id: id }, body, {
             new: true
-        }).exec();
+        })
+            .select('-__v')
+            .populate({
+                path: 'author',
+                select: 'name'
+            })
+            .lean()
+            .exec();
     };
 
     public add = (body: any, authorId: string): Promise<IArticleModel> => {

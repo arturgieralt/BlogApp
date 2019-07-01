@@ -3,7 +3,7 @@ import { IArticleService } from '../../services/Article/IArticleService';
 import { ICommentService } from '../../services/Comment/ICommentService';
 import { IArticlesController } from './IArticlesController';
 import { IAuthToken } from 'factories/Token/IAuthToken';
-import { IFindArticleDto } from 'dtos/IFindArticle';
+import { IFindArticleDto } from 'dtos/article/IFindArticle';
 
 export default class ArticlesController implements IArticlesController {
     public constructor(
