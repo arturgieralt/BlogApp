@@ -10,6 +10,9 @@ import { getQueryObject } from './helpers';
 import { IFindArticleDto } from 'dtos/article/IFindArticle';
 import { ITag } from 'models/Tag/ITagModel';
 import { IUpdateArticle } from 'dtos/article/IUpdateArticle';
+import { IAddArticle } from 'dtos/article/IAddArticle';
+import { DeleteWriteOpResultObject } from 'mongodb';
+import { IDeleteResultObject } from 'models/common/IDeleteResultObject';
 
 export default class ArticleService implements IArticleService {
     public constructor(private ArticleModel: Model<IArticleModel, {}>) {}
@@ -62,9 +65,16 @@ export default class ArticleService implements IArticleService {
         id: string,
         body: IUpdateArticle
     ): Promise<IArticleWithId | null> => {
-        return this.ArticleModel.findOneAndUpdate({ _id: id }, body, {
-            new: true
-        })
+        return this.ArticleModel.findOneAndUpdate(
+            { _id: id },
+            {
+                ...body,
+                last_updated: Date.now()
+            },
+            {
+                new: true
+            }
+        )
             .select('-__v')
             .populate({
                 path: 'author',
@@ -74,17 +84,20 @@ export default class ArticleService implements IArticleService {
             .exec();
     };
 
-    public add = (body: any, authorId: string): Promise<IArticleModel> => {
+    public add = (
+        body: IAddArticle,
+        authorId: string
+    ): Promise<IArticleModel> => {
         const article = new this.ArticleModel({
             ...body,
-            tags: body.tags.map((t: string) => t.trim()),
+            tags: body.tags.map((t: string) => t.toLowerCase().trim()),
             author: authorId,
             _id: new mongoose.Types.ObjectId()
         });
         return article.save();
     };
 
-    public remove = (id: string): Promise<any> => {
+    public remove = (id: string): Promise<IDeleteResultObject> => {
         return this.ArticleModel.remove({ _id: id }).exec();
     };
 }

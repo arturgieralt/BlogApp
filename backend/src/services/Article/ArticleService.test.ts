@@ -10,6 +10,7 @@ import {
     expectedArticles,
     expectedArticlesFull
 } from './../../testSetup/articleServiceExpected';
+import { IAddArticle } from 'dtos/article/IAddArticle';
 
 let mongoServer: MongoMemoryServer;
 
@@ -158,8 +159,7 @@ describe('Article service getters:', () => {
     });
 });
 
-describe('Article service mutation methods:', () => {
-
+describe('Article service', () => {
     describe('update element', () => {
         beforeEach(async () => {
             mongoServer = new MongoMemoryServer();
@@ -168,7 +168,7 @@ describe('Article service mutation methods:', () => {
             await ArticleModel.insertMany(articlesSeed);
             await UserModel.insertMany(usersSeed);
         });
-    
+
         afterEach(() => {
             mongoose.disconnect();
             mongoServer.stop();
@@ -180,16 +180,12 @@ describe('Article service mutation methods:', () => {
                 content: 'mutatedContent'
             };
 
-            const expected = {
-                ...expectedArticlesFull[0],
-                ...updateArticle
-            };
-            const articles = await articleService.update(
+            const article = await articleService.update(
                 '6d1a44b66970a011ed25ca0e',
                 updateArticle
             );
 
-            expect(articles).to.deep.equal(expected);
+            expect(article).to.include(updateArticle);
         });
 
         it('should return null when id is incorrect', async () => {
@@ -197,12 +193,91 @@ describe('Article service mutation methods:', () => {
             const updateArticle = {
                 content: 'mutatedContent'
             };
-            const articles = await articleService.update(
+            const article = await articleService.update(
                 '101a44b66970a011ed25ca0e',
                 updateArticle
             );
 
-            expect(articles).to.equal(null);
+            expect(article).to.equal(null);
+        });
+    });
+});
+
+describe('Article service', () => {
+    describe('add element', () => {
+        beforeEach(async () => {
+            mongoServer = new MongoMemoryServer();
+            const url = await mongoServer.getConnectionString();
+            mongoose.connect(url, { useNewUrlParser: true });
+            await UserModel.insertMany(usersSeed);
+        });
+
+        afterEach(() => {
+            mongoose.disconnect();
+            mongoServer.stop();
+        });
+
+        it('should add article when body and authorId are provided', async () => {
+            const articleService = new ArticleService(ArticleModel);
+            const articleToAdd: IAddArticle = {
+                title: 'Why tags are important',
+                content:
+                    'It is important to use tags to make user be able to search..',
+                summary: 'This is about tagging.',
+                tags: ['TAG1', 'tag2 '],
+                commentsAllowed: true
+            };
+
+            const expectedValues = {
+                title: 'Why tags are important',
+                content:
+                    'It is important to use tags to make user be able to search..',
+                summary: 'This is about tagging.',
+                tags: ['tag1', 'tag2'],
+                commentsAllowed: true
+            };
+
+            const articleAdded = await articleService.add(
+                articleToAdd,
+                '5d1a44b66970a011ed25ca0e'
+            );
+
+            expect(articleAdded.toObject()).to.deep.include(expectedValues);
+        });
+    });
+});
+
+describe('Article service', () => {
+    describe('remove element', () => {
+        beforeEach(async () => {
+            mongoServer = new MongoMemoryServer();
+            const url = await mongoServer.getConnectionString();
+            mongoose.connect(url, { useNewUrlParser: true });
+            await ArticleModel.insertMany(articlesSeed);
+            await UserModel.insertMany(usersSeed);
+        });
+
+        afterEach(() => {
+            mongoose.disconnect();
+            mongoServer.stop();
+        });
+
+        it('should remove article when Id is provided', async () => {
+            const articleService = new ArticleService(ArticleModel);
+            const articleRemoved = await articleService.remove(
+                '6d1a44b66970a011ed25ca0e'
+            );
+
+            expect(articleRemoved).to.include({ deletedCount: 1 });
+        });
+
+        it('should not remove article when Id is incorrect', async () => {
+            const articleService = new ArticleService(ArticleModel);
+            const articleRemoved = await articleService.remove(
+                '991a44b66970a011ed25ca0e'
+            );
+
+            expect(articleRemoved).to.include({ deletedCount: 0 });
         });
     });
 });
