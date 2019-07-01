@@ -45,6 +45,7 @@ export default class ArticleService implements IArticleService {
                 [
                     { $project: { _id: 0, tags: 1 } },
                     { $unwind: '$tags' },
+                    { $project: { tags: { $toLower: '$tags' } } },
                     {
                         $group: {
                             _id: '$tags',
