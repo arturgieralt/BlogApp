@@ -1,17 +1,17 @@
 import { connect } from "react-redux";
 import ArticlesList from "../components/ArticleList/ArticleList";
-import { fetchArticles } from "../actions/articles";
+import { fetchArticles, queryArticles } from "../actions/articles";
 
 const mapStateToProps = state => {
   return {
-    articles: state.articles.summary
+    articles: state.articles.summary,
+    isLoading: state.loaders.articles
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchArticles: () => dispatch(fetchArticles())
-  };
+const mapDispatchToProps = {
+  fetchArticles,
+  queryArticles
 };
 
 export default connect(

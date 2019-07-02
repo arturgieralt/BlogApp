@@ -11,7 +11,8 @@ import {
   fetchArticlesFailure,
   ARTICLE_FETCH_REQUEST,
   fetchArticleSuccess,
-  fetchArticleFailure
+  fetchArticleFailure,
+  ARTICLES_QUERY_REQUEST
 } from "../actions/articles";
 
 export const fetchArticlesEpic = action$ =>
@@ -32,6 +33,25 @@ export const fetchArticleEpic = action$ =>
       ajax.getJSON(`https://localhost:3001/articles/${action.id}`).pipe(
         map(response => fetchArticleSuccess(response)),
         catchError(error => ActionsObservable.of(fetchArticleFailure(error)))
+      )
+    )
+  );
+
+export const queryArticlesEpic = action$ =>
+  action$.pipe(
+    ofType(ARTICLES_QUERY_REQUEST),
+    mergeMap(action =>
+      ajax({
+        url: "https://localhost:3001/articles",
+        body: JSON.stringify(action.queryObject),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        cache: false,
+        method: "POST"
+      }).pipe(
+        map(({ response }) => fetchArticlesSuccess(response)),
+        catchError(error => ActionsObservable.of(fetchArticlesFailure(error)))
       )
     )
   );

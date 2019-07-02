@@ -11,7 +11,6 @@ import { IFindArticleDto } from 'dtos/article/IFindArticle';
 import { ITag } from 'models/Tag/ITagModel';
 import { IUpdateArticle } from 'dtos/article/IUpdateArticle';
 import { IAddArticle } from 'dtos/article/IAddArticle';
-import { DeleteWriteOpResultObject } from 'mongodb';
 import { IDeleteResultObject } from 'models/common/IDeleteResultObject';
 
 export default class ArticleService implements IArticleService {

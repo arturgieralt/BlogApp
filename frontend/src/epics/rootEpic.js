@@ -2,7 +2,8 @@ import { combineEpics } from "redux-observable";
 import {
   fetchArticlesEpic,
   addArticleEpic,
-  fetchArticleEpic
+  fetchArticleEpic,
+  queryArticlesEpic
 } from "./articles";
 import {
   loginUserEpic,
@@ -42,5 +43,6 @@ export default combineEpics(
   fetchUserProfileEpic,
   notifierEpic,
   verifyCaptchaEpic,
-  fetchTagsEpic
+  fetchTagsEpic,
+  queryArticlesEpic
 );
