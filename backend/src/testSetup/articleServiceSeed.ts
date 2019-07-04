@@ -1,5 +1,4 @@
 import { IArticleWithId } from 'models/Article/IArticleModel';
-import mongoose from 'mongoose';
 import { IUserWithId } from 'models/User/IUserModel';
 
 export const usersSeed: IUserWithId[] = [
