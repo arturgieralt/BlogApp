@@ -8,6 +8,4 @@ export interface IRole {
 
 export interface IRoleWithId extends IRole, IIdentity {}
 
-export interface IRoleModel extends IRole, Document {
-}
-
+export interface IRoleModel extends IRole, Document {}

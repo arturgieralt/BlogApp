@@ -3,7 +3,6 @@ import { IRoleModel, IRoleWithId } from 'models/Role/IRoleModel';
 import { IRoleService } from './IRoleService';
 
 export default class RoleService implements IRoleService {
-
     public constructor(private RoleModel: Model<IRoleModel, {}>) {}
 
     public getRolesPerUser = (userId: string): Promise<string[]> => {
@@ -14,7 +13,7 @@ export default class RoleService implements IRoleService {
                     .lean()
                     .exec();
 
-               const roleNames = this.getRoleNames(roles);
+                const roleNames = this.getRoleNames(roles);
                 resolve(['User', ...roleNames]);
             } catch (e) {
                 reject(e);
@@ -23,8 +22,5 @@ export default class RoleService implements IRoleService {
     };
 
     private getRoleNames = (roles: IRoleWithId[] | null): string[] =>
-    roles === null
-        ? []
-        : roles.map((role: IRoleWithId) => role.roleName);
-
+        roles === null ? [] : roles.map((role: IRoleWithId) => role.roleName);
 }

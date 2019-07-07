@@ -1,10 +1,13 @@
-import { ICommentModel } from 'models/Comment/ICommentModel';
+import { ICommentModel, ICommentWithId } from 'models/Comment/ICommentModel';
+import { IAddComment } from 'dtos/comment/IAddComment';
+import { IUpdateComment } from 'dtos/comment/IUpdateComment';
 
 export interface ICommentService {
-    getAll: () => Promise<ICommentModel | {}>;
-    getAllForArticle: (id: string) => Promise<ICommentModel[]>;
-    getSingle: (id: string) => Promise<ICommentModel | null>;
-    update: (id: string, body: any) => Promise<ICommentModel | null>;
-    add: (body: any) => Promise<ICommentModel>;
-    remove: (id: string) => Promise<any>;
+    get: (id?: string) => Promise<ICommentWithId[]>;
+    update: (id: string, body: IUpdateComment) => Promise<ICommentWithId | null>;
+    add: (
+        body: IAddComment,
+        articleId: string,
+        authorId: string
+    ) => Promise<ICommentModel>;
 }

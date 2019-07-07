@@ -6,7 +6,6 @@ import { RoleModel } from '../../models/Role/RoleModel';
 import { roleSeed, usersSeed } from '../../testSetup/roleServiceSeed';
 import RoleService from './RoleService';
 
-
 let mongoServer: MongoMemoryServer;
 
 describe('Role service:', () => {
@@ -26,17 +25,20 @@ describe('Role service:', () => {
     describe('get roles for user method', () => {
         it('should return array with "User" role only when userId is not present in the list', async () => {
             const roleService = new RoleService(RoleModel);
-            const roles = await roleService.getRolesPerUser('111a44b66970a011ed25ca0e');
+            const roles = await roleService.getRolesPerUser(
+                '111a44b66970a011ed25ca0e'
+            );
 
-            expect(roles).to.deep.equal(["User"]);
+            expect(roles).to.deep.equal(['User']);
         });
 
         it('should return list of roles for user', async () => {
             const roleService = new RoleService(RoleModel);
-            const roles = await roleService.getRolesPerUser('5d1a44b66970a011ed25ca0e');
+            const roles = await roleService.getRolesPerUser(
+                '5d1a44b66970a011ed25ca0e'
+            );
 
-            expect(roles).to.deep.equal(["User", "Admin", "Moderator"]);
+            expect(roles).to.deep.equal(['User', 'Admin', 'Moderator']);
         });
     });
-
 });

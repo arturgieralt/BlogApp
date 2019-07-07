@@ -24,4 +24,4 @@ export const roleSeed: IRoleWithId[] = [
         userId: '5d1a44b66970a011ed25ca0e',
         roleName: 'Moderator'
     }
-]
+];
