@@ -49,7 +49,7 @@ export default class FilesController implements IFilesController {
                 tags: ['avatar']
             });
 
-            await this.UserService.update(id, { avatarName: filename });
+            await this.UserService.update(id, { avatarUrl: filename });
 
             return res.status(200).send(req.file);
         } catch (e) {

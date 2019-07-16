@@ -27,7 +27,8 @@ class Article extends React.Component {
     comment: "",
     socket: null,
     commentsDefault: [],
-    commentsLive: []
+    commentsLive: [],
+    usersLive: []
   };
 
   componentDidMount() {
@@ -46,6 +47,12 @@ class Article extends React.Component {
         }
       });
 
+      socket.on("roomUpdate", users => {
+        this.setState({
+          usersLive: users
+        });
+      });
+
       socket.on("new comment", msg => {
         this.setState(state => ({
           commentsLive: [...state.commentsLive, msg]
@@ -56,6 +63,11 @@ class Article extends React.Component {
         socket
       });
     }
+  }
+
+  componentWillUnmount() {
+    const { socket } = this.state;
+    socket.disconnect();
   }
 
   handleChange(event) {
@@ -75,7 +87,7 @@ class Article extends React.Component {
 
   render() {
     const { article, isAuthenticated } = this.props;
-    const { comment, commentsLive } = this.state;
+    const { comment, commentsLive, usersLive } = this.state;
     if (article) {
       return (
         <React.Fragment>
@@ -98,6 +110,21 @@ class Article extends React.Component {
               </Button>
             </StyledCard>
           )}
+          <StyledCard width="90%" margin="20px auto" title="Active users">
+            {usersLive.map(u => (
+              <div key={u._id}>
+                {u.name}
+                <img
+                  src={`https://localhost:3001/user/avatar/${u._id}`}
+                  alt="Avatar"
+                  style={{
+                    width: "20px",
+                    height: "20px"
+                  }}
+                />
+              </div>
+            ))}
+          </StyledCard>
           <StyledCard width="90%" margin="20px auto" title="Comments">
             {commentsLive.map(com => (
               <div key={com._id}>

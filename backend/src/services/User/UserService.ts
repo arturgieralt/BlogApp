@@ -29,7 +29,7 @@ export default class UserService implements IUserService {
 
     public getUserProfile = (id: string): Promise<IUserDto> => {
         return this.UserRepository.findById(id)
-            .select('name email isActive avatarName -_id')
+            .select('name email isActive avatarUrl -_id')
             .lean()
             .exec();
     };

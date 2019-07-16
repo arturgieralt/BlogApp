@@ -77,6 +77,10 @@ export class Routes {
             UsersController.getMyProfile
         );
 
+        app.route('/user/avatar/:userId').get(
+            UsersController.getAvatar
+        );
+
         app.route('/captcha/verify').post(CaptchaController.verifyToken);
 
         app.route('/users/:userId')

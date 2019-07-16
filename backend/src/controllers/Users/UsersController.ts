@@ -19,7 +19,8 @@ export default class UserController implements IUsersController {
         private UserService: IUserService,
         private TokenService: ITokenService,
         private RoleService: IRoleService,
-        private MailService: Transporter
+        private MailService: Transporter,
+        private storagePath: string
     ) {}
 
     public getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -153,6 +154,16 @@ export default class UserController implements IUsersController {
             res.status(200).send();
         } catch (e) {
             res.status(400).send(e);
+        }
+    };
+
+    public getAvatar = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.params.userId;
+            const user = await this.UserService.getUserProfile(userId);
+            res.sendFile(this.storagePath + user.avatarUrl || 'default.jpg');
+        } catch(e) {
+            res.sendFile(this.storagePath + 'default.jpg')
         }
     };
 }

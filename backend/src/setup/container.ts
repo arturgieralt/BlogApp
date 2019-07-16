@@ -76,7 +76,8 @@ export const usersController = new UsersController(
     userService,
     tokenService,
     roleService,
-    mailService
+    mailService,
+    path.dirname(__dirname) + '/uploads/'
 );
 export const filesController = new FilesController(
     userService,
