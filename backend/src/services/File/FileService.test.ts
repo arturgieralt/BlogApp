@@ -26,14 +26,18 @@ describe('File service:', () => {
     describe('get single', () => {
         it('should return null when no id matches', async () => {
             const fileService = new FileService(FileModel);
-            const file = await fileService.getSingle('111a44b66970a011ed25ca0e');
+            const file = await fileService.getSingle(
+                '111a44b66970a011ed25ca0e'
+            );
 
             expect(file).to.equal(null);
         });
 
         it('should return object when id matches', async () => {
             const fileService = new FileService(FileModel);
-            const file = await fileService.getSingle('5ccf5c4050bca72ec4a33ba3');
+            const file = await fileService.getSingle(
+                '5ccf5c4050bca72ec4a33ba3'
+            );
 
             expect(file).to.deep.equal(expectedFiles[0]);
         });
@@ -49,9 +53,16 @@ describe('File service:', () => {
 
         it('should return all for uploader', async () => {
             const fileService = new FileService(FileModel);
-            const files = await fileService.get({uploadBy: '5ccf4f2ba2338a253197defe'});
+            const files = await fileService.get({
+                uploadBy: '5ccf4f2ba2338a253197defe'
+            });
 
-            expect(files).to.deep.equal([expectedFiles[0], expectedFiles[1], expectedFiles[2], expectedFiles[4]]);
+            expect(files).to.deep.equal([
+                expectedFiles[0],
+                expectedFiles[1],
+                expectedFiles[2],
+                expectedFiles[4]
+            ]);
         });
 
         it('should return all for uploader and tagged avatar', async () => {
@@ -88,8 +99,7 @@ describe('File service:', () => {
 
     describe('add', () => {
         it('should add new file entry', async () => {
-
-            const fileToAdd =  {
+            const fileToAdd = {
                 uploadBy: '5ccf4f2ba2338a253197defe',
                 originalname: 'IMG_20190224_162034.jpg',
                 encoding: '7bit',
@@ -99,25 +109,24 @@ describe('File service:', () => {
                 filename: '1557093440074-IMG_20190224_162034.jpg',
                 path: 'uploads/1557093440074-IMG_20190224_162034.jpg',
                 tags: ['ARTICLE', 'javascript']
-            }
+            };
 
             const expected = {
                 ...fileToAdd,
-                uploadBy: new mongoose.Types.ObjectId('5ccf4f2ba2338a253197defe'),
+                uploadBy: new mongoose.Types.ObjectId(
+                    '5ccf4f2ba2338a253197defe'
+                ),
                 tags: ['article', 'javascript']
-            }
+            };
 
-            
             const fileService = new FileService(FileModel);
             const file = await fileService.add(fileToAdd);
 
             expect(file.toObject()).to.deep.include(expected);
         });
-
     });
 
     describe('remove element', () => {
-
         it('should not remove file when Id is incorrect', async () => {
             const fileService = new FileService(FileModel);
             const fileRemoved = await fileService.remove(
@@ -135,7 +144,16 @@ describe('File service:', () => {
 
             expect(fileRemoved).to.include({ deletedCount: 1 });
         });
+    });
 
+    describe('remove avatar entries', () => {
+        it('should remove avatar entries for user', async () => {
+            const fileService = new FileService(FileModel);
+            const fileRemoved = await fileService.removeAvatarEntries(
+                '5d1a44b66970a011ed25ca0e'
+            );
 
+            expect(fileRemoved).to.include({ deletedCount: 2 });
+        });
     });
 });

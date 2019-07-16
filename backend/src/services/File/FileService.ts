@@ -11,7 +11,7 @@ export default class FileService implements IFileService {
 
     public get = (queryData: IFindFileDto): Promise<IFileModel[]> => {
         return this.FileModel.find(getQueryObject(queryData))
-        .select('-__v')
+            .select('-__v')
             .lean()
             .exec();
     };
@@ -34,5 +34,12 @@ export default class FileService implements IFileService {
 
     public remove = (id: string): Promise<IDeleteResultObject> => {
         return this.FileModel.remove({ _id: id }).exec();
+    };
+
+    public removeAvatarEntries = (userId: string): Promise<IDeleteResultObject> => {
+        return this.FileModel.deleteMany({
+            uploadBy: userId,
+            tags: ['avatar']
+         }).exec();
     };
 }
