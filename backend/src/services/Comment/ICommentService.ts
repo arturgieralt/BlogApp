@@ -4,7 +4,10 @@ import { IUpdateComment } from 'dtos/comment/IUpdateComment';
 
 export interface ICommentService {
     get: (id?: string) => Promise<ICommentWithId[]>;
-    update: (id: string, body: IUpdateComment) => Promise<ICommentWithId | null>;
+    update: (
+        id: string,
+        body: IUpdateComment
+    ) => Promise<ICommentWithId | null>;
     add: (
         body: IAddComment,
         articleId: string,

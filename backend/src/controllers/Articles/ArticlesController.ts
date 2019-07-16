@@ -34,9 +34,7 @@ export default class ArticlesController implements IArticlesController {
         try {
             const { articleId } = req.params;
             const article = await this.ArticleService.getSingle(articleId);
-            const comments = await this.CommentService.getAllForArticle(
-                articleId
-            );
+            const comments = await this.CommentService.get(articleId);
             res.status(200).json({
                 ...article,
                 comments

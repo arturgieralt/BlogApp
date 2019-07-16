@@ -2,7 +2,6 @@ import mongoose, { Model } from 'mongoose';
 import { IArticleService } from './IArticleService';
 import {
     IArticleModel,
-    IArticle,
     IArticleWithId,
     IArticleLiteWithId
 } from 'models/Article/IArticleModel';

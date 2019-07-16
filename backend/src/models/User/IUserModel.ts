@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { IIdentity } from 'models/common/IIdentity';
+import { IIdentity } from '../../models/common/IIdentity';
 
 export interface IUserLite {
     name: string;

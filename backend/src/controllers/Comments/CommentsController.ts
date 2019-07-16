@@ -6,6 +6,7 @@ import { ICommentService } from '../../services/Comment/ICommentService';
 import { ICommentsController } from './ICommentsController';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
 import { IJWT } from 'types/externals';
+import { IAddComment } from 'dtos/comment/IAddComment';
 
 export default class CommentsController implements ICommentsController {
     public constructor(
@@ -62,13 +63,15 @@ export default class CommentsController implements ICommentsController {
         articleId: roomID,
         decodedToken
     }: ICommentSocket) => async (message: string) => {
-        const comment = {
-            content: message,
-            author: decodedToken.id,
-            article: roomID
+        const comment: IAddComment = {
+            content: message
         };
         try {
-            const comDoc = await this.CommentService.add(comment);
+            const comDoc = await this.CommentService.add(
+                comment,
+                roomID,
+                decodedToken.id
+            );
             const com = comDoc.toObject();
             const user = await this.UserService.getSingle(com.author);
             this.server

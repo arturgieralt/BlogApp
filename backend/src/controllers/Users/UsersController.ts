@@ -112,7 +112,9 @@ export default class UserController implements IUsersController {
                 res,
                 next
             );
-            const roles = await this.RoleService.getRolesPerUser(user.id);
+            const roles = await this.RoleService.getRolesPerUser(
+                user.toObject()._id
+            );
             const { token, payload } = await this.TokenService.createToken(
                 user,
                 roles

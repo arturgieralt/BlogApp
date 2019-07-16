@@ -38,12 +38,15 @@ describe('Comments service service:', () => {
                 '7d1a44b66970a011ed25ca0e'
             );
 
-            expect(comments).to.deep.equal([commentsExpected[0], commentsExpected[1]]);
+            expect(comments).to.deep.equal([
+                commentsExpected[0],
+                commentsExpected[1]
+            ]);
         });
 
         it('should return array with all comments', async () => {
             const commentService = new CommentService(CommentModel);
-            const comments = await commentService.get()
+            const comments = await commentService.get();
 
             expect(comments).to.deep.equal(commentsExpected);
         });
@@ -54,7 +57,7 @@ describe('Comments service service:', () => {
             const commentService = new CommentService(CommentModel);
             const body: IAddComment = {
                 content: 'My new comment'
-            }
+            };
             const comment = await commentService.add(
                 body,
                 '6d1a44b66970a011ed25ca0e',
@@ -70,8 +73,8 @@ describe('Comments service service:', () => {
             const commentService = new CommentService(CommentModel);
 
             const body: IUpdateComment = {
-                content: 'Content changed',
-            }
+                content: 'Content changed'
+            };
 
             const comment = await commentService.update(
                 '600a44b66970a011ed25ca0e',
@@ -85,8 +88,8 @@ describe('Comments service service:', () => {
             const commentService = new CommentService(CommentModel);
 
             const body: IUpdateComment = {
-                content: 'Content changed',
-            }
+                content: 'Content changed'
+            };
 
             const comment = await commentService.update(
                 '000a44b66970a011ed25ca0e',

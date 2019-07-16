@@ -15,7 +15,8 @@ import {
     captchaController,
     authorizeMiddleware,
     verifyUserMiddleware,
-    envProvider
+    envProvider,
+    fileUploaderMiddleware
 } from './container';
 
 class App {
@@ -32,7 +33,8 @@ class App {
             usersController,
             filesController,
             captchaController,
-            authorizeMiddleware
+            authorizeMiddleware,
+            fileUploaderMiddleware
         );
         this.mongoSetup();
     }
@@ -48,9 +50,12 @@ class App {
         this.app.use(cors(corsOptions));
         this.app.use(passport.initialize());
         initPassport(verifyUserMiddleware, envProvider);
+
+        console.log(path.dirname(__dirname) + '/uploads');
+
         this.app.use(
             '/avatars',
-            express.static(path.dirname(__dirname) + '/backend/uploads') /// change this!!
+            express.static(path.dirname(__dirname) + '/uploads') /// change this!!
         );
     }
 

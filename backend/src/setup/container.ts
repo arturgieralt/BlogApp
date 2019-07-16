@@ -15,6 +15,7 @@ import CaptchaController from '../controllers/Captcha/CaptchaController';
 import CaptchaService from '../services/Captcha/CaptchaService';
 import CommentsController from '../controllers/Comments/CommentsController';
 import { iot } from '../server';
+import path from 'path';
 import FileService from '../services/File/FileService';
 import { FileModel } from '../models/File/FileModel';
 import FilesController from '../controllers/Files/FilesController';
@@ -26,6 +27,7 @@ import bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
 import multer from 'multer';
+import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 
 export const jwtModule = jwt;
 
@@ -42,6 +44,13 @@ export const commentService = new CommentService(CommentModel);
 export const articleService = new ArticleService(ArticleModel);
 export const captchaService = new CaptchaService(envProvider, axios);
 export const fileSerivce = new FileService(FileModel);
+
+export const fileUploaderMiddleware = new FileUploaderMiddleware(
+    multer,
+    path.dirname(__dirname) + '/uploads',
+    'file',
+    Date
+);
 
 export const verifyUserMiddleware = new VerifyUserMiddleware(
     userService,
@@ -63,8 +72,4 @@ export const usersController = new UsersController(
     roleService,
     mailService
 );
-export const filesController = new FilesController(
-    userService,
-    fileSerivce,
-    multer
-);
+export const filesController = new FilesController(userService, fileSerivce);

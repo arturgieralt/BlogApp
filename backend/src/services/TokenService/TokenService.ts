@@ -91,7 +91,7 @@ export class TokenService {
         return new Promise(async (resolve, reject) => {
             try {
                 const tokenEntry = await this.add({
-                    userId: user.id,
+                    userId: user.toObject()._id,
                     expTime: TokenFactory.ExpTime[Authorization],
                     isActive: true
                 });

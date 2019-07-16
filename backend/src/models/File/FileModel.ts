@@ -10,6 +10,7 @@ export const FileSchema = new Schema({
     destination: { type: String, required: true },
     filename: { type: String, required: true },
     path: { type: String, required: true },
+    tags: [{ type: String }],
     uploadBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     created_date: {
         type: Date,

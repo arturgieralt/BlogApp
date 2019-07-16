@@ -5,6 +5,7 @@ import { IUsersController } from '../controllers/Users/IUsersController';
 import { IFilesController } from '../controllers/Files/IFilesController';
 import { ICaptchaController } from '../controllers/Captcha/ICaptchaController';
 import { IAuthorizeMiddleware } from '../middlewares/Authorize/IAuthorize';
+import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 
 export class Routes {
     public routes(
@@ -13,7 +14,8 @@ export class Routes {
         UsersController: IUsersController,
         FilesController: IFilesController,
         CaptchaController: ICaptchaController,
-        AuthorizeMiddleware: IAuthorizeMiddleware
+        AuthorizeMiddleware: IAuthorizeMiddleware,
+        FileUploader: FileUploaderMiddleware
     ): void {
         app.route('/articles')
             .get(ArticlesController.getList)
@@ -84,6 +86,7 @@ export class Routes {
 
         app.route('/avatar/upload').post(
             AuthorizeMiddleware.authorize(),
+            FileUploader.getRequestHandler(),
             FilesController.uploadAvatar
         );
     }
