@@ -1,17 +1,61 @@
 import { Model } from 'mongoose';
 import mongoose from 'mongoose';
-import { ICommentModel } from 'models/Comment/ICommentModel';
+import { ICommentModel, ICommentWithId } from 'models/Comment/ICommentModel';
 import { ICommentService } from './ICommentService';
+import { IAddComment } from 'dtos/comment/IAddComment';
+import { IUpdateComment } from 'dtos/comment/IUpdateComment';
 
 export default class CommentService implements ICommentService {
     public constructor(private CommentModel: Model<ICommentModel, {}>) {}
 
-    public getAll(): Promise<ICommentModel | {}> {
-        return this.CommentModel.find({}).exec();
+    public get(articleId?: string): Promise<ICommentWithId[]> {
+        const queryObject = articleId ? { article: articleId } : {};
+        return new Promise(async (resolve, reject) => {
+            try {
+                const comments: ICommentModel[] = await this.CommentModel.find(
+                    queryObject
+                )
+                    .select('-__v')
+                    .populate({
+                        path: 'author',
+                        select: 'name'
+                    })
+                    .exec();
+
+                const commentObjects: ICommentWithId[] = comments.map(c => {
+                    const {
+                        _id,
+                        validContent: content,
+                        author,
+                        article,
+                        created_date,
+                        isRemoved
+                    } = c.toJSON({ virtuals: true });
+
+                    return {
+                        _id,
+                        content,
+                        author,
+                        article,
+                        created_date,
+                        isRemoved
+                    };
+                });
+                resolve(commentObjects);
+            } catch (e) {
+                reject(e);
+            }
+        });
     }
 
-    public getAllForArticle(id: string): Promise<ICommentModel[]> {
-        return this.CommentModel.find({ article: id })
+    public update(
+        id: string,
+        body: IUpdateComment
+    ): Promise<ICommentWithId | null> {
+        return this.CommentModel.findOneAndUpdate({ _id: id }, body, {
+            new: true
+        })
+            .select('-__v')
             .populate({
                 path: 'author',
                 select: 'name'
@@ -20,25 +64,17 @@ export default class CommentService implements ICommentService {
             .exec();
     }
 
-    public getSingle(id: string): Promise<ICommentModel | null> {
-        return this.CommentModel.findById(id).exec();
-    }
-
-    public update(id: string, body: any): Promise<ICommentModel | null> {
-        return this.CommentModel.findOneAndUpdate({ _id: id }, body, {
-            new: true
-        }).exec();
-    }
-
-    public add(body: any): Promise<ICommentModel> {
+    public add(
+        body: IAddComment,
+        articleId: string,
+        authorId: string
+    ): Promise<ICommentModel> {
         const article = new this.CommentModel({
             ...body,
+            author: authorId,
+            article: articleId,
             _id: new mongoose.Types.ObjectId()
         });
         return article.save();
-    }
-
-    public remove(id: string): Promise<any> {
-        return this.CommentModel.remove({ _id: id }).exec();
     }
 }

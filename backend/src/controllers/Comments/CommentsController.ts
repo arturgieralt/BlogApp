@@ -1,17 +1,21 @@
-import jwt from 'jsonwebtoken';
 import { Server, Socket } from 'socket.io';
 import { ICommentSocket } from '../../dtos/ICommentSocket';
 import { IUserService } from '../../services/User/IUserService';
 import { ITokenService } from '../../services/TokenService/ITokenService';
 import { ICommentService } from '../../services/Comment/ICommentService';
 import { ICommentsController } from './ICommentsController';
+import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
+import { IJWT } from 'types/externals';
+import { IAddComment } from 'dtos/comment/IAddComment';
 
 export default class CommentsController implements ICommentsController {
     public constructor(
         private server: Server,
         private UserService: IUserService,
         private TokenService: ITokenService,
-        private CommentService: ICommentService
+        private CommentService: ICommentService,
+        private EnvProvider: IEnvProvider,
+        private JsonWebToken: IJWT
     ) {
         this.server
             .of('/commentStream')
@@ -45,9 +49,9 @@ export default class CommentsController implements ICommentsController {
             commentSocket.handshake.query &&
             commentSocket.handshake.query.token
         ) {
-            jwt.verify(
+            this.JsonWebToken.verify(
                 commentSocket.handshake.query.token,
-                process.env.SECRET_JWT as string,
+                this.EnvProvider.get('SECRET_JWT'),
                 this.verifyToken(commentSocket, next)
             );
         } else {
@@ -59,13 +63,15 @@ export default class CommentsController implements ICommentsController {
         articleId: roomID,
         decodedToken
     }: ICommentSocket) => async (message: string) => {
-        const comment = {
-            content: message,
-            author: decodedToken.id,
-            article: roomID
+        const comment: IAddComment = {
+            content: message
         };
         try {
-            const comDoc = await this.CommentService.add(comment);
+            const comDoc = await this.CommentService.add(
+                comment,
+                roomID,
+                decodedToken.id
+            );
             const com = comDoc.toObject();
             const user = await this.UserService.getSingle(com.author);
             this.server

@@ -1,6 +1,7 @@
 import { Document } from 'mongoose';
+import { IIdentity } from 'models/common/IIdentity';
 
-export interface IFileModelDto {
+export interface IFile {
     originalname: string;
     encoding: string;
     mimetype: string;
@@ -9,6 +10,10 @@ export interface IFileModelDto {
     filename: string;
     path: string;
     uploadBy: string;
+    tags: string[];
+    created_date?: string;
 }
 
-export interface IFileModel extends IFileModelDto, Document {}
+export interface IFileWithId extends IFile, IIdentity {}
+
+export interface IFileModel extends IFile, Document {}

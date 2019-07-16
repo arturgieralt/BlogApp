@@ -40,15 +40,8 @@ class Root extends React.Component {
             <StyledBanner />
             <Switch>
               <Route exact path="/" component={Main} />
-              <Route
-                exact
-                path="/articles"
-                component={Can({
-                  permission: "articles:list",
-                  Component: ArticleList,
-                  NoAccessComponent: NoAcess
-                })}
-              />
+              <Route exact path="/articles" component={ArticleList} />
+              <Route exact path="/tags/:tag" component={ArticleList} />
               <Route
                 exact
                 path="/articles/add"

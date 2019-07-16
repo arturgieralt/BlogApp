@@ -2,6 +2,7 @@ import React from "react";
 import StyledCard from "../components/Card/Card";
 import photo from "../static/photo.png";
 import ArticleList from "../containers/ArticleList";
+import TagList from "../containers/TagList";
 
 const Main = () => (
   <React.Fragment>
@@ -70,15 +71,7 @@ const Main = () => (
         margin="20px 20px 20px 20px"
         title="Tags"
       >
-        . Duis cursus maximus auctor. Nullam elementum at tortor eu viverra.
-        Duis nec semper arcu. Sed viverra imperdiet magna eget interdum. Nunc
-        tincidunt pharetra ex vel hendrerit. Sed convallis semper orci mattis
-        blandit. In fermentum lobortis nisl nec molestie. Cras pharetra tortor
-        quis elit egestas, ut placerat ex ornare. Phasellus in tellus in leo
-        euismod faucibus. Maecenas luctus metus arcu, vitae mattis orci aliquam
-        at. Proin non varius erat. Aenean vel gravida purus, in rutrum dolor.
-        Pellentesque habitant morbi tristique senectus et netus et malesuada
-        fames ac turpis egestas.
+        <TagList />
       </StyledCard>
     </div>
     <div

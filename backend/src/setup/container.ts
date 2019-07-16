@@ -15,23 +15,47 @@ import CaptchaController from '../controllers/Captcha/CaptchaController';
 import CaptchaService from '../services/Captcha/CaptchaService';
 import CommentsController from '../controllers/Comments/CommentsController';
 import { iot } from '../server';
+import path from 'path';
 import FileService from '../services/File/FileService';
 import { FileModel } from '../models/File/FileModel';
 import FilesController from '../controllers/Files/FilesController';
 import AuthorizeMiddleware from '../middlewares/Authorize/Authorize';
 import VerifyUserMiddleware from '../middlewares/VerifyUser/VerifyUser';
+import EnvProvider from '../providers/EnvProvider/EnvProvider';
+import MailServiceBuilder from '../builders/MailServiceBuilder/MailServiceBuilder';
+import bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import axios from 'axios';
+import multer from 'multer';
+import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 
-export const tokenFactory = new TokenFactory();
+export const jwtModule = jwt;
+
+export const envProvider = new EnvProvider();
+const mailBuilder = new MailServiceBuilder(envProvider);
+
+export const mailService = mailBuilder.build();
+export const tokenFactory = new TokenFactory(envProvider, jwt);
 
 export const tokenService = new TokenService(TokenModel, tokenFactory);
-export const userService = new UserService(UserModel);
+export const userService = new UserService(UserModel, envProvider, bcrypt);
 export const roleService = new RoleService(RoleModel);
 export const commentService = new CommentService(CommentModel);
 export const articleService = new ArticleService(ArticleModel);
-export const captchaService = new CaptchaService();
+export const captchaService = new CaptchaService(envProvider, axios);
 export const fileSerivce = new FileService(FileModel);
 
-export const verifyUserMiddleware = new VerifyUserMiddleware(userService);
+export const fileUploaderMiddleware = new FileUploaderMiddleware(
+    multer,
+    path.dirname(__dirname) + '/uploads',
+    'file',
+    Date
+);
+
+export const verifyUserMiddleware = new VerifyUserMiddleware(
+    userService,
+    bcrypt
+);
 export const authorizeMiddleware = new AuthorizeMiddleware(
     roleService,
     tokenService
@@ -45,6 +69,7 @@ export const articlesController = new ArticlesController(
 export const usersController = new UsersController(
     userService,
     tokenService,
-    roleService
+    roleService,
+    mailService
 );
 export const filesController = new FilesController(userService, fileSerivce);

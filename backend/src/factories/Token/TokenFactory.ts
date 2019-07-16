@@ -1,9 +1,10 @@
-import * as jwt from 'jsonwebtoken';
 import Permissions from './Permissions';
 import { IUserModel } from 'models/User/IUserModel';
 import { IVerifyToken } from './IVerifyToken';
 import { IAuthToken } from './IAuthToken';
 import { ITokenFactory } from './ITokenFactory';
+import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
+import { IJWT } from 'types/externals';
 
 type Authorization = 'AuthToken';
 export const Authorization: Authorization = 'AuthToken';
@@ -15,14 +16,6 @@ type VerifyAccount = 'VerifyAccountToken';
 export const VerifyAccount: VerifyAccount = 'VerifyAccountToken';
 
 export type TokenType = Authorization | PassReset | VerifyAccount;
-
-export const getSecret = (): string => {
-    const secret = process.env.SECRET_JWT;
-    if (secret === undefined) {
-        throw new Error('Cannot get secret');
-    }
-    return secret;
-};
 
 export default class TokenFactory implements ITokenFactory {
     public static TokenTypes = {
@@ -53,19 +46,19 @@ export default class TokenFactory implements ITokenFactory {
         issuer: 'webdevag:issuer'
     };
 
-    private secret: string;
-    public constructor() {
-        this.secret = getSecret();
-    }
+    public constructor(
+        private EnvProvider: IEnvProvider,
+        private JsonWebToken: IJWT
+    ) {}
 
     public getAuthToken(
         user: IUserModel,
         userRoles: string[],
         tokenId: string
     ) {
-        const { id } = user;
+        const { _id } = user.toObject();
         const payload: IAuthToken = {
-            id,
+            id: _id,
             exp: Date.now() + TokenFactory.ExpTime[Authorization],
             userRoles,
             tokenId,
@@ -73,7 +66,10 @@ export default class TokenFactory implements ITokenFactory {
             ...TokenFactory.TokenOptions
         };
 
-        const token = jwt.sign(JSON.stringify(payload), this.secret);
+        const token = this.JsonWebToken.sign(
+            JSON.stringify(payload),
+            this.EnvProvider.get('SECRET_JWT')
+        );
         return {
             token,
             payload
@@ -89,14 +85,17 @@ export default class TokenFactory implements ITokenFactory {
             ...TokenFactory.TokenOptions
         };
 
-        return jwt.sign(JSON.stringify(payload), this.secret);
+        return this.JsonWebToken.sign(
+            JSON.stringify(payload),
+            this.EnvProvider.get('SECRET_JWT')
+        );
     }
 
     public decodeToken(token: string): Promise<any> {
         return new Promise((resolve, reject) => {
-            jwt.verify(
+            this.JsonWebToken.verify(
                 token,
-                this.secret,
+                this.EnvProvider.get('SECRET_JWT'),
                 TokenFactory.TokenOptionsVerify,
                 async function(err: any, decoded: any) {
                     if (!err) {

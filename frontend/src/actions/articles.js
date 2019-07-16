@@ -53,3 +53,10 @@ export const addArticleFailure = error => ({
   type: ARTICLE_ADD_FAILURE,
   error
 });
+
+export const ARTICLES_QUERY_REQUEST = "[ARTICLES]_QUERY_REQUEST";
+
+export const queryArticles = queryObject => ({
+  type: ARTICLES_QUERY_REQUEST,
+  queryObject
+});

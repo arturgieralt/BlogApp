@@ -1,14 +1,24 @@
 import { Document } from 'mongoose';
+import { IIdentity } from '../../models/common/IIdentity';
 
-export interface IUserModel extends Document {
-    _id: string;
+export interface IUserLite {
+    name: string;
+}
+
+export interface IUserLiteWithId extends IUserLite, IIdentity {}
+
+export interface IUser {
     name: string;
     email: string;
     isActive: boolean;
     passwordHash: string;
-    created_date: Date;
+    created_date: string;
     avatarUrl: string;
 }
+
+export interface IUserWithId extends IUser, IIdentity {}
+
+export interface IUserModel extends IUser, Document {}
 
 export interface IUserDto {
     name: string;

@@ -11,7 +11,8 @@ import {
   fetchArticlesFailure,
   ARTICLE_FETCH_REQUEST,
   fetchArticleSuccess,
-  fetchArticleFailure
+  fetchArticleFailure,
+  ARTICLES_QUERY_REQUEST
 } from "../actions/articles";
 
 export const fetchArticlesEpic = action$ =>
@@ -36,13 +37,32 @@ export const fetchArticleEpic = action$ =>
     )
   );
 
+export const queryArticlesEpic = action$ =>
+  action$.pipe(
+    ofType(ARTICLES_QUERY_REQUEST),
+    mergeMap(action =>
+      ajax({
+        url: "https://localhost:3001/articles",
+        body: JSON.stringify(action.queryObject),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        cache: false,
+        method: "POST"
+      }).pipe(
+        map(({ response }) => fetchArticlesSuccess(response)),
+        catchError(error => ActionsObservable.of(fetchArticlesFailure(error)))
+      )
+    )
+  );
+
 export const addArticleEpic = (action$, state$) =>
   action$.pipe(
     ofType(ARTICLE_ADD_REQUEST),
     withLatestFrom(state$),
     mergeMap(([action, state]) =>
       ajax({
-        url: "https://localhost:3001/articles",
+        url: "https://localhost:3001/articles/add",
         body: JSON.stringify({ ...action.article }),
         headers: {
           "Content-Type": "application/json",

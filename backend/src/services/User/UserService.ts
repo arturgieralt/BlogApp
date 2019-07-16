@@ -1,5 +1,3 @@
-import { UserModel } from '../../models/User/UserModel';
-import bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import passport = require('passport');
 import { IVerifyOptions } from 'passport-local';
@@ -7,9 +5,15 @@ import { Request, Response, NextFunction } from 'express';
 import { IUserModel, IUserDto } from 'models/User/IUserModel';
 import { IAuthToken } from '../../factories/Token/IAuthToken';
 import { IUserService } from './IUserService';
+import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
+import { IEncryptor } from 'types/externals';
 
 export default class UserService implements IUserService {
-    public constructor(private UserRepository: Model<IUserModel, {}>) {}
+    public constructor(
+        private UserRepository: Model<IUserModel, {}>,
+        private EnvProvider: IEnvProvider,
+        private bcrypt: IEncryptor
+    ) {}
 
     public getAll = (): Promise<IUserModel> => {
         return this.UserRepository.find({})
@@ -57,10 +61,10 @@ export default class UserService implements IUserService {
         email: string
     ): Promise<IUserModel> => {
         return new Promise(async (resolve, reject) => {
-            const rounds = Number(process.env.PASS_ROUNDS);
+            const rounds = Number(this.EnvProvider.get('PASS_ROUNDS'));
 
             try {
-                const passwordHash = await bcrypt.hash(password, rounds);
+                const passwordHash = await this.bcrypt.hash(password, rounds);
                 const user = new this.UserRepository({
                     name,
                     passwordHash,
