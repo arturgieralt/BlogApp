@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import * as bodyParser from 'body-parser';
@@ -18,6 +18,9 @@ import {
     envProvider,
     fileUploaderMiddleware
 } from './container';
+import errorHandler from './../middlewares/ErrorHandler/ErrorHandler';
+import winston from 'winston';
+import expressWinston from 'express-winston';
 
 class App {
     public app: express.Application;
@@ -37,18 +40,19 @@ class App {
             fileUploaderMiddleware
         );
 
-        this.app.use(function errorHandler(
-            err: Error,
-            req: Request,
-            res: Response,
-            next: NextFunction
-        ) {
-            if (res.headersSent) {
-                return next(err);
-            }
-            res.status(500);
-            res.json(err.message);
-        });
+        this.app.use(expressWinston.errorLogger({
+            transports: [
+              new winston.transports.File({
+                  filename: 'errors.log'
+              })
+            ],
+            format: winston.format.combine(
+              winston.format.colorize(),
+              winston.format.json()
+            )
+          }));
+
+        this.app.use(errorHandler);
 
         this.mongoSetup();
     }
@@ -65,12 +69,27 @@ class App {
         this.app.use(passport.initialize());
         initPassport(verifyUserMiddleware, envProvider);
 
-        console.log(path.dirname(__dirname) + '/uploads');
-
         this.app.use(
             '/avatars',
             express.static(path.dirname(__dirname) + '/uploads') /// change this!!
         );
+
+        this.app.use(expressWinston.logger({
+            transports: [
+              new winston.transports.File({
+                  filename: 'requests.log'
+              })
+            ],
+            format: winston.format.combine(
+              winston.format.colorize(),
+              winston.format.json()
+            ),
+            meta: true, // optional: control whether you want to log the meta data about the request (default to true)
+            msg: "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+            expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+            colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+            ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
+          }));
     }
 
     private async mongoSetup(): Promise<void> {

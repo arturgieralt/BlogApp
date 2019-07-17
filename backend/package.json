@@ -41,6 +41,7 @@
         "@types/cors": "^2.8.5",
         "@types/express": "^4.17.0",
         "@types/express-validator": "^3.0.0",
+        "@types/express-winston": "^3.0.3",
         "@types/mocha": "^5.2.7",
         "@types/mocha-each": "^1.1.0",
         "@types/mongoose": "^5.5.8",
@@ -82,6 +83,7 @@
         "envalid": "^5.0.0",
         "express": "^4.17.1",
         "express-validator": "^5.3.1",
+        "express-winston": "^3.2.1",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.6.4",
         "multer": "^1.4.2",
@@ -89,6 +91,7 @@
         "passport": "^0.4.0",
         "passport-jwt": "^4.0.0",
         "passport-local": "^1.0.0",
-        "socket.io": "^2.2.0"
+        "socket.io": "^2.2.0",
+        "winston": "^3.2.1"
     }
 }
