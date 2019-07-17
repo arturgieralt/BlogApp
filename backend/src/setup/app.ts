@@ -18,6 +18,10 @@ import {
     envProvider,
     fileUploaderMiddleware
 } from './container';
+import errorHandler from './../middlewares/ErrorHandler/ErrorHandler';
+import errorLogger from './../middlewares/loggers/ErrorLogger';
+import requestLogger from './../middlewares/loggers/RequestLogger';
+
 
 class App {
     public app: express.Application;
@@ -36,6 +40,11 @@ class App {
             authorizeMiddleware,
             fileUploaderMiddleware
         );
+
+        this.app.use(errorLogger);
+
+        this.app.use(errorHandler);
+
         this.mongoSetup();
     }
 
@@ -51,12 +60,12 @@ class App {
         this.app.use(passport.initialize());
         initPassport(verifyUserMiddleware, envProvider);
 
-        console.log(path.dirname(__dirname) + '/uploads');
-
         this.app.use(
             '/avatars',
             express.static(path.dirname(__dirname) + '/uploads') /// change this!!
         );
+
+        this.app.use(requestLogger);
     }
 
     private async mongoSetup(): Promise<void> {

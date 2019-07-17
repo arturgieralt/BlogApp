@@ -10,13 +10,8 @@ export default class CaptchaController implements ICaptchaController {
         res: Response,
         next: NextFunction
     ) => {
-        try {
-            const isHuman = await this.CaptchaService.verifyToken(
-                req.body.token
-            );
-            res.status(200).json(isHuman);
-        } catch (e) {
-            res.status(400).json(e);
-        }
+        const isHuman = await this.CaptchaService.verifyToken(req.body.token);
+
+        res.status(200).json(isHuman);
     };
 }

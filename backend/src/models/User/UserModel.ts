@@ -32,7 +32,7 @@ export const UserSchema = new Schema(
             type: Date,
             default: Date.now()
         },
-        avatarName: { type: String }
+        avatarUrl: { type: String }
     },
     { id: false }
 );

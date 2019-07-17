@@ -7,6 +7,15 @@ import { ICommentsController } from './ICommentsController';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
 import { IJWT } from 'types/externals';
 import { IAddComment } from 'dtos/comment/IAddComment';
+import { addUser, removeUser } from './helpers';
+
+export type RoomUser = {
+    _id: string;
+    name: string;
+};
+export type RoomUsers = {
+    [key: string]: RoomUser[];
+};
 
 export default class CommentsController implements ICommentsController {
     public constructor(
@@ -15,7 +24,8 @@ export default class CommentsController implements ICommentsController {
         private TokenService: ITokenService,
         private CommentService: ICommentService,
         private EnvProvider: IEnvProvider,
-        private JsonWebToken: IJWT
+        private JsonWebToken: IJWT,
+        private roomUsers: RoomUsers = {}
     ) {
         this.server
             .of('/commentStream')
@@ -92,9 +102,40 @@ export default class CommentsController implements ICommentsController {
         }
     };
 
-    private onConnection = (socket: Socket) => {
+    private onConnection = async (socket: Socket) => {
         const roomID = (socket as ICommentSocket).articleId;
+        const token = (socket as ICommentSocket).decodedToken;
+
+        const user = await this.UserService.getSingle(token.id);
+
         socket.join(roomID);
+        this.roomUsers = addUser(
+            roomID,
+            {
+                _id: token.id,
+                name: user.name
+            },
+            { ...this.roomUsers }
+        );
+
         socket.on('message', this.onMessage(socket as ICommentSocket));
+        socket.on('disconnect', this.onDisconnect(socket as ICommentSocket));
+
+        this.server
+            .of('/commentStream')
+            .to(roomID)
+            .emit('roomUpdate', this.roomUsers[roomID]);
+    };
+
+    private onDisconnect = (socket: Socket) => () => {
+        const roomID = (socket as ICommentSocket).articleId;
+        const token = (socket as ICommentSocket).decodedToken;
+
+        this.roomUsers = removeUser(roomID, token.id, { ...this.roomUsers });
+
+        this.server
+            .of('/commentStream')
+            .to(roomID)
+            .emit('roomUpdate', this.roomUsers[roomID]);
     };
 }

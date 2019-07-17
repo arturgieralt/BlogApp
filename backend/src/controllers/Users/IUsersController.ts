@@ -10,4 +10,5 @@ export interface IUsersController {
     login: (req: Request, res: Response, next: NextFunction) => any;
     logout: (req: Request, res: Response) => any;
     remove: (req: Request, res: Response, next: NextFunction) => any;
+    getAvatar: (req: Request, res: Response, next: NextFunction) => any;
 }

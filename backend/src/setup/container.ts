@@ -28,13 +28,19 @@ import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
 import multer from 'multer';
 import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
+import FileManager from '../external/FileManager/FileManager';
+import fs from 'fs';
 
 export const jwtModule = jwt;
 
+export const fileManager = new FileManager(
+    fs,
+    path.dirname(__dirname) + '/uploads/'
+);
 export const envProvider = new EnvProvider();
 const mailBuilder = new MailServiceBuilder(envProvider);
 
-export const mailService = mailBuilder.build();
+export const mailService = mailBuilder.withService('gmail').build();
 export const tokenFactory = new TokenFactory(envProvider, jwt);
 
 export const tokenService = new TokenService(TokenModel, tokenFactory);
@@ -70,6 +76,11 @@ export const usersController = new UsersController(
     userService,
     tokenService,
     roleService,
-    mailService
+    mailService,
+    path.dirname(__dirname) + '/uploads/'
 );
-export const filesController = new FilesController(userService, fileSerivce);
+export const filesController = new FilesController(
+    userService,
+    fileSerivce,
+    fileManager
+);

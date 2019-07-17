@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 
 import React from "react";
-import { path, pathOr } from "ramda";
+import { path, pathOr, isNil } from "ramda";
 import * as io from "socket.io-client";
 import PropTypes from "prop-types";
 import StyledCard from "../Card/Card";
@@ -27,7 +27,8 @@ class Article extends React.Component {
     comment: "",
     socket: null,
     commentsDefault: [],
-    commentsLive: []
+    commentsLive: [],
+    usersLive: []
   };
 
   componentDidMount() {
@@ -46,6 +47,12 @@ class Article extends React.Component {
         }
       });
 
+      socket.on("roomUpdate", users => {
+        this.setState({
+          usersLive: users
+        });
+      });
+
       socket.on("new comment", msg => {
         this.setState(state => ({
           commentsLive: [...state.commentsLive, msg]
@@ -55,6 +62,13 @@ class Article extends React.Component {
       this.setState({
         socket
       });
+    }
+  }
+
+  componentWillUnmount() {
+    const { socket } = this.state;
+    if (!isNil(socket)) {
+      socket.disconnect();
     }
   }
 
@@ -75,7 +89,7 @@ class Article extends React.Component {
 
   render() {
     const { article, isAuthenticated } = this.props;
-    const { comment, commentsLive } = this.state;
+    const { comment, commentsLive, usersLive } = this.state;
     if (article) {
       return (
         <React.Fragment>
@@ -98,7 +112,22 @@ class Article extends React.Component {
               </Button>
             </StyledCard>
           )}
-          <StyledCard width="90%" margin="20px auto" title="Comments">
+          <StyledCard width="20%" margin="20px auto" title="Active users">
+            {usersLive.map(u => (
+              <div key={u._id}>
+                {u.name}
+                <img
+                  src={`https://localhost:3001/user/avatar/${u._id}`}
+                  alt="Avatar"
+                  style={{
+                    width: "20px",
+                    height: "20px"
+                  }}
+                />
+              </div>
+            ))}
+          </StyledCard>
+          <StyledCard width="70%" margin="20px auto" title="Comments">
             {commentsLive.map(com => (
               <div key={com._id}>
                 {com.content} by {com.author.name}
