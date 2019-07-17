@@ -6,6 +6,23 @@ import { IFilesController } from '../controllers/Files/IFilesController';
 import { ICaptchaController } from '../controllers/Captcha/ICaptchaController';
 import { IAuthorizeMiddleware } from '../middlewares/Authorize/IAuthorize';
 import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
+import registerRoutes from '../utils/registerRoutes';
+
+export const DELETE = 'delete';
+export const PUT = 'put';
+export const GET = 'get';
+export const POST = 'post';
+
+export type Route = {
+    controller: Function;
+    middlewares?: any[];
+};
+
+export type RouteMapping = {
+    [key: string]: {
+        [key: string]: Route;
+    };
+};
 
 export class Routes {
     public routes(
@@ -17,81 +34,133 @@ export class Routes {
         AuthorizeMiddleware: IAuthorizeMiddleware,
         FileUploader: FileUploaderMiddleware
     ): void {
-        app.route('/articles')
-            .get(ArticlesController.getList)
-            .post(ArticlesController.getList);
+        const routeMap: RouteMapping = {
+            '/articles': {
+                [GET]: {
+                    controller: ArticlesController.getList
+                },
+                [POST]: {
+                    controller: ArticlesController.getList
+                }
+            },
 
-        // app.route('/articles/filter').post(ArticlesController.getAllByQuery);
+            '/articles/add': {
+                [POST]: {
+                    controller: ArticlesController.add,
+                    middlewares: [AuthorizeMiddleware.authorize(['Admin'])]
+                }
+            },
 
-        app.route('/articles/add').post(
-            AuthorizeMiddleware.authorize(['Admin']),
-            ArticlesController.add
-        );
+            '/articles/:articleId': {
+                [GET]: {
+                    controller: ArticlesController.getSingle
+                },
+                [PUT]: {
+                    controller: ArticlesController.update,
+                    middlewares: [AuthorizeMiddleware.authorize(['Admin'])]
+                },
+                [DELETE]: {
+                    controller: ArticlesController.remove,
+                    middlewares: [AuthorizeMiddleware.authorize(['Admin'])]
+                }
+            },
 
-        app.route('/articles/:articleId')
-            .get(ArticlesController.getSingle)
-            .put(
-                AuthorizeMiddleware.authorize(['Admin']),
-                ArticlesController.update
-            )
-            .delete(
-                AuthorizeMiddleware.authorize(['Admin']),
-                ArticlesController.remove
-            );
+            '/tags': {
+                [GET]: {
+                    controller: ArticlesController.getTagsCounted
+                }
+            },
 
-        app.route('/tags').get(ArticlesController.getTagsCounted);
+            '/users': {
+                [GET]: {
+                    controller: UsersController.getAll,
+                    middlewares: [AuthorizeMiddleware.authorize()]
+                }
+            },
 
-        app.route('/users').get(
-            AuthorizeMiddleware.authorize(),
-            UsersController.getAll
-        );
+            '/user/register': {
+                [POST]: {
+                    controller: UsersController.register,
+                    middlewares: [...BaseValidator.get('/user/register')]
+                }
+            },
 
-        app.route('/user/register').post(
-            ...BaseValidator.get('/user/register'),
-            UsersController.register
-        );
+            '/user/login': {
+                [POST]: {
+                    controller: UsersController.login,
+                    middlewares: [...BaseValidator.get('/user/login')]
+                }
+            },
 
-        app.route('/user/login').post(
-            ...BaseValidator.get('/user/login'),
-            UsersController.login
-        );
+            '/user/logout': {
+                [POST]: {
+                    controller: UsersController.logout,
+                    middlewares: [AuthorizeMiddleware.authorize()]
+                }
+            },
 
-        app.route('/user/logout').post(
-            AuthorizeMiddleware.authorize(),
-            UsersController.logout
-        );
+            '/user/verify': {
+                [POST]: {
+                    controller: UsersController.verify,
+                    middlewares: [
+                        ...BaseValidator.get('/user/verify'),
+                        AuthorizeMiddleware.authorize()
+                    ]
+                }
+            },
 
-        app.route('/user/verify').post(
-            ...BaseValidator.get('/user/verify'),
-            AuthorizeMiddleware.authorize(),
-            UsersController.verify
-        );
+            '/user/remove': {
+                [POST]: {
+                    controller: UsersController.remove,
+                    middlewares: [AuthorizeMiddleware.authorize()]
+                }
+            },
 
-        app.route('/user/remove').post(
-            AuthorizeMiddleware.authorize(),
-            UsersController.remove
-        );
+            '/user/profile': {
+                [GET]: {
+                    controller: UsersController.getMyProfile,
+                    middlewares: [AuthorizeMiddleware.authorize()]
+                }
+            },
 
-        app.route('/user/profile').get(
-            AuthorizeMiddleware.authorize(),
-            UsersController.getMyProfile
-        );
+            '/user/avatar/:userId': {
+                [GET]: {
+                    controller: UsersController.getAvatar
+                }
+            },
 
-        app.route('/user/avatar/:userId').get(
-            UsersController.getAvatar
-        );
+            '/users/:userId': {
+                [GET]: {
+                    controller: UsersController.getSingle,
+                    middlewares: [AuthorizeMiddleware.authorize()]
+                },
+                [PUT]: {
+                    controller: UsersController.update,
+                    middlewares: [AuthorizeMiddleware.authorize()]
+                },
+                [DELETE]: {
+                    controller: UsersController.remove,
+                    middlewares: [AuthorizeMiddleware.authorize()]
+                }
+            },
 
-        app.route('/captcha/verify').post(CaptchaController.verifyToken);
+            '/captcha/verify': {
+                [POST]: {
+                    controller: CaptchaController.verifyToken
+                }
+            },
 
-        app.route('/users/:userId')
-            .get(AuthorizeMiddleware.authorize(), UsersController.getSingle)
-            .put(AuthorizeMiddleware.authorize(), UsersController.update)
-            .delete(AuthorizeMiddleware.authorize(), UsersController.remove);
+            '/avatar/upload': {
+                [POST]: {
+                    controller: FilesController.uploadAvatar,
+                    middlewares: [
+                        AuthorizeMiddleware.authorize(),
+                        FileUploader.getRequestHandler()
+                    ]
+                }
+            }
+        };
 
-        app.route('/avatar/upload').post(
-            AuthorizeMiddleware.authorize(),
-            FileUploader.getRequestHandler(),
-            FilesController.uploadAvatar
-        );
+        registerRoutes(app, routeMap);
     }
 }

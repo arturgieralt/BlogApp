@@ -16,44 +16,40 @@ export default class FilesController implements IFilesController {
         res: Response,
         next: NextFunction
     ) => {
-        try {
-            const {
-                originalname,
-                encoding,
-                mimetype,
-                size,
-                destination,
-                filename,
-                path
-            } = req.file;
-            const { id } = req.user;
+        const {
+            originalname,
+            encoding,
+            mimetype,
+            size,
+            destination,
+            filename,
+            path
+        } = req.file;
+        const { id } = req.user;
 
-            const oldAvatars = await this.FileService.get({
-                uploadBy: id,
-                tags: ['avatar']
-            });
-            // remove old avatars
-            oldAvatars.map(f => this.FileManager.remove(f.filename));
+        const oldAvatars = await this.FileService.get({
+            uploadBy: id,
+            tags: ['avatar']
+        });
+        // remove old avatars
+        oldAvatars.map(f => this.FileManager.remove(f.filename));
 
-            await this.FileService.removeAvatarEntries(id);
+        await this.FileService.removeAvatarEntries(id);
 
-            await this.FileService.add({
-                uploadBy: id,
-                originalname,
-                encoding,
-                mimetype,
-                size,
-                destination,
-                filename,
-                path,
-                tags: ['avatar']
-            });
+        await this.FileService.add({
+            uploadBy: id,
+            originalname,
+            encoding,
+            mimetype,
+            size,
+            destination,
+            filename,
+            path,
+            tags: ['avatar']
+        });
 
-            await this.UserService.update(id, { avatarUrl: filename });
+        await this.UserService.update(id, { avatarUrl: filename });
 
-            return res.status(200).send(req.file);
-        } catch (e) {
-            return res.status(500).json(e);
-        }
+        res.status(200).send(req.file);
     };
 }

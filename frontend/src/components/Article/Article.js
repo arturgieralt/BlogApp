@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unused-state */
 
 import React from "react";
-import { path, pathOr } from "ramda";
+import { path, pathOr, isNil } from "ramda";
 import * as io from "socket.io-client";
 import PropTypes from "prop-types";
 import StyledCard from "../Card/Card";
@@ -67,7 +67,9 @@ class Article extends React.Component {
 
   componentWillUnmount() {
     const { socket } = this.state;
-    socket.disconnect();
+    if (!isNil(socket)) {
+      socket.disconnect();
+    }
   }
 
   handleChange(event) {
@@ -110,7 +112,7 @@ class Article extends React.Component {
               </Button>
             </StyledCard>
           )}
-          <StyledCard width="90%" margin="20px auto" title="Active users">
+          <StyledCard width="20%" margin="20px auto" title="Active users">
             {usersLive.map(u => (
               <div key={u._id}>
                 {u.name}
@@ -125,7 +127,7 @@ class Article extends React.Component {
               </div>
             ))}
           </StyledCard>
-          <StyledCard width="90%" margin="20px auto" title="Comments">
+          <StyledCard width="70%" margin="20px auto" title="Comments">
             {commentsLive.map(com => (
               <div key={com._id}>
                 {com.content} by {com.author.name}

@@ -7,5 +7,5 @@ export interface IFileService {
     getSingle: (id: string) => Promise<IFileWithId | null>;
     add: (body: IFile) => Promise<IFileModel>;
     remove: (id: string) => Promise<IDeleteResultObject>;
-    removeAvatarEntries: (userId: string) => Promise<IDeleteResultObject>
+    removeAvatarEntries: (userId: string) => Promise<IDeleteResultObject>;
 }

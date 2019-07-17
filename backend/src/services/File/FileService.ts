@@ -36,10 +36,12 @@ export default class FileService implements IFileService {
         return this.FileModel.remove({ _id: id }).exec();
     };
 
-    public removeAvatarEntries = (userId: string): Promise<IDeleteResultObject> => {
+    public removeAvatarEntries = (
+        userId: string
+    ): Promise<IDeleteResultObject> => {
         return this.FileModel.deleteMany({
             uploadBy: userId,
             tags: ['avatar']
-         }).exec();
+        }).exec();
     };
 }

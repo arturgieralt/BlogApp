@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import * as bodyParser from 'body-parser';
@@ -36,6 +36,20 @@ class App {
             authorizeMiddleware,
             fileUploaderMiddleware
         );
+
+        this.app.use(function errorHandler(
+            err: Error,
+            req: Request,
+            res: Response,
+            next: NextFunction
+        ) {
+            if (res.headersSent) {
+                return next(err);
+            }
+            res.status(500);
+            res.json(err.message);
+        });
+
         this.mongoSetup();
     }
 
