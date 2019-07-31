@@ -26,7 +26,8 @@ import {
   USER_LOGIN_SUCCESS,
   USER_PROFILE_FETCH_REQUEST,
   fetchUserProfileSuccess,
-  fetchUserProfileFailure
+  fetchUserProfileFailure,
+  USER_EXTERNAL_PROVIDER_LOGIN_REQUEST
 } from "../actions/users";
 
 export const loginUserEpic = action$ =>
@@ -37,6 +38,25 @@ export const loginUserEpic = action$ =>
       return ajax({
         url: "https://localhost:3001/user/login",
         body: JSON.stringify({ ...action.user }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        cache: false,
+        method: "POST"
+      }).pipe(
+        map(({ response }) => loginUserSuccess(response.token)),
+        catchError(error => ActionsObservable.of(loginUserFailure(error)))
+      );
+    })
+  );
+
+export const loginUserWithExternalProviderEpic = action$ =>
+  action$.pipe(
+    ofType(USER_EXTERNAL_PROVIDER_LOGIN_REQUEST),
+    mergeMap(action => {
+      return ajax({
+        url: `https://localhost:3001/user/login/${action.provider}`,
+        body: JSON.stringify({ token: action.token }),
         headers: {
           "Content-Type": "application/json"
         },

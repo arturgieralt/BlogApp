@@ -7,6 +7,8 @@ import { ICaptchaController } from '../controllers/Captcha/ICaptchaController';
 import { IAuthorizeMiddleware } from '../middlewares/Authorize/IAuthorize';
 import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 import registerRoutes from '../utils/registerRoutes';
+import IdentityController from 'controllers/Identity/IdentityController';
+import { IIdentityController } from 'controllers/Identity/IIdentityController';
 
 export const DELETE = 'delete';
 export const PUT = 'put';
@@ -32,7 +34,8 @@ export class Routes {
         FilesController: IFilesController,
         CaptchaController: ICaptchaController,
         AuthorizeMiddleware: IAuthorizeMiddleware,
-        FileUploader: FileUploaderMiddleware
+        FileUploader: FileUploaderMiddleware,
+        IdentityController: IIdentityController
     ): void {
         const routeMap: RouteMapping = {
             '/articles': {
@@ -89,6 +92,12 @@ export class Routes {
                 [POST]: {
                     controller: UsersController.login,
                     middlewares: [...BaseValidator.get('/user/login')]
+                }
+            },
+
+            '/user/login/facebook': {
+                [POST]: {
+                    controller: IdentityController.verifyFacebookToken
                 }
             },
 

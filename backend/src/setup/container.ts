@@ -30,6 +30,7 @@ import multer from 'multer';
 import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 import FileManager from '../external/FileManager/FileManager';
 import fs from 'fs';
+import IdentityController from './../controllers/Identity/IdentityController';
 
 export const jwtModule = jwt;
 
@@ -67,6 +68,7 @@ export const authorizeMiddleware = new AuthorizeMiddleware(
     tokenService
 );
 
+export const identityController = new IdentityController(axios);
 export const captchaController = new CaptchaController(captchaService);
 export const articlesController = new ArticlesController(
     articleService,

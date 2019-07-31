@@ -16,7 +16,8 @@ import {
     authorizeMiddleware,
     verifyUserMiddleware,
     envProvider,
-    fileUploaderMiddleware
+    fileUploaderMiddleware,
+    identityController
 } from './container';
 import errorHandler from './../middlewares/ErrorHandler/ErrorHandler';
 import errorLogger from './../middlewares/loggers/ErrorLogger';
@@ -38,7 +39,8 @@ class App {
             filesController,
             captchaController,
             authorizeMiddleware,
-            fileUploaderMiddleware
+            fileUploaderMiddleware,
+            identityController
         );
 
         this.app.use(errorLogger);

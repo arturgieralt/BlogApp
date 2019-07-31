@@ -13,7 +13,8 @@ import {
   userLogoutSuccessEpic,
   removeUserEpic,
   userLoginSuccessEpic,
-  fetchUserProfileEpic
+  fetchUserProfileEpic,
+  loginUserWithExternalProviderEpic
 } from "./users";
 import {
   decodeTokenEpic,
@@ -44,5 +45,6 @@ export default combineEpics(
   notifierEpic,
   verifyCaptchaEpic,
   fetchTagsEpic,
-  queryArticlesEpic
+  queryArticlesEpic,
+  loginUserWithExternalProviderEpic
 );

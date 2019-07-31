@@ -17,6 +17,14 @@ export const loginUserFailure = error => ({
   error
 });
 
+export const USER_EXTERNAL_PROVIDER_LOGIN_REQUEST =
+  "[USER]_EXTERNAL_PROVIDER_LOGIN_REQUEST";
+export const loginUserWithExternalProvider = (token, provider) => ({
+  type: USER_EXTERNAL_PROVIDER_LOGIN_REQUEST,
+  token,
+  provider
+});
+
 export const USER_LOGOUT_REQUEST = "[USER]_LOGOUT_REQUEST";
 export const USER_LOGOUT_SUCCESS = "[USER]_LOGOUT_SUCCESS";
 export const USER_LOGOUT_FAILURE = "[USER]_LOGOUT_FAILURE";
