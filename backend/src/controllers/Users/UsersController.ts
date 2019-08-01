@@ -91,7 +91,7 @@ export default class UserController implements IUsersController {
             user.toObject()._id
         );
         const { token, payload } = await this.TokenService.createToken(
-            user,
+            user.toObject(),
             roles
         );
         const loginSuccess = await this.UserService.login(req, payload);

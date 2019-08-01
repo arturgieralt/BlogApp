@@ -68,7 +68,15 @@ export const authorizeMiddleware = new AuthorizeMiddleware(
     tokenService
 );
 
-export const identityController = new IdentityController(axios);
+export const identityController = new IdentityController(
+    axios,
+    verifyUserMiddleware,
+    userService,
+    roleService,
+    tokenService,
+    mailService,
+    envProvider
+);
 export const captchaController = new CaptchaController(captchaService);
 export const articlesController = new ArticlesController(
     articleService,

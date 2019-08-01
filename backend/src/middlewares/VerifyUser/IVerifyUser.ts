@@ -1,4 +1,4 @@
-import { IUserModel } from 'models/User/IUserModel';
+import { IUserModel, accountType } from 'models/User/IUserModel';
 import { IVerifyOptions } from 'passport-local';
 
 export interface IVerifyUserMiddleware {
@@ -11,4 +11,10 @@ export interface IVerifyUserMiddleware {
             options?: IVerifyOptions
         ) => void
     ) => void;
+
+    verifyExternalUser: (
+        email: string,
+        externalId: string,
+        provider: accountType
+    ) => Promise<IUserModel | null | Error>;
 }

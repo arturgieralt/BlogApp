@@ -2,7 +2,7 @@ import { Model } from 'mongoose';
 import passport = require('passport');
 import { IVerifyOptions } from 'passport-local';
 import { Request, Response, NextFunction } from 'express';
-import { IUserModel, IUserDto } from 'models/User/IUserModel';
+import { IUserModel, IUserDto, facebook } from 'models/User/IUserModel';
 import { IAuthToken } from '../../factories/Token/IAuthToken';
 import { IUserService } from './IUserService';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
@@ -38,6 +38,10 @@ export default class UserService implements IUserService {
         return this.UserRepository.findOne({ name }).exec();
     };
 
+    public getSingleByMail = (email: string): Promise<IUserModel | null> => {
+        return this.UserRepository.findOne({ email }).exec();
+    };
+
     public update = (id: string, body: any): Promise<IUserModel> => {
         return this.UserRepository.findOneAndUpdate({ _id: id }, body, {
             new: true
@@ -68,7 +72,30 @@ export default class UserService implements IUserService {
                 const user = new this.UserRepository({
                     name,
                     passwordHash,
-                    email
+                    email,
+                    accountType: 'internal'
+                });
+                const userDoc = await user.save();
+                resolve(userDoc.toObject());
+            } catch (e) {
+                reject(e);
+            }
+        });
+    };
+
+    public addExternal = async (
+        name: string,
+        email: string,
+        externalId: string,
+        accountType: facebook
+    ): Promise<IUserModel> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = new this.UserRepository({
+                    name,
+                    email,
+                    externalId,
+                    accountType
                 });
                 const userDoc = await user.save();
                 resolve(userDoc.toObject());

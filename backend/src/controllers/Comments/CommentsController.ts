@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import sanitize from 'sanitize-html'
+import sanitize from 'sanitize-html';
 import { ICommentSocket } from '../../dtos/ICommentSocket';
 import { IUserService } from '../../services/User/IUserService';
 import { ITokenService } from '../../services/TokenService/ITokenService';

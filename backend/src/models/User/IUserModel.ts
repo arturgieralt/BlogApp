@@ -14,7 +14,13 @@ export interface IUser {
     passwordHash: string;
     created_date: string;
     avatarUrl: string;
+    externalId?: string;
+    accountType: accountType;
 }
+
+export type internal = 'internal';
+export type facebook = 'facebook';
+export type accountType = internal | facebook;
 
 export interface IUserWithId extends IUser, IIdentity {}
 

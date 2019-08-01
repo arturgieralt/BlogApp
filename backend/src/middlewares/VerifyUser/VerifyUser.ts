@@ -1,5 +1,5 @@
 import { IVerifyOptions } from 'passport-local';
-import { IUserModel } from 'models/User/IUserModel';
+import { IUserModel, accountType, IUser } from 'models/User/IUserModel';
 import { IUserService } from 'services/User/IUserService';
 import { IVerifyUserMiddleware } from './IVerifyUser';
 import { IEncryptor } from 'types/externals';
@@ -38,6 +38,29 @@ export default class VerifyUserMiddleware implements IVerifyUserMiddleware {
             });
         } catch (error) {
             return done(error);
+        }
+    };
+
+    public verifyExternalUser = async (
+        email: string,
+        externalId: string,
+        provider: accountType
+    ) => {
+        try {
+            const user = await this.UserService.getSingleByMail(email);
+            if (user) {
+                if (
+                    user.externalId === externalId &&
+                    user.accountType === provider
+                ) {
+                    return user;
+                }
+                return new Error('Incorrect userId or provider.');
+            } else {
+                return null;
+            }
+        } catch (error) {
+            return error as Error;
         }
     };
 }

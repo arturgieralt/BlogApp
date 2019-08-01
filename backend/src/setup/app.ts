@@ -23,7 +23,6 @@ import errorHandler from './../middlewares/ErrorHandler/ErrorHandler';
 import errorLogger from './../middlewares/loggers/ErrorLogger';
 import requestLogger from './../middlewares/loggers/RequestLogger';
 
-
 class App {
     public app: express.Application;
     public routing: Routes = new Routes();

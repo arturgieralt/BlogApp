@@ -1,4 +1,4 @@
-import { IUserModel, IUserDto } from 'models/User/IUserModel';
+import { IUserModel, IUserDto, facebook } from 'models/User/IUserModel';
 import { Request, Response, NextFunction } from 'express';
 
 export interface IUserService {
@@ -6,9 +6,16 @@ export interface IUserService {
     getSingle: (id: string) => Promise<IUserModel>;
     getUserProfile: (id: string) => Promise<IUserDto>;
     getSingleByName: (name: string) => Promise<IUserModel | null>;
+    getSingleByMail: (name: string) => Promise<IUserModel | null>;
     update: (id: string, body: any) => Promise<IUserModel>;
     verify: (id: string) => Promise<IUserModel>;
     add: (name: string, password: string, email: string) => Promise<IUserModel>;
+    addExternal: (
+        name: string,
+        email: string,
+        externalId: string,
+        accountType: facebook
+    ) => Promise<IUserModel>;
     remove: (id: string) => Promise<any>;
     authenticate: (
         req: Request,
