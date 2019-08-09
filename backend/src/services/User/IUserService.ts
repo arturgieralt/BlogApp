@@ -14,6 +14,7 @@ export interface IUserService {
         name: string,
         email: string,
         externalId: string,
+        avatarUrl: string,
         accountType: facebook
     ) => Promise<IUserModel>;
     remove: (id: string) => Promise<any>;

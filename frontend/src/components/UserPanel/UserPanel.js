@@ -14,7 +14,7 @@ export default class UserPanel extends React.Component {
     const { user } = this.props;
     this.state = {
       verifyToken: "",
-      url: `https://localhost:3001/avatars/${user.info.avatarName}`,
+      url: `https://localhost:3001/avatars/${user.info.avatarUrl}`,
       avatar: null
     };
   }

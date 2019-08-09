@@ -3,9 +3,9 @@ import { IIdentity } from 'models/common/IIdentity';
 
 export interface IFile {
     originalname: string;
-    encoding: string;
-    mimetype: string;
-    size: number;
+    encoding?: string;
+    mimetype?: string;
+    size?: number;
     destination: string;
     filename: string;
     path: string;

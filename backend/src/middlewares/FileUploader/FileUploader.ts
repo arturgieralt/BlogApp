@@ -2,6 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 import { StorageEngine } from 'multer';
 
 import { IMulter } from 'types/externals';
+import StoragePathProvider from './../../providers/StoragePathProvider';
 
 export default class FileUploaderMiddleware {
     private storage: StorageEngine;
@@ -9,7 +10,6 @@ export default class FileUploaderMiddleware {
 
     public constructor(
         private multer: IMulter,
-        private destination: string,
         private fileFieldName: string,
         private dateTimeProvider: DateConstructor
     ) {
@@ -18,10 +18,10 @@ export default class FileUploaderMiddleware {
     }
 
     private initStorage() {
-        const { destination, dateTimeProvider } = this;
+        const { dateTimeProvider } = this;
         return this.multer.diskStorage({
             destination: function(req, file, cb) {
-                cb(null, destination);
+                cb(null, StoragePathProvider.getPathNoSlash());
             },
             filename: function(req, file, cb) {
                 cb(null, dateTimeProvider.now() + '-' + file.originalname);

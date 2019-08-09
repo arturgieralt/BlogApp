@@ -8,6 +8,10 @@ import { ITokenService } from './../../services/TokenService/ITokenService';
 import { welcomeMail } from './../../builders/MailServiceBuilder/templates';
 import { Transporter } from 'nodemailer';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
+import { IFileManager } from 'external/FileManager/IFileManager';
+import { ReadStream } from 'fs';
+import { IFileService } from 'services/File/IFileService';
+import StoragePathProvider from '../../providers/StoragePathProvider';
 
 export default class IdentityController implements IIdentityController {
     public constructor(
@@ -17,7 +21,10 @@ export default class IdentityController implements IIdentityController {
         private roleService: IRoleService,
         private tokenService: ITokenService,
         private mailService: Transporter,
-        private envProvider: IEnvProvider
+        private envProvider: IEnvProvider,
+        private fileManager: IFileManager,
+        private fileService: IFileService
+
     ) {}
 
     public verifyFacebookToken = async (
@@ -34,9 +41,11 @@ export default class IdentityController implements IIdentityController {
         );
         const encodedToken: FacebookToken = tokenResponse.data;
         const userResponse = await this.axios.get(
-            `https://graph.facebook.com/${encodedToken.data.user_id}?fields=id,name,email,picture&access_token=${token}`
+            `https://graph.facebook.com/${encodedToken.data.user_id}?fields=id,name,email,picture.width(720).height(720)&access_token=${token}`
         );
-        const { email, id, name }: FacebookUser = userResponse.data;
+        const { email, id, name, picture }: FacebookUser = userResponse.data;
+
+        console.log(picture);
 
         let systemUser = await this.verifyUserMiddleware.verifyExternalUser(
             email,
@@ -44,13 +53,36 @@ export default class IdentityController implements IIdentityController {
             'facebook'
         );
         if (systemUser === null) {
+            const response = await this.axios({
+                url: picture.data.url,
+                method: 'GET',
+                responseType: 'stream'
+            });
+            //save picture
+            await this.fileManager.save(response.data as ReadStream, `${id}.jpeg`);
             // register
+
+            //add picture entry to db! is it smart?
+
             systemUser = await this.userService.addExternal(
                 name,
                 email,
                 id,
+                `${id}.jpeg`,
                 'facebook'
             );
+
+            await this.fileService.add(
+                {
+                    uploadBy: systemUser._id,
+                    filename: `${id}.jpeg`,
+                    originalname: `${id}.jpeg`,
+                    destination: StoragePathProvider.getPathNoSlash(),
+                    path: `${StoragePathProvider.getPath()}${id}.jpeg`,
+                    tags: ['avatar']
+                }
+            )
+
             const verToken = await this.tokenService.createVerificationToken(
                 systemUser._id
             );

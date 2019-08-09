@@ -87,6 +87,7 @@ export default class UserService implements IUserService {
         name: string,
         email: string,
         externalId: string,
+        avatarUrl: string,
         accountType: facebook
     ): Promise<IUserModel> => {
         return new Promise(async (resolve, reject) => {
@@ -95,7 +96,8 @@ export default class UserService implements IUserService {
                     name,
                     email,
                     externalId,
-                    accountType
+                    accountType,
+                    avatarUrl
                 });
                 const userDoc = await user.save();
                 resolve(userDoc.toObject());
