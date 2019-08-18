@@ -16,12 +16,12 @@ import {
     authorizeMiddleware,
     verifyUserMiddleware,
     envProvider,
-    fileUploaderMiddleware
+    fileUploaderMiddleware,
+    identityController
 } from './container';
 import errorHandler from './../middlewares/ErrorHandler/ErrorHandler';
 import errorLogger from './../middlewares/loggers/ErrorLogger';
 import requestLogger from './../middlewares/loggers/RequestLogger';
-
 
 class App {
     public app: express.Application;
@@ -38,7 +38,8 @@ class App {
             filesController,
             captchaController,
             authorizeMiddleware,
-            fileUploaderMiddleware
+            fileUploaderMiddleware,
+            identityController
         );
 
         this.app.use(errorLogger);

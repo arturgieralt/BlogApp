@@ -2,10 +2,13 @@
 
 import React from "react";
 import { path, pathOr, isNil } from "ramda";
+import { stateToHTML } from "draft-js-export-html";
+import { sanitize } from "dompurify";
+
 import * as io from "socket.io-client";
 import PropTypes from "prop-types";
 import StyledCard from "../Card/Card";
-import TextArea from "../formElements/TextArea";
+import CommentEditor from "../CommentEditor/CommentEditor";
 import Button from "../formElements/Button";
 import updateFormElement from "../formElements/stateSetters";
 
@@ -80,7 +83,8 @@ class Article extends React.Component {
 
   addComment() {
     const { socket, comment } = this.state;
-    socket.emit("message", comment);
+    const commentHTML = sanitize(stateToHTML(comment));
+    socket.emit("message", commentHTML);
   }
 
   addComment = this.addComment.bind(this);
@@ -89,7 +93,7 @@ class Article extends React.Component {
 
   render() {
     const { article, isAuthenticated } = this.props;
-    const { comment, commentsLive, usersLive } = this.state;
+    const { commentsLive, usersLive } = this.state;
     if (article) {
       return (
         <React.Fragment>
@@ -102,11 +106,14 @@ class Article extends React.Component {
           </StyledCard>
           {isAuthenticated && (
             <StyledCard width="90%" margin="20px auto" title="Add comment">
-              <TextArea
-                name="comment"
-                value={comment}
-                onChange={this.handleChange}
+              <CommentEditor
+                onChange={e =>
+                  this.setState({
+                    comment: e.getCurrentContent()
+                  })
+                }
               />
+
               <Button type="button" onClick={this.addComment}>
                 Send
               </Button>
@@ -130,7 +137,10 @@ class Article extends React.Component {
           <StyledCard width="70%" margin="20px auto" title="Comments">
             {commentsLive.map(com => (
               <div key={com._id}>
-                {com.content} by {com.author.name}
+                <div
+                  dangerouslySetInnerHTML={{ __html: sanitize(com.content) }}
+                />
+                <span>Author: {com.author.name}</span>
               </div>
             ))}
           </StyledCard>

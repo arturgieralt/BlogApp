@@ -1,4 +1,5 @@
 import { Server, Socket } from 'socket.io';
+import sanitize from 'sanitize-html';
 import { ICommentSocket } from '../../dtos/ICommentSocket';
 import { IUserService } from '../../services/User/IUserService';
 import { ITokenService } from '../../services/TokenService/ITokenService';
@@ -74,7 +75,7 @@ export default class CommentsController implements ICommentsController {
         decodedToken
     }: ICommentSocket) => async (message: string) => {
         const comment: IAddComment = {
-            content: message
+            content: sanitize(message)
         };
         try {
             const comDoc = await this.CommentService.add(

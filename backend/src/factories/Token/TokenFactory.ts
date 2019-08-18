@@ -56,7 +56,7 @@ export default class TokenFactory implements ITokenFactory {
         userRoles: string[],
         tokenId: string
     ) {
-        const { _id } = user.toObject();
+        const { _id } = user;
         const payload: IAuthToken = {
             id: _id,
             exp: Date.now() + TokenFactory.ExpTime[Authorization],

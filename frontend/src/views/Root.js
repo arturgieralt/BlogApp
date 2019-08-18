@@ -19,6 +19,8 @@ import { history } from "../store/configure";
 import UserPanel from "../containers/UserPanel";
 import Can from "../containers/Can";
 import NoAcess from "../components/NoAccess/NoAccess";
+import LoginPage from "../components/LoginPage/LoginPage";
+import FacebookCallback from "../containers/FacebookCallback";
 
 export const CAPTCHA_KEY = "6LckFKMUAAAAACb6b-gTNT0QCIQj6c3ml2xBwWIo";
 
@@ -53,7 +55,13 @@ class Root extends React.Component {
               />
               <Route path="/articles/:id" component={SingleArticle} />
               <Route exact path="/user/register" component={RegisterForm} />
-              <Route exact path="/user/login" component={LoginForm} />
+              <Route exact path="/user/login/form" component={LoginForm} />
+              <Route exact path="/user/login" component={LoginPage} />
+              <Route
+                exact
+                path="/login/facebook"
+                component={FacebookCallback}
+              />
               <Route
                 exact
                 path="/user/view"

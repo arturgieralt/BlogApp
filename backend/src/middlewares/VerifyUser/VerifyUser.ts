@@ -1,5 +1,5 @@
 import { IVerifyOptions } from 'passport-local';
-import { IUserModel } from 'models/User/IUserModel';
+import { IUserModel, accountType, IUser } from 'models/User/IUserModel';
 import { IUserService } from 'services/User/IUserService';
 import { IVerifyUserMiddleware } from './IVerifyUser';
 import { IEncryptor } from 'types/externals';
@@ -11,7 +11,7 @@ export default class VerifyUserMiddleware implements IVerifyUserMiddleware {
     ) {}
 
     public verifyUser = async (
-        name: string,
+        email: string,
         password: string,
         done: (
             error: any,
@@ -20,7 +20,7 @@ export default class VerifyUserMiddleware implements IVerifyUserMiddleware {
         ) => void
     ) => {
         try {
-            const user = await this.UserService.getSingleByName(name);
+            const user = await this.UserService.getSingleByMail(email);
             if (user) {
                 const storedPass = user.passwordHash;
                 const doesPasswordMatch = await this.bcrypt.compare(
@@ -34,10 +34,33 @@ export default class VerifyUserMiddleware implements IVerifyUserMiddleware {
             }
 
             return done(null, false, {
-                message: 'Incorect username or password'
+                message: 'Incorect email or password'
             });
         } catch (error) {
             return done(error);
+        }
+    };
+
+    public verifyExternalUser = async (
+        email: string,
+        externalId: string,
+        provider: accountType
+    ) => {
+        try {
+            const user = await this.UserService.getSingleByMail(email);
+            if (user) {
+                if (
+                    user.externalId === externalId &&
+                    user.accountType === provider
+                ) {
+                    return user;
+                }
+                return new Error('Incorrect userId or provider.');
+            } else {
+                return null;
+            }
+        } catch (error) {
+            return error as Error;
         }
     };
 }

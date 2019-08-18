@@ -11,7 +11,7 @@ import { CAPTCHA_KEY } from "../../views/Root";
 
 export default class LoginForm extends React.Component {
   state = {
-    name: "",
+    email: "",
     password: ""
   };
 
@@ -22,13 +22,13 @@ export default class LoginForm extends React.Component {
   }
 
   handleSubmit() {
-    const isFormValid = this.validate();
+    // const isFormValid = this.validate();
 
-    if (isFormValid) {
-      const { name, password } = this.state;
-      const { loginUser } = this.props;
-      loginUser({ name, password });
-    }
+    //  if (isFormValid) {
+    const { email, password } = this.state;
+    const { loginUser } = this.props;
+    loginUser({ email, password });
+    //   }
   }
 
   validate() {
@@ -52,21 +52,21 @@ export default class LoginForm extends React.Component {
   verifyCaptcha = this.verifyCaptcha.bind(this);
 
   render() {
-    const { name, password } = this.state;
+    const { email, password } = this.state;
     const { isHuman } = this.props;
 
     return (
       <StyledCard width="500px" margin="20px auto" title="Login">
         {isHuman ? (
           <React.Fragment>
-            <ElementLabel name="Name">
+            <ElementLabel name="Email">
               <Input
                 type="text"
-                name="name"
+                name="email"
                 required
                 onChange={this.handleChange}
-                value={name}
-                placeholder="Name..."
+                value={email}
+                placeholder="Email..."
               />
             </ElementLabel>
             <ElementLabel name="Password">

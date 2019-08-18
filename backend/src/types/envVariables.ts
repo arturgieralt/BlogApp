@@ -5,4 +5,6 @@ export type EnvVariables =
     | 'MAIL'
     | 'MAIL_PASS'
     | 'CAPTCHA_SECRET'
-    | 'DB_MODE';
+    | 'DB_MODE'
+    | 'FB_APP_ID'
+    | 'FB_SECRET';

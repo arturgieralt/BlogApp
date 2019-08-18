@@ -15,7 +15,6 @@ import CaptchaController from '../controllers/Captcha/CaptchaController';
 import CaptchaService from '../services/Captcha/CaptchaService';
 import CommentsController from '../controllers/Comments/CommentsController';
 import { iot } from '../server';
-import path from 'path';
 import FileService from '../services/File/FileService';
 import { FileModel } from '../models/File/FileModel';
 import FilesController from '../controllers/Files/FilesController';
@@ -30,12 +29,12 @@ import multer from 'multer';
 import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 import FileManager from '../external/FileManager/FileManager';
 import fs from 'fs';
+import IdentityController from './../controllers/Identity/IdentityController';
 
 export const jwtModule = jwt;
 
 export const fileManager = new FileManager(
-    fs,
-    path.dirname(__dirname) + '/uploads/'
+    fs
 );
 export const envProvider = new EnvProvider();
 const mailBuilder = new MailServiceBuilder(envProvider);
@@ -53,7 +52,6 @@ export const fileSerivce = new FileService(FileModel);
 
 export const fileUploaderMiddleware = new FileUploaderMiddleware(
     multer,
-    path.dirname(__dirname) + '/uploads',
     'file',
     Date
 );
@@ -67,6 +65,17 @@ export const authorizeMiddleware = new AuthorizeMiddleware(
     tokenService
 );
 
+export const identityController = new IdentityController(
+    axios,
+    verifyUserMiddleware,
+    userService,
+    roleService,
+    tokenService,
+    mailService,
+    envProvider,
+    fileManager,
+    fileSerivce
+);
 export const captchaController = new CaptchaController(captchaService);
 export const articlesController = new ArticlesController(
     articleService,
@@ -76,8 +85,7 @@ export const usersController = new UsersController(
     userService,
     tokenService,
     roleService,
-    mailService,
-    path.dirname(__dirname) + '/uploads/'
+    mailService
 );
 export const filesController = new FilesController(
     userService,

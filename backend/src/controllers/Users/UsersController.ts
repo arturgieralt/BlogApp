@@ -13,14 +13,14 @@ import { ITokenService } from '../../services/TokenService/ITokenService';
 import { IRoleService } from '../../services/Role/IRoleService';
 import { IUsersController } from './IUsersController';
 import { Transporter } from 'nodemailer';
+import StoragePathProvider from './../../providers/StoragePathProvider';
 
 export default class UserController implements IUsersController {
     public constructor(
         private UserService: IUserService,
         private TokenService: ITokenService,
         private RoleService: IRoleService,
-        private MailService: Transporter,
-        private storagePath: string
+        private MailService: Transporter
     ) {}
 
     public getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -91,7 +91,7 @@ export default class UserController implements IUsersController {
             user.toObject()._id
         );
         const { token, payload } = await this.TokenService.createToken(
-            user,
+            user.toObject(),
             roles
         );
         const loginSuccess = await this.UserService.login(req, payload);
@@ -127,6 +127,6 @@ export default class UserController implements IUsersController {
     ) => {
         const userId = req.params.userId;
         const user = await this.UserService.getUserProfile(userId);
-        res.sendFile(this.storagePath + user.avatarUrl || 'default.jpg');
+        res.sendFile(StoragePathProvider.getPath() + user.avatarUrl || 'default.jpg');
     };
 }

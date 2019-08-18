@@ -10,7 +10,7 @@ export const UserSchema = new Schema(
         _id: { type: Schema.Types.ObjectId, auto: true },
         name: {
             type: String,
-            unique: true,
+            unique: false,
             required: [true, 'Please provide a username'],
             validate: [{ validator: validateUsername, msg: 'Invalid length' }]
         },
@@ -26,7 +26,15 @@ export const UserSchema = new Schema(
         },
         passwordHash: {
             type: String,
+            required: false
+        },
+        accountType: {
+            type: String,
             required: true
+        },
+        externalId: {
+            type: String,
+            required: false
         },
         created_date: {
             type: Date,

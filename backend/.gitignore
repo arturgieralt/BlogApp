@@ -18,6 +18,7 @@ errors.log
 requests.log
 
 /uploads
+/src/uploads
 
 # misc
 .DS_Store
