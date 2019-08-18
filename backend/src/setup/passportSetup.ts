@@ -12,7 +12,7 @@ export const initPassport = (
     passport.use(
         new StrategyLocal(
             {
-                usernameField: 'name',
+                usernameField: 'email',
                 passwordField: 'password'
             },
             VerifyUserMiddleware.verifyUser
