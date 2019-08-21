@@ -6,6 +6,9 @@ import { Routes } from './routes';
 import mongoose from 'mongoose';
 import passport = require('passport');
 import { initPassport } from './passportSetup';
+import session from 'express-session';
+import connectRedis from 'connect-redis';
+
 import cors from 'cors';
 import path from 'path';
 import {
@@ -17,7 +20,8 @@ import {
     verifyUserMiddleware,
     envProvider,
     fileUploaderMiddleware,
-    identityController
+    identityController,
+    userService
 } from './container';
 import errorHandler from './../middlewares/ErrorHandler/ErrorHandler';
 import errorLogger from './../middlewares/loggers/ErrorLogger';
@@ -52,14 +56,29 @@ class App {
     private config() {
         const corsOptions = {
             origin: 'http://localhost:3000',
-            optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+            optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+            credentials: true
         };
 
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors(corsOptions));
+
+        const RedisStore = connectRedis(session);
+
+        this.app.use(
+            session({
+                store: new RedisStore({}),
+                secret: 'keyboard cat',
+                resave: false,
+                cookie: { secure: false, maxAge: 1209600000 },
+                saveUninitialized: false
+            })
+        );
+
         this.app.use(passport.initialize());
-        initPassport(verifyUserMiddleware, envProvider);
+        this.app.use(passport.session());
+        initPassport(verifyUserMiddleware, userService);
 
         this.app.use(
             '/avatars',

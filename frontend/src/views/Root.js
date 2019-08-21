@@ -21,12 +21,15 @@ import Can from "../containers/Can";
 import NoAcess from "../components/NoAccess/NoAccess";
 import LoginPage from "../components/LoginPage/LoginPage";
 import FacebookCallback from "../containers/FacebookCallback";
+import { fetchUserProfile } from "../actions/users";
 
 export const CAPTCHA_KEY = "6LckFKMUAAAAACb6b-gTNT0QCIQj6c3ml2xBwWIo";
 
 class Root extends React.Component {
   componentDidMount() {
+    const { store } = this.props;
     loadReCaptcha(CAPTCHA_KEY);
+    store.dispatch(fetchUserProfile());
   }
 
   render() {

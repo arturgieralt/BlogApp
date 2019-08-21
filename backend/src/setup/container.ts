@@ -30,12 +30,11 @@ import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 import FileManager from '../external/FileManager/FileManager';
 import fs from 'fs';
 import IdentityController from './../controllers/Identity/IdentityController';
+import messageQueue from './../MessageQueue/'
 
 export const jwtModule = jwt;
 
-export const fileManager = new FileManager(
-    fs
-);
+export const fileManager = new FileManager(fs);
 export const envProvider = new EnvProvider();
 const mailBuilder = new MailServiceBuilder(envProvider);
 
@@ -61,8 +60,7 @@ export const verifyUserMiddleware = new VerifyUserMiddleware(
     bcrypt
 );
 export const authorizeMiddleware = new AuthorizeMiddleware(
-    roleService,
-    tokenService
+    roleService
 );
 
 export const identityController = new IdentityController(
@@ -85,7 +83,8 @@ export const usersController = new UsersController(
     userService,
     tokenService,
     roleService,
-    mailService
+    mailService,
+    messageQueue
 );
 export const filesController = new FilesController(
     userService,

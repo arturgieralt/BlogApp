@@ -136,13 +136,13 @@ export default class UserService implements IUserService {
         return authPromise;
     };
 
-    public login = (req: Request, payload: any): Promise<any> => {
+    public login = (req: Request, user: any): Promise<any> => {
         const loginPromise = new Promise((resolve, reject) => {
-            req.login(payload, { session: false }, error => {
+            req.login(user, error => {
                 if (error) {
-                    resolve(false);
+                    resolve([false, error]);
                 }
-                resolve(true);
+                resolve([true]);
             });
         });
 

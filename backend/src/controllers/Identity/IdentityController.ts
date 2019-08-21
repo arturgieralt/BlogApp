@@ -24,7 +24,6 @@ export default class IdentityController implements IIdentityController {
         private envProvider: IEnvProvider,
         private fileManager: IFileManager,
         private fileService: IFileService
-
     ) {}
 
     public verifyFacebookToken = async (
@@ -59,7 +58,10 @@ export default class IdentityController implements IIdentityController {
                 responseType: 'stream'
             });
             //save picture
-            await this.fileManager.save(response.data as ReadStream, `${id}.jpeg`);
+            await this.fileManager.save(
+                response.data as ReadStream,
+                `${id}.jpeg`
+            );
             // register
 
             //add picture entry to db! is it smart?
@@ -72,16 +74,14 @@ export default class IdentityController implements IIdentityController {
                 'facebook'
             );
 
-            await this.fileService.add(
-                {
-                    uploadBy: systemUser._id,
-                    filename: `${id}.jpeg`,
-                    originalname: `${id}.jpeg`,
-                    destination: StoragePathProvider.getPathNoSlash(),
-                    path: `${StoragePathProvider.getPath()}${id}.jpeg`,
-                    tags: ['avatar']
-                }
-            )
+            await this.fileService.add({
+                uploadBy: systemUser._id,
+                filename: `${id}.jpeg`,
+                originalname: `${id}.jpeg`,
+                destination: StoragePathProvider.getPathNoSlash(),
+                path: `${StoragePathProvider.getPath()}${id}.jpeg`,
+                tags: ['avatar']
+            });
 
             const verToken = await this.tokenService.createVerificationToken(
                 systemUser._id

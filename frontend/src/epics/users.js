@@ -37,6 +37,7 @@ export const loginUserEpic = action$ =>
       console.log(action);
       return ajax({
         url: "https://localhost:3001/user/login",
+        withCredentials: "include",
         body: JSON.stringify({ ...action.user }),
         headers: {
           "Content-Type": "application/json"
@@ -44,7 +45,7 @@ export const loginUserEpic = action$ =>
         cache: false,
         method: "POST"
       }).pipe(
-        map(({ response }) => loginUserSuccess(response.token)),
+        map(() => loginUserSuccess()),
         catchError(error => ActionsObservable.of(loginUserFailure(error)))
       );
     })
@@ -76,6 +77,7 @@ export const logoutUserEpic = (action$, state$) =>
     mergeMap(([, state]) =>
       ajax({
         url: "https://localhost:3001/user/logout",
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${state.user.token}`
@@ -98,7 +100,7 @@ export const userLogoutSuccessEpic = action$ =>
 export const userLoginSuccessEpic = action$ =>
   action$.pipe(
     ofType(USER_LOGIN_SUCCESS),
-    mergeMap(() => ActionsObservable.of(fetchUserProfile()))
+    mergeMap(() => [fetchUserProfile(), push("/")])
   );
 
 export const verifyUserEpic = (action$, state$) =>
@@ -161,16 +163,16 @@ export const removeUserEpic = (action$, state$) =>
     )
   );
 
-export const fetchUserProfileEpic = (action$, state$) =>
+export const fetchUserProfileEpic = action$ =>
   action$.pipe(
     ofType(USER_PROFILE_FETCH_REQUEST),
-    withLatestFrom(state$),
-    mergeMap(([, state]) =>
+    mergeMap(() =>
       ajax({
         url: "https://localhost:3001/user/profile",
+        withCredentials: true,
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${state.user.token}`
+          "Content-Type": "application/json"
+          // Authorization: `Bearer ${state.user.token}`
         },
         cache: false,
         method: "GET"
