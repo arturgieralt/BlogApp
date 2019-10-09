@@ -16,6 +16,7 @@ export const uploadAvatarEpic = (action$, state$) =>
     mergeMap(([action, state]) =>
       ajax({
         url: "https://localhost:3001/avatar/upload",
+        withCredentials: true,
         headers: {
           Authorization: `Bearer ${state.user.token}`
         },

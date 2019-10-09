@@ -9,7 +9,8 @@ export const usersSeed: IUserWithId[] = [
         isActive: true,
         passwordHash: 'dfsdfsdfsf',
         created_date: '2019-10-04T00:00:00.000Z',
-        avatarUrl: 'dsfsdfs.jpg'
+        avatarUrl: 'dsfsdfs.jpg',
+        accountType: 'internal'
     }
 ];
 

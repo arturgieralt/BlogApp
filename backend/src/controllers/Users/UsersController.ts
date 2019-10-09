@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import {
-    welcomeMail,
     accountActivated,
     accountRemoved
 } from '../../builders/MailServiceBuilder/templates';
@@ -14,13 +13,16 @@ import { IRoleService } from '../../services/Role/IRoleService';
 import { IUsersController } from './IUsersController';
 import { Transporter } from 'nodemailer';
 import StoragePathProvider from './../../providers/StoragePathProvider';
+import { sendWelcomeMailMessage } from './../../MessageQueue/messages';
+import { Queue } from 'bull';
 
 export default class UserController implements IUsersController {
     public constructor(
         private UserService: IUserService,
         private TokenService: ITokenService,
         private RoleService: IRoleService,
-        private MailService: Transporter
+        private MailService: Transporter,
+        private MessageQueue: Queue
     ) {}
 
     public getAll = async (req: Request, res: Response, next: NextFunction) => {
@@ -51,9 +53,13 @@ export default class UserController implements IUsersController {
         res: Response,
         next: NextFunction
     ) => {
-        const { user }: { user?: IAuthToken } = req;
-        const userData = await this.UserService.getUserProfile(user!.id);
-        res.status(200).send(userData);
+        const { user }: { user?: any } = req;
+        const userData = await this.UserService.getUserProfile(user!._id);
+        const roles = await this.RoleService.getRolesPerUser(user!._id);
+        res.status(200).send({
+            ...userData,
+            roles
+        });
     };
 
     public register = async (
@@ -63,8 +69,7 @@ export default class UserController implements IUsersController {
     ) => {
         const { name, password, email } = req.body;
         const user = await this.UserService.add(name, password, email);
-        const token = await this.TokenService.createVerificationToken(user._id);
-        this.MailService.sendMail(welcomeMail(user, token));
+        this.MessageQueue.add(sendWelcomeMailMessage(user));
         res.status(200).send();
     };
 
@@ -87,28 +92,21 @@ export default class UserController implements IUsersController {
             res,
             next
         );
-        const roles = await this.RoleService.getRolesPerUser(
-            user.toObject()._id
-        );
-        const { token, payload } = await this.TokenService.createToken(
-            user.toObject(),
-            roles
-        );
-        const loginSuccess = await this.UserService.login(req, payload);
+        const [loginSuccess, error] = await this.UserService.login(req, user);
 
         if (loginSuccess) {
-            res.status(200).send({ token });
+            res.status(200).send();
         } else {
-            this.TokenService.blacklist(payload.tokenId);
-            res.status(401).send({ message: 'Cannot log in' });
+            next(error);
         }
     };
 
     public logout = (req: Request, res: Response) => {
-        const { user }: { user?: IAuthToken } = req;
-        this.TokenService.blacklist(user!.tokenId);
         req.logout();
-        return res.status(200).send();
+        res.clearCookie('connect.sid');
+        req.session!.destroy(() => {
+            return res.status(200).send();
+        });
     };
 
     public remove = async (req: Request, res: Response, next: NextFunction) => {
@@ -127,6 +125,8 @@ export default class UserController implements IUsersController {
     ) => {
         const userId = req.params.userId;
         const user = await this.UserService.getUserProfile(userId);
-        res.sendFile(StoragePathProvider.getPath() + user.avatarUrl || 'default.jpg');
+        res.sendFile(
+            StoragePathProvider.getPath() + user.avatarUrl || 'default.jpg'
+        );
     };
 }

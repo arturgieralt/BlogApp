@@ -12,6 +12,7 @@ import {
     envProvider,
     jwtModule
 } from './setup/container';
+import setupDb from './setup/db';
 
 const PORT = 3001;
 const httpsOptions = {
@@ -19,17 +20,25 @@ const httpsOptions = {
     cert: fs.readFileSync(path.resolve(__dirname, './config/cert.pem'))
 };
 
-export const server = https.createServer(httpsOptions, app).listen(PORT, () => {
-    console.log('Express server listening on port ' + PORT);
-});
+export let server: any;
+export let iot: any;
+export let commentsController: any;
 
-export const iot = io(server);
+setupDb(envProvider);
+app.build().then(express => {
+     server = https.createServer(httpsOptions, express.app ).listen(PORT, () => {
+        console.log('Express server listening on port ' + PORT);
+    });
+    
+    iot  = io(server);
+    
+    commentsController = new CommentsController(
+        iot,
+        userService,
+        tokenService,
+        commentService,
+        envProvider,
+        jwtModule
+    );
+})
 
-export const commentsController = new CommentsController(
-    iot,
-    userService,
-    tokenService,
-    commentService,
-    envProvider,
-    jwtModule
-);

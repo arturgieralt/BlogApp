@@ -1,11 +1,12 @@
 import express from 'express';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import * as bodyParser from 'body-parser';
 import { Routes } from './routes';
-import mongoose from 'mongoose';
 import passport = require('passport');
 import { initPassport } from './passportSetup';
+import session from 'express-session';
+
+
 import cors from 'cors';
 import path from 'path';
 import {
@@ -17,19 +18,22 @@ import {
     verifyUserMiddleware,
     envProvider,
     fileUploaderMiddleware,
-    identityController
+    identityController,
+    userService
 } from './container';
 import errorHandler from './../middlewares/ErrorHandler/ErrorHandler';
 import errorLogger from './../middlewares/loggers/ErrorLogger';
 import requestLogger from './../middlewares/loggers/RequestLogger';
 
 class App {
-    public app: express.Application;
+    public app: express.Application;    
     public routing: Routes = new Routes();
-    private mongoUrl: string = envProvider.get('DB_CONNECTION_STRING');
 
     public constructor() {
-        this.app = express();
+        this.app = express();;
+    }
+
+    public async build(): Promise<App> {
         this.config();
         this.routing.routes(
             this.app,
@@ -46,20 +50,53 @@ class App {
 
         this.app.use(errorHandler);
 
-        this.mongoSetup();
+
+        return this;
     }
 
     private config() {
         const corsOptions = {
             origin: 'http://localhost:3000',
-            optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+            optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+            credentials: true
         };
 
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors(corsOptions));
+
+        let middleware: any;
+        const mode = envProvider.get('DB_MODE');
+        if((mode === 'INMEMORY' || process.env.NODE_ENV === 'test')) {
+            middleware = session({
+                secret: 'keyboard cat',
+                resave: false,
+                cookie: { secure: false, maxAge: 1209600000 },
+                saveUninitialized: false
+            });
+    
+        } else {
+            const connectRedis = require('connect-redis') ;
+            const RedisStore = connectRedis(session);
+            const store = new RedisStore({});
+            middleware = session({
+                store,
+                secret: 'keyboard cat',
+                resave: false,
+                cookie: { secure: false, maxAge: 1209600000 },
+                saveUninitialized: false
+            });
+    
+        }
+        
+            
+        this.app.use(
+            middleware
+        );
+
         this.app.use(passport.initialize());
-        initPassport(verifyUserMiddleware, envProvider);
+        this.app.use(passport.session());
+        initPassport(verifyUserMiddleware, userService);
 
         this.app.use(
             '/avatars',
@@ -68,26 +105,6 @@ class App {
 
         this.app.use(requestLogger);
     }
-
-    private async mongoSetup(): Promise<void> {
-        mongoose.Promise = global.Promise;
-
-        const mode = envProvider.get('DB_MODE');
-        let url;
-        if (mode === 'INMEMORY') {
-            const mongod = new MongoMemoryServer();
-            url = await mongod.getConnectionString();
-        } else {
-            url = this.mongoUrl;
-        }
-
-        mongoose.connect(url, { useNewUrlParser: true }, e => {
-            if (e) {
-                return console.log('ERROR' + e);
-            }
-            return console.log('Connected to Mongo');
-        });
-    }
 }
 
-export default new App().app;
+export default new App()

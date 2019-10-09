@@ -25,7 +25,7 @@ export default class FilesController implements IFilesController {
             filename,
             path
         } = req.file;
-        const { id } = req.user;
+        const { _id: id } = req.user;
 
         const oldAvatars = await this.FileService.get({
             uploadBy: id,

@@ -7,9 +7,8 @@ export const loginUser = user => ({
   user
 });
 
-export const loginUserSuccess = token => ({
-  type: USER_LOGIN_SUCCESS,
-  token
+export const loginUserSuccess = () => ({
+  type: USER_LOGIN_SUCCESS
 });
 
 export const loginUserFailure = error => ({
