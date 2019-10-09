@@ -1,13 +1,11 @@
 import express from 'express';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 
 import * as bodyParser from 'body-parser';
 import { Routes } from './routes';
-import mongoose from 'mongoose';
 import passport = require('passport');
 import { initPassport } from './passportSetup';
 import session from 'express-session';
-import connectRedis from 'connect-redis';
+
 
 import cors from 'cors';
 import path from 'path';
@@ -28,12 +26,14 @@ import errorLogger from './../middlewares/loggers/ErrorLogger';
 import requestLogger from './../middlewares/loggers/RequestLogger';
 
 class App {
-    public app: express.Application;
+    public app: express.Application;    
     public routing: Routes = new Routes();
-    private mongoUrl: string = envProvider.get('DB_CONNECTION_STRING');
 
     public constructor() {
-        this.app = express();
+        this.app = express();;
+    }
+
+    public async build(): Promise<App> {
         this.config();
         this.routing.routes(
             this.app,
@@ -50,7 +50,8 @@ class App {
 
         this.app.use(errorHandler);
 
-        this.mongoSetup();
+
+        return this;
     }
 
     private config() {
@@ -64,16 +65,33 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors(corsOptions));
 
-        const RedisStore = connectRedis(session);
-
-        this.app.use(
-            session({
-                store: new RedisStore({}),
+        let middleware: any;
+        const mode = envProvider.get('DB_MODE');
+        if((mode === 'INMEMORY' || process.env.NODE_ENV === 'test')) {
+            middleware = session({
                 secret: 'keyboard cat',
                 resave: false,
                 cookie: { secure: false, maxAge: 1209600000 },
                 saveUninitialized: false
-            })
+            });
+    
+        } else {
+            const connectRedis = require('connect-redis') ;
+            const RedisStore = connectRedis(session);
+            const store = new RedisStore({});
+            middleware = session({
+                store,
+                secret: 'keyboard cat',
+                resave: false,
+                cookie: { secure: false, maxAge: 1209600000 },
+                saveUninitialized: false
+            });
+    
+        }
+        
+            
+        this.app.use(
+            middleware
         );
 
         this.app.use(passport.initialize());
@@ -87,26 +105,6 @@ class App {
 
         this.app.use(requestLogger);
     }
-
-    private async mongoSetup(): Promise<void> {
-        mongoose.Promise = global.Promise;
-
-        const mode = envProvider.get('DB_MODE');
-        let url;
-        if (mode === 'INMEMORY') {
-            const mongod = new MongoMemoryServer();
-            url = await mongod.getConnectionString();
-        } else {
-            url = this.mongoUrl;
-        }
-
-        mongoose.connect(url, { useNewUrlParser: true }, e => {
-            if (e) {
-                return console.log('ERROR' + e);
-            }
-            return console.log('Connected to Mongo');
-        });
-    }
 }
 
-export default new App().app;
+export default new App()

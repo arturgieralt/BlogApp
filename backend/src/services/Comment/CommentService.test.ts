@@ -26,9 +26,9 @@ describe('Comments service service:', () => {
         await CommentModel.insertMany(commentsSeed);
     });
 
-    after(() => {
-        mongoose.disconnect();
-        mongoServer.stop();
+    after( () => {
+         mongoose.disconnect();
+         mongoServer.stop();
     });
 
     describe('get comments', () => {
