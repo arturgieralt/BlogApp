@@ -42,6 +42,7 @@ import { IMailServiceBuilder } from 'builders/MailServiceBuilder/IMailServiceBui
 import { ITokenFactory } from 'factories/Token/ITokenFactory';
 import { StorageEngine } from 'multer';
 import { RequestHandler } from 'express';
+import createQueue from './../MessageQueue/index';
 
 export let jwtModule: IJWT;
 export let fsModule: IFileSystem;
@@ -82,7 +83,7 @@ if(process.env.NODE_ENV === 'test' ) {
     fsModule = fs ;
     axiosModule = axios;
     dateModule = Date;
-    messageQueueModule = require('./../MessageQueue/');
+    messageQueueModule = createQueue();
 }
 
 bcryptModule = bcrypt;

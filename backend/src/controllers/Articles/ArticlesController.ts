@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { IArticleService } from '../../services/Article/IArticleService';
 import { ICommentService } from '../../services/Comment/ICommentService';
 import { IArticlesController } from './IArticlesController';
-import { IAuthToken } from 'factories/Token/IAuthToken';
 import { IFindArticleDto } from 'dtos/article/IFindArticle';
+import { IUserModel } from 'models/User/IUserModel';
 
 export default class ArticlesController implements IArticlesController {
     public constructor(
@@ -61,9 +61,9 @@ export default class ArticlesController implements IArticlesController {
 
     public add = async (req: Request, res: Response, next: NextFunction) => {
         const { body } = req;
-        const { user }: { user?: IAuthToken } = req;
-
-        await this.ArticleService.add(body, user!.id);
+        const { user }: { user?: IUserModel } = req;
+console.log(req);
+        await this.ArticleService.add(body, user!._id);
 
         res.status(200).send();
     };

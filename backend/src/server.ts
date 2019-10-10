@@ -7,12 +7,12 @@ import * as path from 'path';
 import CommentsController from './controllers/Comments/CommentsController';
 import {
     userService,
-    tokenService,
     commentService,
     envProvider,
-    jwtModule
 } from './setup/container';
 import setupDb from './setup/db';
+import { ICommentsController } from 'controllers/Comments/ICommentsController';
+import { Response } from 'express';
 
 const PORT = 3001;
 const httpsOptions = {
@@ -21,8 +21,8 @@ const httpsOptions = {
 };
 
 export let server: any;
-export let iot: any;
-export let commentsController: any;
+export let iot: SocketIO.Server;
+export let commentsController: ICommentsController;
 
 setupDb(envProvider);
 app.build().then(express => {
@@ -31,14 +31,15 @@ app.build().then(express => {
     });
     
     iot  = io(server);
+
+    iot.use((socket, next) => {
+        app.session(socket.request, {} as Response, next)
+    });
     
     commentsController = new CommentsController(
         iot,
         userService,
-        tokenService,
-        commentService,
-        envProvider,
-        jwtModule
+        commentService
     );
 })
 

@@ -21,6 +21,7 @@ export default function setupDb(envProvider: IEnvProvider) {
                 if (e) {
                     rej(e)
                 }
+                console.log('Connected to Mongo');
                 res('Connected to Mongo')
             });
 

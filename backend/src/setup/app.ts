@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 
 import * as bodyParser from 'body-parser';
 import { Routes } from './routes';
@@ -28,9 +28,10 @@ import requestLogger from './../middlewares/loggers/RequestLogger';
 class App {
     public app: express.Application;    
     public routing: Routes = new Routes();
-
+    public session: RequestHandler;
     public constructor() {
-        this.app = express();;
+        this.app = express();
+        this.session = this.createSessionMiddleware();
     }
 
     public async build(): Promise<App> {
@@ -54,6 +55,32 @@ class App {
         return this;
     }
 
+    private createSessionMiddleware(): RequestHandler {
+        const mode = envProvider.get('DB_MODE');
+
+        if((mode === 'INMEMORY' || process.env.NODE_ENV === 'test')) {
+            return  session({
+                secret: 'keyboard cat',
+                resave: false,
+                cookie: { secure: false, maxAge: 1209600000 },
+                saveUninitialized: false
+            });
+    
+        } else {
+            const connectRedis = require('connect-redis') ;
+            const RedisStore = connectRedis(session);
+            const store = new RedisStore({});
+            return session({
+                store,
+                secret: 'keyboard cat',
+                resave: false,
+                cookie: { secure: false, maxAge: 1209600000 },
+                saveUninitialized: false
+            });
+    
+        }
+    }
+
     private config() {
         const corsOptions = {
             origin: 'http://localhost:3000',
@@ -65,33 +92,11 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors(corsOptions));
 
-        let middleware: any;
-        const mode = envProvider.get('DB_MODE');
-        if((mode === 'INMEMORY' || process.env.NODE_ENV === 'test')) {
-            middleware = session({
-                secret: 'keyboard cat',
-                resave: false,
-                cookie: { secure: false, maxAge: 1209600000 },
-                saveUninitialized: false
-            });
-    
-        } else {
-            const connectRedis = require('connect-redis') ;
-            const RedisStore = connectRedis(session);
-            const store = new RedisStore({});
-            middleware = session({
-                store,
-                secret: 'keyboard cat',
-                resave: false,
-                cookie: { secure: false, maxAge: 1209600000 },
-                saveUninitialized: false
-            });
-    
-        }
+
         
             
         this.app.use(
-            middleware
+            this.session
         );
 
         this.app.use(passport.initialize());
