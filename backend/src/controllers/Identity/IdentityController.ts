@@ -44,7 +44,6 @@ export default class IdentityController implements IIdentityController {
         );
         const { email, id, name, picture }: FacebookUser = userResponse.data;
 
-        console.log(picture);
 
         let systemUser = await this.verifyUserMiddleware.verifyExternalUser(
             email,

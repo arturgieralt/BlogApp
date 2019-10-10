@@ -40,6 +40,8 @@ import { IUserModel } from 'models/User/IUserModel';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
 import { IMailServiceBuilder } from 'builders/MailServiceBuilder/IMailServiceBuilder';
 import { ITokenFactory } from 'factories/Token/ITokenFactory';
+import { StorageEngine } from 'multer';
+import { RequestHandler } from 'express';
 
 export let jwtModule: IJWT;
 export let fsModule: IFileSystem;
@@ -64,18 +66,25 @@ if(process.env.NODE_ENV === 'test' ) {
     fsModule = stubInterface<IFileSystem>();
     axiosModule = stubInterface<IAxios>();
     dateModule = stubInterface<typeof Date>();
-    multerModule = stubInterface<IMulter>();
-    messageQueueModule = stubInterface<Queue>();
-
+   
+    multerModule = function(this: any) {
+        let that = this;
+        that.single = () => ({} as RequestHandler);
+        return that;
+     } as unknown as IMulter;
+     multerModule.memoryStorage =  () => ({} as StorageEngine);
+     multerModule.diskStorage = () => ({}  as StorageEngine);
+    
+     messageQueueModule = stubInterface<Queue>();
 
 } else {
+    multerModule = require('multer');
     fsModule = fs ;
     axiosModule = axios;
     dateModule = Date;
     messageQueueModule = require('./../MessageQueue/');
 }
 
-multerModule = require('multer');
 bcryptModule = bcrypt;
 jwtModule = jwt;
 tokenModel = TokenModel;
