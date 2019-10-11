@@ -15,16 +15,16 @@ export const PUT = 'put';
 export const GET = 'get';
 export const POST = 'post';
 
-export type Route = {
+export interface Route {
     controller: Function;
     middlewares?: any[];
-};
+}
 
-export type RouteMapping = {
+export interface RouteMapping {
     [key: string]: {
         [key: string]: Route;
     };
-};
+}
 
 export class Routes {
     public routes(
@@ -111,10 +111,7 @@ export class Routes {
             '/user/verify': {
                 [POST]: {
                     controller: UsersController.verify,
-                    middlewares: [
-                        ...BaseValidator.get('/user/verify'),
-                        AuthorizeMiddleware.authorize()
-                    ]
+                    middlewares: [AuthorizeMiddleware.authorize()]
                 }
             },
 

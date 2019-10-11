@@ -10,6 +10,7 @@ export const usersSeed: IUserWithId[] = [
         passwordHash: 'dfsdfsdfsf',
         created_date: '2019-10-04T00:00:00.000Z',
         avatarUrl: 'dsfsdfs.jpg',
+        verificationCode: 'code',
         accountType: 'internal'
     }
 ];

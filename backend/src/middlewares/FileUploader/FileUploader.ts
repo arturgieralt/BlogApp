@@ -6,7 +6,7 @@ import StoragePathProvider from './../../providers/StoragePathProvider';
 
 export default class FileUploaderMiddleware {
     private storage: StorageEngine;
-    private requestHandler: RequestHandler | null;
+    private requestHandler: RequestHandler;
 
     public constructor(
         private multer: IMulter,
@@ -31,15 +31,9 @@ export default class FileUploaderMiddleware {
 
     private initRequestHandler() {
         const { fileFieldName } = this;
-        try {
-            return this.multer({
-                storage: this.storage
-            }).single(fileFieldName);
-        } catch(e) {
-            console.log(e)
-            return null;
-        }
-        
+        return this.multer({
+            storage: this.storage
+        }).single(fileFieldName);
     }
 
     public getRequestHandler = () => (
@@ -47,11 +41,12 @@ export default class FileUploaderMiddleware {
         res: Response,
         next: NextFunction
     ) => {
-        this.requestHandler && this.requestHandler(req, res, async err => {
-            if (err) {
-                return next(err);
-            }
-            return next();
-        });
+        this.requestHandler &&
+            this.requestHandler(req, res, async err => {
+                if (err) {
+                    return next(err);
+                }
+                return next();
+            });
     };
 }

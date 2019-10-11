@@ -24,6 +24,10 @@ export const UserSchema = new Schema(
             required: true,
             default: false
         },
+        verificationCode: {
+            type: String,
+            required: true
+        },
         passwordHash: {
             type: String,
             required: false

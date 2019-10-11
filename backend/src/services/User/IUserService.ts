@@ -8,7 +8,7 @@ export interface IUserService {
     getSingleByName: (name: string) => Promise<IUserModel | null>;
     getSingleByMail: (name: string) => Promise<IUserModel | null>;
     update: (id: string, body: any) => Promise<IUserModel>;
-    verify: (id: string) => Promise<IUserModel>;
+    verify: (id: string, verificationCode: string) => Promise<IUserModel>;
     add: (name: string, password: string, email: string) => Promise<IUserModel>;
     addExternal: (
         name: string,

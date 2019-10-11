@@ -11,6 +11,7 @@ export interface IUser {
     name: string;
     email: string;
     isActive: boolean;
+    verificationCode: string;
     passwordHash: string;
     created_date: string;
     avatarUrl: string;

@@ -3,12 +3,13 @@ import {
     accountActivated,
     accountRemoved
 } from '../../builders/MailServiceBuilder/templates';
-import { IUserModel } from './../../models/User/IUserModel';
-import { IVerifyToken } from '../../factories/Token/IVerifyToken';
-import { VerifyAccount } from '../../factories/Token/TokenFactory';
-import { IAuthToken } from '../../factories/Token/IAuthToken';
+import {
+    IUserModel,
+    IUserDto,
+    IUserLiteWithId,
+    IUserWithId
+} from './../../models/User/IUserModel';
 import { IUserService } from '../../services/User/IUserService';
-import { ITokenService } from '../../services/TokenService/ITokenService';
 import { IRoleService } from '../../services/Role/IRoleService';
 import { IUsersController } from './IUsersController';
 import { Transporter } from 'nodemailer';
@@ -19,7 +20,6 @@ import { Queue } from 'bull';
 export default class UserController implements IUsersController {
     public constructor(
         private UserService: IUserService,
-        private TokenService: ITokenService,
         private RoleService: IRoleService,
         private MailService: Transporter,
         private MessageQueue: Queue
@@ -43,8 +43,8 @@ export default class UserController implements IUsersController {
     public update = async (req: Request, res: Response, next: NextFunction) => {
         // validation here
 
-        const { user }: { user?: IAuthToken } = req;
-        const result = await this.UserService.update(user!.id, req.body);
+        const { user }: { user?: IUserWithId } = req;
+        const result = await this.UserService.update(user!._id, req.body);
         return res.json(result);
     };
 
@@ -75,14 +75,13 @@ export default class UserController implements IUsersController {
 
     public verify = async (req: Request, res: Response, next: NextFunction) => {
         const { verifyToken: token } = req.body;
+        const { user }: { user?: any } = req;
 
-        const decoded: IVerifyToken = await this.TokenService.verifyToken(
-            token,
-            VerifyAccount
+        const userData: IUserModel = await this.UserService.verify(
+            user.id,
+            token
         );
-        const user: IUserModel = await this.UserService.verify(decoded.id);
-        await this.TokenService.blacklist(decoded.tokenId);
-        this.MailService.sendMail(accountActivated(user));
+        this.MailService.sendMail(accountActivated(userData));
         res.status(200).send();
     };
 
@@ -110,10 +109,9 @@ export default class UserController implements IUsersController {
     };
 
     public remove = async (req: Request, res: Response, next: NextFunction) => {
-        const { user }: { user?: IAuthToken } = req;
-        await this.TokenService.blacklistAllForUser(user!.id);
-        await this.UserService.remove(user!.id);
-        this.MailService.sendMail(accountRemoved(user));
+        const { user }: { user?: IUserLiteWithId } = req;
+        await this.UserService.remove(user!._id);
+        this.MailService.sendMail(accountRemoved(user as IUserModel));
         req.logout();
         res.status(200).send();
     };

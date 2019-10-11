@@ -110,6 +110,7 @@ export const verifyUserEpic = (action$, state$) =>
     mergeMap(([action, state]) =>
       ajax({
         url: "https://localhost:3001/user/verify",
+        withCredentials: "include",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${state.user.token}`
@@ -150,6 +151,7 @@ export const removeUserEpic = (action$, state$) =>
     mergeMap(([, state]) =>
       ajax({
         url: "https://localhost:3001/user/remove",
+        withCredentials: "include",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${state.user.token}`

@@ -19,8 +19,6 @@ export class BaseValidator {
         switch (route) {
             case '/user/register':
                 return UserValidators.register;
-            case '/user/verify':
-                return UserValidators.register;
             case '/user/login':
                 return UserValidators.login;
             default:

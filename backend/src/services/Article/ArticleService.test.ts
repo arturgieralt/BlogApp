@@ -23,9 +23,9 @@ describe('Article service getters:', () => {
         await UserModel.insertMany(usersSeed);
     });
 
-    after( () => {
-         mongoose.disconnect();
-         mongoServer.stop();
+    after(() => {
+        mongoose.disconnect();
+        mongoServer.stop();
     });
 
     describe('get method with empty data object', () => {
