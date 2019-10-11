@@ -29,5 +29,4 @@ export const initPassport = (
             done(e);
         }
     });
-
 };

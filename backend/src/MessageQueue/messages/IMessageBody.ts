@@ -1,6 +1,6 @@
-import Topics from './topics'
+import Topics from './topics';
 
 export interface IMessageBody<T> {
-    topic: Topics,
-    data: T
+    topic: Topics;
+    data: T;
 }

@@ -2,21 +2,18 @@ import { Server, Socket } from 'socket.io';
 import sanitize from 'sanitize-html';
 import { ICommentSocket } from '../../dtos/ICommentSocket';
 import { IUserService } from '../../services/User/IUserService';
-import { ITokenService } from '../../services/TokenService/ITokenService';
 import { ICommentService } from '../../services/Comment/ICommentService';
 import { ICommentsController } from './ICommentsController';
-import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
-import { IJWT } from 'types/externals';
 import { IAddComment } from 'dtos/comment/IAddComment';
 import { addUser, removeUser } from './helpers';
 
-export type RoomUser = {
+export interface RoomUser {
     _id: string;
     name: string;
-};
-export type RoomUsers = {
+}
+export interface RoomUsers {
     [key: string]: RoomUser[];
-};
+}
 
 export default class CommentsController implements ICommentsController {
     public constructor(
@@ -52,10 +49,9 @@ export default class CommentsController implements ICommentsController {
     // };
 
     private verifyUser = (socket: Socket, next: Function) => {
-        if (
-            socket.request.session.passport
-        ) {
-            (socket as ICommentSocket).articleId = socket.handshake.query.articleId;
+        if (socket.request.session.passport) {
+            (socket as ICommentSocket).articleId =
+                socket.handshake.query.articleId;
             return next();
         } else {
             socket.disconnect();
@@ -67,8 +63,8 @@ export default class CommentsController implements ICommentsController {
         const comment: IAddComment = {
             content: sanitize(message)
         };
-        const roomId =  (socket as ICommentSocket).articleId;
-        const userId = socket.request.session.passport.user 
+        const roomId = (socket as ICommentSocket).articleId;
+        const userId = socket.request.session.passport.user;
 
         try {
             const comDoc = await this.CommentService.add(
@@ -84,26 +80,23 @@ export default class CommentsController implements ICommentsController {
                     _id: userId,
                     name: user.name
                 }
-            }
-            
+            };
+
             this.server
                 .of('/commentStream')
                 .to(roomId)
                 .emit('new comment', message);
-
         } catch (e) {
-
             this.server
                 .of('/commentStream')
                 .to(roomId)
                 .emit('comment save fail', e);
-
         }
     };
 
     private onConnection = async (socket: Socket) => {
         const roomID = (socket as ICommentSocket).articleId;
-        const userId = socket.request.session.passport.user  
+        const userId = socket.request.session.passport.user;
 
         const user = await this.UserService.getSingle(userId);
 
@@ -128,7 +121,7 @@ export default class CommentsController implements ICommentsController {
 
     private onDisconnect = (socket: Socket) => () => {
         const roomID = (socket as ICommentSocket).articleId;
-        const userId = socket.request.session.passport.user  
+        const userId = socket.request.session.passport.user;
 
         this.roomUsers = removeUser(roomID, userId, { ...this.roomUsers });
 

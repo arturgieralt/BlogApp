@@ -1,9 +1,9 @@
 import { Model } from 'mongoose';
 import passport = require('passport');
+import { v1 } from 'uuid';
 import { IVerifyOptions } from 'passport-local';
 import { Request, Response, NextFunction } from 'express';
 import { IUserModel, IUserDto, facebook } from 'models/User/IUserModel';
-import { IAuthToken } from '../../factories/Token/IAuthToken';
 import { IUserService } from './IUserService';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
 import { IEncryptor } from 'types/externals';
@@ -50,9 +50,12 @@ export default class UserService implements IUserService {
             .exec();
     };
 
-    public verify = (id: string): Promise<IUserModel> => {
+    public verify = (
+        id: string,
+        verificationCode: string
+    ): Promise<IUserModel> => {
         return this.UserRepository.findOneAndUpdate(
-            { _id: id },
+            { $and: [{ id: id }, { verificationCode }] },
             { isActive: true }
         )
             .lean()
@@ -65,13 +68,15 @@ export default class UserService implements IUserService {
         email: string
     ): Promise<IUserModel> => {
         return new Promise(async (resolve, reject) => {
-            const rounds = Number(this.EnvProvider.get('PASS_ROUNDS'));
-
             try {
+                const rounds = Number(this.EnvProvider.get('PASS_ROUNDS'));
+
+                const verificationCode = v1();
                 const passwordHash = await this.bcrypt.hash(password, rounds);
                 const user = new this.UserRepository({
                     name,
                     passwordHash,
+                    verificationCode,
                     email,
                     accountType: 'internal'
                 });
@@ -92,9 +97,11 @@ export default class UserService implements IUserService {
     ): Promise<IUserModel> => {
         return new Promise(async (resolve, reject) => {
             try {
+                const verificationCode = v1();
                 const user = new this.UserRepository({
                     name,
                     email,
+                    verificationCode,
                     externalId,
                     accountType,
                     avatarUrl
@@ -122,7 +129,7 @@ export default class UserService implements IUserService {
                 { session: false },
                 async (
                     error: any,
-                    user: IAuthToken,
+                    user: IUserDto,
                     options?: IVerifyOptions
                 ) => {
                     if (error || !user) {

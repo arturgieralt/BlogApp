@@ -140,7 +140,9 @@ class Article extends React.Component {
                 <div
                   dangerouslySetInnerHTML={{ __html: sanitize(com.content) }}
                 />
-                <span>Author: {com.author.name}</span>
+                <span>
+                  Author: {pathOr("User removed", ["author", "name"], com)}
+                </span>
               </div>
             ))}
           </StyledCard>

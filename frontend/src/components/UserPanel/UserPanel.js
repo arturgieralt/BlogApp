@@ -35,12 +35,8 @@ export default class UserPanel extends React.Component {
 
   handleSubmit() {
     const { verifyToken } = this.state;
-    const isFormValid = this.validate();
-
-    if (isFormValid) {
-      const { verifyUser } = this.props;
-      verifyUser(verifyToken);
-    }
+    const { verifyUser } = this.props;
+    verifyUser(verifyToken);
   }
 
   validate() {
@@ -124,7 +120,7 @@ export default class UserPanel extends React.Component {
               </TextArea>
             </ElementLabel>
             <Button type="button" onClick={this.handleSubmit}>
-              Register
+              Activate account
             </Button>
           </StyledCard>
         )}

@@ -6,7 +6,6 @@ import passport = require('passport');
 import { initPassport } from './passportSetup';
 import session from 'express-session';
 
-
 import cors from 'cors';
 import path from 'path';
 import {
@@ -26,7 +25,7 @@ import errorLogger from './../middlewares/loggers/ErrorLogger';
 import requestLogger from './../middlewares/loggers/RequestLogger';
 
 class App {
-    public app: express.Application;    
+    public app: express.Application;
     public routing: Routes = new Routes();
     public session: RequestHandler;
     public constructor() {
@@ -51,23 +50,21 @@ class App {
 
         this.app.use(errorHandler);
 
-
         return this;
     }
 
     private createSessionMiddleware(): RequestHandler {
         const mode = envProvider.get('DB_MODE');
 
-        if((mode === 'INMEMORY' || process.env.NODE_ENV === 'test')) {
-            return  session({
+        if (mode === 'INMEMORY' || process.env.NODE_ENV === 'test') {
+            return session({
                 secret: 'keyboard cat',
                 resave: false,
                 cookie: { secure: false, maxAge: 1209600000 },
                 saveUninitialized: false
             });
-    
         } else {
-            const connectRedis = require('connect-redis') ;
+            const connectRedis = require('connect-redis');
             const RedisStore = connectRedis(session);
             const store = new RedisStore({});
             return session({
@@ -77,7 +74,6 @@ class App {
                 cookie: { secure: false, maxAge: 1209600000 },
                 saveUninitialized: false
             });
-    
         }
     }
 
@@ -92,12 +88,7 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors(corsOptions));
 
-
-        
-            
-        this.app.use(
-            this.session
-        );
+        this.app.use(this.session);
 
         this.app.use(passport.initialize());
         this.app.use(passport.session());
@@ -112,4 +103,4 @@ class App {
     }
 }
 
-export default new App()
+export default new App();

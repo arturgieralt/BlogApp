@@ -17,65 +17,77 @@ describe('Login route:', () => {
         mongoose.connect(url, { useNewUrlParser: true });
         appBuilderClass = await appBuilder.build();
         await userModel.insertMany(usersSeed);
-        app = appBuilderClass.app   
+        app = appBuilderClass.app;
     });
 
     after(async () => {
-         await mongoose.disconnect();
-         await mongoServer.stop();
+        await mongoose.disconnect();
+        await mongoServer.stop();
     });
 
-        it('should return 503 code when mail is duplicated', (done) => {
-            request(app)
-           .post('/user/register')
-           .send({
-               name: 'user1111',
-               email: 'mymail@op.pl',
-               password: 'passpass'
-           })
-           .expect(503, {
-            type: 'MongoError',
-            message: 'E11000 duplicate key error dup key: { : \"mymail@op.pl\" }'
-           }, done)
-        });
+    it('should return 503 code when mail is duplicated', done => {
+        request(app)
+            .post('/user/register')
+            .send({
+                name: 'user1111',
+                email: 'mymail@op.pl',
+                password: 'passpass'
+            })
+            .expect(
+                503,
+                {
+                    type: 'MongoError',
+                    message:
+                        'E11000 duplicate key error dup key: { : "mymail@op.pl" }'
+                },
+                done
+            );
+    });
 
-        it('should return 200 code when login is correct', (done) => {
-            request(app)
-           .post('/user/register')
-           .send({
-               name: 'user',
-               email: 'mymail2@op.pl',
-               password: 'passpass'
-           })
-           .expect(503, {
-            type: 'MongoError',
-            message: 'User validation failed: name: Invalid length'
-           }, done)
-        });
+    it('should return 200 code when login is correct', done => {
+        request(app)
+            .post('/user/register')
+            .send({
+                name: 'user',
+                email: 'mymail2@op.pl',
+                password: 'passpass'
+            })
+            .expect(
+                503,
+                {
+                    type: 'MongoError',
+                    message: 'User validation failed: name: Invalid length'
+                },
+                done
+            );
+    });
 
-
-        it('should return 200 code when login is correct', (done) => {
-            request(app)
-           .post('/user/register')
-           .send({
-               name: undefined,
-               email: 'mymail2@##op.pl',
-               password: 'passpass'
-           })
-           .expect(422, {
-            "errors": [
-                   {
-                     "location": "body",
-                     "msg": "Invalid value",
-                     "param": "name",
-                   },
-                   {
-                    "location": "body",
-                    "msg": "Invalid value",
-                    "param": "email",
-                    "value": "mymail2@##op.pl"
-                  }
-                 ]
-           }, done)
-        });
+    it('should return 200 code when login is correct', done => {
+        request(app)
+            .post('/user/register')
+            .send({
+                name: undefined,
+                email: 'mymail2@##op.pl',
+                password: 'passpass'
+            })
+            .expect(
+                422,
+                {
+                    errors: [
+                        {
+                            location: 'body',
+                            msg: 'Invalid value',
+                            param: 'name'
+                        },
+                        {
+                            location: 'body',
+                            msg: 'Invalid value',
+                            param: 'email',
+                            value: 'mymail2@##op.pl'
+                        }
+                    ]
+                },
+                done
+            );
+    });
 });

@@ -3,7 +3,7 @@ import { IFindArticleDto } from 'dtos/article/IFindArticle';
 export const provideTagQueryObject = (
     tags: string[],
     containsAll: boolean = false
-): Object =>
+): Record<string, any> =>
     containsAll
         ? {
               tags: { $all: tags }
@@ -12,7 +12,9 @@ export const provideTagQueryObject = (
               tags: { $in: tags }
           };
 
-export const provideFilterQueryObject = (query: string): Object => ({
+export const provideFilterQueryObject = (
+    query: string
+): Record<string, any> => ({
     $or: [
         { title: { $regex: query, $options: 'i' } },
         { summary: { $regex: query, $options: 'i' } },

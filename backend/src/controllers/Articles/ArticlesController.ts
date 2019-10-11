@@ -62,7 +62,7 @@ export default class ArticlesController implements IArticlesController {
     public add = async (req: Request, res: Response, next: NextFunction) => {
         const { body } = req;
         const { user }: { user?: IUserModel } = req;
-console.log(req);
+        console.log(req);
         await this.ArticleService.add(body, user!._id);
 
         res.status(200).send();

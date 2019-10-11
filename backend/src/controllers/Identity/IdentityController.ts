@@ -4,7 +4,6 @@ import { IIdentityController } from './IIdentityController';
 import { IVerifyUserMiddleware } from './../../middlewares/VerifyUser/IVerifyUser';
 import { IUserService } from './../../services/User/IUserService';
 import { IRoleService } from './../../services/Role/IRoleService';
-import { ITokenService } from './../../services/TokenService/ITokenService';
 import { welcomeMail } from './../../builders/MailServiceBuilder/templates';
 import { Transporter } from 'nodemailer';
 import { IEnvProvider } from 'providers/EnvProvider/IEnvProvider';
@@ -19,7 +18,6 @@ export default class IdentityController implements IIdentityController {
         private verifyUserMiddleware: IVerifyUserMiddleware,
         private userService: IUserService,
         private roleService: IRoleService,
-        private tokenService: ITokenService,
         private mailService: Transporter,
         private envProvider: IEnvProvider,
         private fileManager: IFileManager,
@@ -43,7 +41,6 @@ export default class IdentityController implements IIdentityController {
             `https://graph.facebook.com/${encodedToken.data.user_id}?fields=id,name,email,picture.width(720).height(720)&access_token=${token}`
         );
         const { email, id, name, picture }: FacebookUser = userResponse.data;
-
 
         let systemUser = await this.verifyUserMiddleware.verifyExternalUser(
             email,
@@ -82,33 +79,24 @@ export default class IdentityController implements IIdentityController {
                 tags: ['avatar']
             });
 
-            const verToken = await this.tokenService.createVerificationToken(
-                systemUser._id
-            );
-            this.mailService.sendMail(welcomeMail(systemUser, verToken));
+            this.mailService.sendMail(welcomeMail(systemUser));
         }
 
         if (systemUser instanceof Error) {
             return next(systemUser);
         }
 
-        const roles = await this.roleService.getRolesPerUser(systemUser._id);
-        const {
-            token: accessToken,
-            payload
-        } = await this.tokenService.createToken(systemUser, roles);
-        const loginSuccess = await this.userService.login(req, payload);
+        const loginSuccess = await this.userService.login(req, systemUser);
 
         if (loginSuccess) {
-            res.status(200).send({ token: accessToken });
+            res.status(200).send();
         } else {
-            this.tokenService.blacklist(payload.tokenId);
             res.status(401).send({ message: 'Cannot log in' });
         }
     };
 }
 
-type FacebookToken = {
+interface FacebookToken {
     data: {
         app_id: string;
         type: string;
@@ -119,9 +107,9 @@ type FacebookToken = {
         scopes: string[];
         user_id: string;
     };
-};
+}
 
-type FacebookUser = {
+interface FacebookUser {
     email: string;
     id: string;
     name: string;
@@ -133,4 +121,4 @@ type FacebookUser = {
             width: number;
         };
     };
-};
+}

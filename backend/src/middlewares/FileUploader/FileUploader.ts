@@ -32,9 +32,8 @@ export default class FileUploaderMiddleware {
     private initRequestHandler() {
         const { fileFieldName } = this;
         return this.multer({
-                storage: this.storage
-            }).single(fileFieldName);
-        
+            storage: this.storage
+        }).single(fileFieldName);
     }
 
     public getRequestHandler = () => (
@@ -42,11 +41,12 @@ export default class FileUploaderMiddleware {
         res: Response,
         next: NextFunction
     ) => {
-        this.requestHandler && this.requestHandler(req, res, async err => {
-            if (err) {
-                return next(err);
-            }
-            return next();
-        });
+        this.requestHandler &&
+            this.requestHandler(req, res, async err => {
+                if (err) {
+                    return next(err);
+                }
+                return next();
+            });
     };
 }

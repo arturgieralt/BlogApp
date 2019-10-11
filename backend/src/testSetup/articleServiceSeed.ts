@@ -7,9 +7,11 @@ export const usersSeed: IUserWithId[] = [
         name: 'myUser',
         email: 'mymail@op.pl',
         isActive: true,
-        passwordHash: '$2b$10$8OiVS5MhDjTmXXiS24yGCeFdqcM3Za9rnM/qj8IR5oMv8w//IOFFe', // "passpass"
+        passwordHash:
+            '$2b$10$8OiVS5MhDjTmXXiS24yGCeFdqcM3Za9rnM/qj8IR5oMv8w//IOFFe', // "passpass"
         created_date: '2019-10-04T00:00:00.000Z',
         avatarUrl: 'dsfsdfs.jpg',
+        verificationCode: 'code',
         accountType: 'internal'
     }
 ];

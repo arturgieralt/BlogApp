@@ -7,4 +7,4 @@ export type EnvVariables =
     | 'CAPTCHA_SECRET'
     | 'DB_MODE'
     | 'FB_APP_ID'
-    | 'FB_SECRET'
+    | 'FB_SECRET';
