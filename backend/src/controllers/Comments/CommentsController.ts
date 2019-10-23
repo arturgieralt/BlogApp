@@ -4,8 +4,18 @@ import { ICommentSocket } from '../../dtos/ICommentSocket';
 import { IUserService } from '../../services/User/IUserService';
 import { ICommentService } from '../../services/Comment/ICommentService';
 import { ICommentsController } from './ICommentsController';
-import { IAddComment } from 'dtos/comment/IAddComment';
-import { addUser, removeUser } from './helpers';
+import {
+    addUser,
+    removeUser,
+    verifyUser,
+    getUserID,
+    getRoomID,
+    validateRoomId
+} from './helpers';
+import { IUserModel } from 'models/User/IUserModel';
+import { IComment } from 'models/Comment/ICommentModel';
+
+export const STREAM_NAME = '/commentStream';
 
 export interface RoomUser {
     _id: string;
@@ -15,6 +25,16 @@ export interface RoomUsers {
     [key: string]: RoomUser[];
 }
 
+export const events = {
+    connection: 'connection',
+    status: 'status',
+    message: 'message',
+    error: 'error',
+    success: 'success',
+    roomUpdate: 'roomUpdate',
+    disconnect: 'disconnect'
+};
+
 export default class CommentsController implements ICommentsController {
     public constructor(
         private server: Server,
@@ -23,111 +43,108 @@ export default class CommentsController implements ICommentsController {
         private roomUsers: RoomUsers = {}
     ) {
         this.server
-            .of('/commentStream')
-            .use(this.verifyUser)
-            .on('connection', this.onConnection);
+            .of(STREAM_NAME)
+            .use(verifyUser)
+            .use(validateRoomId)
+            .use(this.fetchUser)
+            .on(events.connection, this.onConnection);
     }
 
-    // private verifyToken = (socket: ICommentSocket, next: Function) => async (
-    //     err: any,
-    //     decoded: any
-    // ) => {
-    //     if (!err) {
-    //         const tokenEntry = await this.TokenService.getSingle(
-    //             decoded.tokenId
-    //         );
-
-    //         if (tokenEntry && tokenEntry.isActive) {
-    //             socket.decodedToken = { ...decoded };
-    //             socket.articleId = socket.handshake.query.articleId;
-    //             return next();
-    //         }
-    //     } else {
-    //         socket.disconnect();
-    //         next(new Error('Authentication error'));
-    //     }
-    // };
-
-    private verifyUser = (socket: Socket, next: Function) => {
-        if (socket.request.session.passport) {
-            (socket as ICommentSocket).articleId =
-                socket.handshake.query.articleId;
-            return next();
-        } else {
-            socket.disconnect();
-            next(new Error('Authentication error'));
+    private fetchUser = async (socket: Socket, next: Function) => {
+        try {
+            const userId = getUserID(socket);
+            const user = await this.UserService.getSingle(userId);
+            (socket as any).user = user;
+            next();
+        } catch (e) {
+            next(e);
         }
     };
-
     private onMessage = (socket: Socket) => async (message: string) => {
-        const comment: IAddComment = {
-            content: sanitize(message)
-        };
-        const roomId = (socket as ICommentSocket).articleId;
-        const userId = socket.request.session.passport.user;
-
+        const roomId = getRoomID(socket);
+        const content = sanitize(message);
         try {
-            const comDoc = await this.CommentService.add(
-                comment,
+            const comment = await this.CommentService.add(
+                content,
                 roomId,
-                userId
+                (socket as any).user._id
             );
-            const com = comDoc.toObject();
-            const user = await this.UserService.getSingle(userId);
-            const message = {
-                ...com,
-                author: {
-                    _id: userId,
-                    name: user.name
-                }
-            };
-
-            this.server
-                .of('/commentStream')
-                .to(roomId)
-                .emit('new comment', message);
+            this.emitComment(comment.toObject(), (socket as any).user, roomId);
         } catch (e) {
-            this.server
-                .of('/commentStream')
-                .to(roomId)
-                .emit('comment save fail', e);
+            this.emitError(e, socket);
         }
     };
 
     private onConnection = async (socket: Socket) => {
-        const roomID = (socket as ICommentSocket).articleId;
-        const userId = socket.request.session.passport.user;
+        socket.on(events.message, this.onMessage(socket as ICommentSocket));
+        socket.on(
+            events.disconnect,
+            this.onDisconnect(socket as ICommentSocket)
+        );
 
-        const user = await this.UserService.getSingle(userId);
+        try {
+            const roomId = getRoomID(socket);
+            socket.join(roomId);
+            this.addUser(roomId, (socket as any).user);
+            this.emitRoomUpdate(roomId);
+        } catch (e) {
+            this.emitError(e, socket);
+        }
+    };
 
-        socket.join(roomID);
+    private onDisconnect = (socket: Socket) => () => {
+        const roomId = getRoomID(socket);
+        const userId = getUserID(socket);
+
+        this.removeUser(roomId, userId);
+        this.emitRoomUpdate(roomId);
+    };
+
+    private removeUser = (roomId: string, userId: string) => {
+        this.roomUsers = removeUser(roomId, userId, { ...this.roomUsers });
+    };
+
+    private addUser = (roomId: string, user: IUserModel) => {
         this.roomUsers = addUser(
-            roomID,
+            roomId,
             {
-                _id: userId,
+                _id: user._id,
                 name: user.name
             },
             { ...this.roomUsers }
         );
-
-        socket.on('message', this.onMessage(socket as ICommentSocket));
-        socket.on('disconnect', this.onDisconnect(socket as ICommentSocket));
-
-        this.server
-            .of('/commentStream')
-            .to(roomID)
-            .emit('roomUpdate', this.roomUsers[roomID]);
     };
 
-    private onDisconnect = (socket: Socket) => () => {
-        const roomID = (socket as ICommentSocket).articleId;
-        const userId = socket.request.session.passport.user;
-
-        this.roomUsers = removeUser(roomID, userId, { ...this.roomUsers });
+    private emitComment = (
+        comment: IComment,
+        user: IUserModel,
+        roomId: string
+    ) => {
+        const message = {
+            ...comment,
+            author: {
+                _id: user._id,
+                name: user.name
+            }
+        };
 
         this.server
-            .of('/commentStream')
-            .to(roomID)
-            .emit('roomUpdate', this.roomUsers[roomID]);
+            .of(STREAM_NAME)
+            .to(roomId)
+            .emit(events.success, message);
+    };
+
+    private emitError = (e: Error, socket: Socket) => {
+        this.server
+            .of(STREAM_NAME)
+            .to(socket.id)
+            .emit(events.error, { message: e.message });
+    };
+
+    private emitRoomUpdate = (roomId: string) => {
+        this.server
+            .of(STREAM_NAME)
+            .to(roomId)
+            .emit(events.roomUpdate, this.roomUsers[roomId]);
     };
 }

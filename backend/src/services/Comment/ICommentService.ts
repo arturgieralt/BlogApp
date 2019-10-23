@@ -9,7 +9,7 @@ export interface ICommentService {
         body: IUpdateComment
     ) => Promise<ICommentWithId | null>;
     add: (
-        body: IAddComment,
+        content: string,
         articleId: string,
         authorId: string
     ) => Promise<ICommentModel>;

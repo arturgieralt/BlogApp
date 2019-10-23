@@ -19,19 +19,12 @@ import VerifyUserMiddleware from '../middlewares/VerifyUser/VerifyUser';
 import EnvProvider from '../providers/EnvProvider/EnvProvider';
 import MailServiceBuilder from '../builders/MailServiceBuilder/MailServiceBuilder';
 import bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
 import FileUploaderMiddleware from '../middlewares/FileUploader/FileUploader';
 import FileManager from '../external/FileManager/FileManager';
 import fs from 'fs';
 import IdentityController from './../controllers/Identity/IdentityController';
-import {
-    IJWT,
-    IFileSystem,
-    IAxios,
-    IEncryptor,
-    IMulter
-} from 'types/externals';
+import { IFileSystem, IAxios, IEncryptor, IMulter } from 'types/externals';
 import { Queue } from 'bull';
 import { Model } from 'mongoose';
 import { IArticleModel } from 'models/Article/IArticleModel';
@@ -45,7 +38,6 @@ import { StorageEngine } from 'multer';
 import { RequestHandler } from 'express';
 import createQueue from './../MessageQueue/index';
 
-export let jwtModule: IJWT;
 export let fsModule: IFileSystem;
 export let axiosModule: IAxios;
 export let bcryptModule: IEncryptor;
@@ -85,7 +77,6 @@ if (process.env.NODE_ENV === 'test') {
 }
 
 bcryptModule = bcrypt;
-jwtModule = jwt;
 articleModel = ArticleModel;
 commentModel = CommentModel;
 fileModel = FileModel;
