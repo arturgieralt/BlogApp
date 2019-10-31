@@ -5,7 +5,7 @@ import * as https from 'https';
 import * as fs from 'fs';
 import * as path from 'path';
 import CommentsController from './controllers/Comments/CommentsController';
-import { userService, commentService, envProvider } from './setup/container';
+import { userService, commentService, envProvider, articleService } from './setup/container';
 import setupDb from './setup/db';
 import { ICommentsController } from 'controllers/Comments/ICommentsController';
 import { Response } from 'express';
@@ -35,6 +35,7 @@ app.build().then(express => {
     commentsController = new CommentsController(
         iot,
         userService,
-        commentService
+        commentService,
+        articleService
     );
 });

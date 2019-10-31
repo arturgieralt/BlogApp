@@ -7,7 +7,7 @@ export default class AuthorizeMiddleware {
     public authorize = (roles: string[] = []) => [
         async (req: Request, res: Response, next: NextFunction) => {
             if (req.isAuthenticated()) {
-                const id = req.user._id;
+                const id = (req.user as any)!._id;
 
                 if (roles.length > 0) {
                     const userRoles = await this.RoleService.getRolesPerUser(

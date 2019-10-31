@@ -40,12 +40,11 @@ class Article extends React.Component {
       const { fetchArticle } = this.props;
       fetchArticle(articleId);
     }
-    const { isAuthenticated, user } = this.props;
+    const { isAuthenticated } = this.props;
 
     if (isAuthenticated) {
       const socket = io.connect("https://localhost:3001/commentStream", {
         query: {
-          token: user.token,
           articleId
         }
       });
@@ -56,7 +55,7 @@ class Article extends React.Component {
         });
       });
 
-      socket.on("new comment", msg => {
+      socket.on("success", msg => {
         this.setState(state => ({
           commentsLive: [...state.commentsLive, msg]
         }));

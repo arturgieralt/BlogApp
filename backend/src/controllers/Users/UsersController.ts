@@ -43,7 +43,7 @@ export default class UserController implements IUsersController {
     public update = async (req: Request, res: Response, next: NextFunction) => {
         // validation here
 
-        const { user }: { user?: IUserWithId } = req;
+        const { user }: { user?: any } = req;
         const result = await this.UserService.update(user!._id, req.body);
         return res.json(result);
     };
@@ -109,7 +109,7 @@ export default class UserController implements IUsersController {
     };
 
     public remove = async (req: Request, res: Response, next: NextFunction) => {
-        const { user }: { user?: IUserLiteWithId } = req;
+        const { user }: { user?: any } = req;
         await this.UserService.remove(user!._id);
         this.MailService.sendMail(accountRemoved(user as IUserModel));
         req.logout();

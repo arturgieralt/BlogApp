@@ -2,7 +2,6 @@ import { Model } from 'mongoose';
 import mongoose from 'mongoose';
 import { ICommentModel, ICommentWithId } from 'models/Comment/ICommentModel';
 import { ICommentService } from './ICommentService';
-import { IAddComment } from 'dtos/comment/IAddComment';
 import { IUpdateComment } from 'dtos/comment/IUpdateComment';
 
 export default class CommentService implements ICommentService {
@@ -65,12 +64,12 @@ export default class CommentService implements ICommentService {
     }
 
     public add(
-        body: IAddComment,
+        content: string,
         articleId: string,
         authorId: string
     ): Promise<ICommentModel> {
         const article = new this.CommentModel({
-            ...body,
+            content,
             author: authorId,
             article: articleId,
             _id: new mongoose.Types.ObjectId()

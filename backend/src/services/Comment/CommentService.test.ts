@@ -55,16 +55,16 @@ describe('Comments service service:', () => {
     describe('add comments', () => {
         it('should add new comment', async () => {
             const commentService = new CommentService(CommentModel);
-            const body: IAddComment = {
-                content: 'My new comment'
-            };
+
             const comment = await commentService.add(
-                body,
+                'My new comment',
                 '6d1a44b66970a011ed25ca0e',
                 '5d1a44b66970a011ed25ca0e'
             );
 
-            expect(comment.toObject()).to.deep.include(body);
+            expect(comment.toObject()).to.deep.include({
+                content: 'My new comment'
+            });
         });
     });
 

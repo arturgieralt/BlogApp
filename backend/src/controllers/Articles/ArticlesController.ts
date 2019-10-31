@@ -42,7 +42,7 @@ export default class ArticlesController implements IArticlesController {
         const {
             body,
             params: { articleId }
-        } = req.params;
+        } = req.params as any;
 
         await this.ArticleService.update(articleId, body);
 
@@ -61,7 +61,7 @@ export default class ArticlesController implements IArticlesController {
 
     public add = async (req: Request, res: Response, next: NextFunction) => {
         const { body } = req;
-        const { user }: { user?: IUserModel } = req;
+        const { user }: { user?: IUserModel } = req as any;
         console.log(req);
         await this.ArticleService.add(body, user!._id);
 
