@@ -5,7 +5,7 @@ import ioBackend, { Server as IoServer } from 'socket.io';
 import { AddressInfo } from 'net';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
-import { usersSeed } from './../testSetup/commentServiceSeed';
+import { usersSeed, articlesSeed } from './../testSetup/commentServiceSeed';
 import { UserModel } from './../models/User/UserModel';
 import CommentsController, {
     events,
@@ -13,8 +13,9 @@ import CommentsController, {
     STREAM_NAME
 } from './../controllers/Comments/CommentsController';
 import { expect } from 'chai';
-import { userService, commentService } from './../setup/container';
+import { userService, commentService, articleService } from './../setup/container';
 import forEach from 'mocha-each';
+import { ArticleModel } from './../models/Article/ArticleModel';
 
 let socket: SocketIOClient.Socket;
 let httpServer: Server;
@@ -42,6 +43,7 @@ const beforeFn = async () => {
     const url = await mongoServer.getConnectionString();
     mongoose.connect(url, { useNewUrlParser: true });
     await UserModel.insertMany(usersSeed);
+    await ArticleModel.insertMany(articlesSeed);
 
     httpServer = http.createServer().listen();
     httpServerAddr = httpServer.address() as AddressInfo;
@@ -60,7 +62,8 @@ const beforeFn = async () => {
     const commentsController = new CommentsController(
         ioServer,
         userService,
-        commentService
+        commentService,
+        articleService
     );
 };
 
@@ -78,7 +81,7 @@ describe('Comments controller When user have active session', () => {
             `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
             {
                 query: {
-                    articleId: '5d1a44b66970a011ed25ca0e'
+                    articleId: '6d1a44b66970a011ed25ca0e'
                 },
                 reconnectionDelay: 0,
                 forceNew: true,
@@ -103,7 +106,7 @@ describe('Comments controller When user have active session', () => {
             `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
             {
                 query: {
-                    articleId: '5d1a44b66970a011ed25ca0e'
+                    articleId: '6d1a44b66970a011ed25ca0e'
                 },
                 reconnectionDelay: 0,
                 forceNew: true,
@@ -113,7 +116,7 @@ describe('Comments controller When user have active session', () => {
         const message = 'My comment';
         const expectedMessage = {
             __v: 0,
-            article: '5d1a44b66970a011ed25ca0e',
+            article: '6d1a44b66970a011ed25ca0e',
             author: {
                 _id: '5d1a44b66970a011ed25ca0e',
                 name: 'myUser'
@@ -157,5 +160,27 @@ describe('Comments controller When user have active session', () => {
 
             after(closeServers);
         });
+    });
+
+    it('when article Id has correct format but article does not exist', done => {
+        socket = io.connect(
+            `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
+            {
+                reconnectionDelay: 0,
+                forceNew: true,
+                transports: ['websocket'],
+                query: {
+                    articleId: '5d1a44b66970a011ed25c000'
+                }
+            }
+        );
+        socket.on(events.disconnect, (msg: RoomUser[]) => {
+            expect(msg).to.deep.equal('io server disconnect');
+            done();
+        });
+
+        afterEach(closeSocket);
+
+        after(closeServers);
     });
 });

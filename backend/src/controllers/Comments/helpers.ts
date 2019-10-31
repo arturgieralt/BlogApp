@@ -53,21 +53,21 @@ export const verifyUser = (socket: Socket, next: Function) => {
 export const validateRoomId = (socket: Socket, next: Function): string => {
     const breakExecution = () => {
         socket.disconnect();
-        next(new Error('Invalid or empty articleId'));
+        return next(new Error('Invalid or empty articleId'));
     };
 
     const roomId = getRoomID(socket) as any;
 
     if (roomId === undefined || roomId === null) {
-        breakExecution();
+        return breakExecution();
     }
 
     if (!(typeof roomId === 'string' || roomId instanceof String)) {
-        breakExecution();
+        return breakExecution();
     }
 
     if (!Types.ObjectId.isValid(roomId as string)) {
-        breakExecution();
+        return breakExecution();
     }
 
     return next();

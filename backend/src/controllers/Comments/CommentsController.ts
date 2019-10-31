@@ -14,6 +14,7 @@ import {
 } from './helpers';
 import { IUserModel } from 'models/User/IUserModel';
 import { IComment } from 'models/Comment/ICommentModel';
+import { IArticleService } from 'services/Article/IArticleService';
 
 export const STREAM_NAME = '/commentStream';
 
@@ -40,26 +41,51 @@ export default class CommentsController implements ICommentsController {
         private server: Server,
         private UserService: IUserService,
         private CommentService: ICommentService,
+        private ArticleService: IArticleService,
         private roomUsers: RoomUsers = {}
     ) {
         this.server
             .of(STREAM_NAME)
             .use(verifyUser)
             .use(validateRoomId)
+            .use(this.checkIfArticleExists)
             .use(this.fetchUser)
             .on(events.connection, this.onConnection);
     }
+
+    private checkIfArticleExists = async (socket: Socket, next: Function) => {
+        try {
+            const articleId = getRoomID(socket);
+            const article = await this.ArticleService.getSingle(articleId);
+            if(article !== null) {
+                return next()
+            }
+
+            socket.disconnect()
+            return next(new Error('No article with such ID in database'));
+        } catch (e) {
+            socket.disconnect()
+            return next(e);
+        }
+    };
+
 
     private fetchUser = async (socket: Socket, next: Function) => {
         try {
             const userId = getUserID(socket);
             const user = await this.UserService.getSingle(userId);
+            if(!user) {
+                socket.disconnect();
+                return next(new Error('No user with such ID in database'))
+            }
             (socket as any).user = user;
-            next();
+            return next();
         } catch (e) {
-            next(e);
+            socket.disconnect();
+            return next(e);
         }
     };
+
     private onMessage = (socket: Socket) => async (message: string) => {
         const roomId = getRoomID(socket);
         const content = sanitize(message);
