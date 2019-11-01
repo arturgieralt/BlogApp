@@ -38,7 +38,7 @@ const closeSocket = (done: Function) => {
     done();
 };
 
-const beforeFn = async () => {
+const beforeFn = async (userId: string) => {
     mongoServer = new MongoMemoryServer();
     const url = await mongoServer.getConnectionString();
     mongoose.connect(url, { useNewUrlParser: true });
@@ -52,7 +52,7 @@ const beforeFn = async () => {
     ioServer.use((socket, next) => {
         socket.request.session = {
             passport: {
-                user: usersSeed[0]._id
+                user: userId
             }
         };
 
@@ -67,9 +67,9 @@ const beforeFn = async () => {
     );
 };
 
-describe('Comments controller When user have active session', () => {
+describe('Comments controller When user have active session and active account', () => {
     before(async () => {
-        await beforeFn();
+        await beforeFn(usersSeed[0]._id);
     });
 
     after(closeServers);
@@ -101,7 +101,7 @@ describe('Comments controller When user have active session', () => {
         });
     });
 
-    it('should receive valid message sent to the room', done => {
+    it('should receive valid message sent to the room and add it to database', done => {
         socket = io.connect(
             `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
             {
@@ -124,8 +124,10 @@ describe('Comments controller When user have active session', () => {
             content: 'My comment',
             isRemoved: false
         };
-        socket.on(events.success, (msg: any) => {
+        socket.on(events.success, async (msg: any) => {
             expect(msg).to.deep.include(expectedMessage);
+            const comments = await commentService.get('6d1a44b66970a011ed25ca0e');
+            expect(comments).to.have.lengthOf(1);
             done();
         });
 
@@ -138,7 +140,7 @@ describe('Comments controller When user have active session', () => {
         [undefined],
         [null],
         [true]
-    ]) as any).describe('should not add user to room ', (articleId: any) => {
+    ]) as any).describe('should not add user to room and disconnect', (articleId: any) => {
         it('when article Id is %s', done => {
             socket = io.connect(
                 `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
@@ -162,7 +164,7 @@ describe('Comments controller When user have active session', () => {
         });
     });
 
-    it('when article Id has correct format but article does not exist', done => {
+    it('when article Id has correct format but article does not exist should disconnect the user', done => {
         socket = io.connect(
             `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
             {
@@ -171,6 +173,74 @@ describe('Comments controller When user have active session', () => {
                 transports: ['websocket'],
                 query: {
                     articleId: '5d1a44b66970a011ed25c000'
+                }
+            }
+        );
+        socket.on(events.disconnect, (msg: RoomUser[]) => {
+            expect(msg).to.deep.equal('io server disconnect');
+            done();
+        });
+
+        afterEach(closeSocket);
+
+        after(closeServers);
+    });
+});
+
+
+describe('Comments controller When user have active session and not active account', () => {
+    before(async () => {
+        await beforeFn(usersSeed[1]._id);
+    });
+
+    after(closeServers);
+
+    afterEach(closeSocket);
+
+
+    it('should disconnect the user', done => {
+        socket = io.connect(
+            `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
+            {
+                reconnectionDelay: 0,
+                forceNew: true,
+                transports: ['websocket'],
+                query: {
+                    articleId: '6d1a44b66970a011ed25ca0e'
+                }
+            }
+        );
+        socket.on(events.disconnect, (msg: RoomUser[]) => {
+            expect(msg).to.deep.equal('io server disconnect');
+            done();
+        });
+
+        afterEach(closeSocket);
+
+        after(closeServers);
+    });
+});
+
+
+describe('Comments controller When user have active session but account is removed', () => {
+    before(async () => {
+        await beforeFn('6d1a44b66970a011ed25ca0e');
+    });
+
+    after(closeServers);
+
+    afterEach(closeSocket);
+
+
+    it('should disconnect the user', done => {
+        socket = io.connect(
+            `http://[${httpServerAddr.address}]:${httpServerAddr.port}${STREAM_NAME}`,
+            {
+                reconnectionDelay: 0,
+                forceNew: true,
+                transports: ['websocket'],
+                query: {
+                    articleId: '6d1a44b66970a011ed25ca0e'
                 }
             }
         );

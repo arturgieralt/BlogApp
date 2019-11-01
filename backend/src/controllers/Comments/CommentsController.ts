@@ -78,6 +78,11 @@ export default class CommentsController implements ICommentsController {
                 socket.disconnect();
                 return next(new Error('No user with such ID in database'))
             }
+            if(!user.isActive) {
+                socket.disconnect();
+                return next(new Error("User's account is not activated"))
+            }
+
             (socket as any).user = user;
             return next();
         } catch (e) {
