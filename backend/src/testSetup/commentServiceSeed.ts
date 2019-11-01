@@ -13,6 +13,17 @@ export const usersSeed: IUserWithId[] = [
         avatarUrl: 'dsfsdfs.jpg',
         verificationCode: 'code',
         accountType: 'internal'
+    },
+    {
+        _id: '5d1a44b66970a011ed25ceee',
+        name: 'myUser2',
+        email: 'mymail2@op.pl',
+        isActive: false,
+        passwordHash: 'dfsdfsdfsf',
+        created_date: '2019-10-04T00:00:00.000Z',
+        avatarUrl: 'dsfsdfs.jpg',
+        verificationCode: 'code',
+        accountType: 'internal'
     }
 ];
 
