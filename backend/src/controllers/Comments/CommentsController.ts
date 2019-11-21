@@ -49,7 +49,7 @@ export default class CommentsController implements ICommentsController {
             .use(verifyUser)
             .use(validateRoomId)
             .use(this.checkIfArticleExists)
-            .use(this.fetchUser)
+            .use(this.fetchAndValidateUser)
             .on(events.connection, this.onConnection);
     }
 
@@ -70,7 +70,7 @@ export default class CommentsController implements ICommentsController {
     };
 
 
-    private fetchUser = async (socket: Socket, next: Function) => {
+    private fetchAndValidateUser = async (socket: Socket, next: Function) => {
         try {
             const userId = getUserID(socket);
             const user = await this.UserService.getSingle(userId);
